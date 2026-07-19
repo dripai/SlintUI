@@ -1,0 +1,98 @@
+import { Theme } from "../tokens/theme.slint";
+import { FocusRing } from "../primitives/focus-ring.slint";
+
+export enum CheckState { unchecked, checked, indeterminate }
+
+export component Checkbox inherits Rectangle {
+    in property <string> text: "";
+    in-out property <CheckState> state: CheckState.unchecked;
+    in property <bool> enabled: true;
+    in property <string> accessible-name: text;
+    out property <bool> has-focus <=> focus-scope.has-focus;
+
+    callback toggled(state: CheckState);
+
+    min-height: max(Theme.control-height-small, Theme.line-height-body);
+    preferred-height: self.min-height;
+    min-width: box.width + Theme.space-2 + label.min-width;
+    background: transparent;
+    accessible-role: checkbox;
+    accessible-label: accessible-name;
+    accessible-enabled: enabled;
+    accessible-checkable: true;
+    accessible-checked: state == CheckState.checked;
+    accessible-action-default() => { root.toggle(); }
+
+    public function toggle() {
+        if (enabled) {
+            root.state = root.state == CheckState.checked ? CheckState.unchecked : CheckState.checked;
+            root.toggled(root.state);
+        }
+    }
+
+    HorizontalLayout {
+        spacing: Theme.space-2;
+        cross-axis-alignment: center;
+
+        box := Rectangle {
+            width: Theme.icon-size-small;
+            height: Theme.icon-size-small;
+            border-radius: Theme.radius-small;
+            border-width: Theme.border-width;
+            border-color: !root.enabled ? Theme.border-default
+                : root.has-focus ? Theme.focus-outline
+                : root.state == CheckState.unchecked && touch.has-hover ? Theme.color-primary-hover
+                : root.state == CheckState.unchecked ? Theme.border-default
+                : Theme.color-primary;
+            background: !root.enabled ? Theme.bg-disabled
+                : root.state == CheckState.unchecked ? Theme.bg-control
+                : Theme.color-primary;
+
+            if root.state != CheckState.unchecked: Text {
+                text: root.state == CheckState.indeterminate ? "−" : "✓";
+                color: root.enabled ? Theme.text-on-accent : Theme.text-disabled;
+                font-size: Theme.font-size-caption;
+                font-weight: Theme.font-weight-semibold;
+                horizontal-alignment: center;
+                vertical-alignment: center;
+                accessible-role: none;
+            }
+
+            FocusRing {
+                active: root.has-focus && root.enabled;
+                target-width: parent.width;
+                target-height: parent.height;
+                radius: Theme.radius-small;
+            }
+        }
+
+        label := Text {
+            text: root.text;
+            color: root.enabled ? Theme.text-primary : Theme.text-disabled;
+            font-size: Theme.font-size-body;
+            min-height: Theme.line-height-body;
+            vertical-alignment: center;
+            wrap: word-wrap;
+            accessible-role: none;
+        }
+    }
+
+    touch := TouchArea {
+        enabled: root.enabled;
+        mouse-cursor: root.enabled ? pointer : default;
+        clicked => { root.toggle(); }
+    }
+
+    focus-scope := FocusScope {
+        x: 0px;
+        width: 0px;
+        enabled: root.enabled;
+        key-pressed(event) => {
+            if (event.text == Key.Space) {
+                root.toggle();
+                return accept;
+            }
+            return reject;
+        }
+    }
+}

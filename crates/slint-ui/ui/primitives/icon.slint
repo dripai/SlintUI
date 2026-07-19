@@ -1,0 +1,19 @@
+import { Theme } from "../tokens/theme.slint";
+
+export enum IconSize { x-small, small, medium, large }
+
+export component Icon inherits Image {
+    in property <IconSize> size: IconSize.medium;
+    in property <color> color: Theme.icon-default;
+    in property <string> accessible-name: "";
+
+    width: size == IconSize.x-small ? Theme.icon-size-x-small
+        : size == IconSize.small ? Theme.icon-size-small
+        : size == IconSize.medium ? Theme.icon-size-medium
+        : Theme.icon-size-large;
+    height: self.width;
+    image-fit: contain;
+    colorize: color;
+    accessible-role: image;
+    accessible-label: accessible-name;
+}

@@ -1,0 +1,11 @@
+[package]
+name = "slint-ui"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+rust-version.workspace = true
+description = "SlintUI design-system components and library-path helper"
+include = ["src/**", "ui/**", "assets/**", "Cargo.toml"]
+
+[lib]
+path = "src/lib.rs"

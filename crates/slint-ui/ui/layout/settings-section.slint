@@ -1,0 +1,34 @@
+import { Theme, Direction } from "../tokens/theme.slint";
+
+export component SettingsSection inherits VerticalLayout {
+    in property <string> title: "";
+    in property <string> description: "";
+    in property <string> accessible-name: title;
+
+    spacing: Theme.space-3;
+    accessible-role: groupbox;
+    accessible-label: accessible-name;
+    accessible-description: description;
+
+    Text {
+        text: root.title;
+        color: Theme.text-primary;
+        font-size: Theme.font-size-title-small;
+        font-weight: Theme.font-weight-medium;
+        min-height: Theme.line-height-title-small;
+        horizontal-alignment: Theme.direction == Direction.rtl ? right : left;
+        wrap: word-wrap;
+    }
+
+    if root.description != "": Text {
+        text: root.description;
+        color: Theme.text-secondary;
+        font-size: Theme.font-size-body;
+        min-height: Theme.line-height-body;
+        horizontal-alignment: Theme.direction == Direction.rtl ? right : left;
+        wrap: word-wrap;
+    }
+
+    @children
+}
+

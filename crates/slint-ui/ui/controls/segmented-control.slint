@@ -1,0 +1,43 @@
+import { Theme, ControlSize } from "../tokens/theme.slint";
+import { Button, ButtonVariant } from "button.slint";
+
+export component SegmentedControl inherits Rectangle {
+    in property <[string]> options: [];
+    in-out property <int> selected-index: 0;
+    in property <bool> enabled: true;
+    in property <ControlSize> size: ControlSize.medium;
+    in property <string> accessible-name: "";
+
+    callback selected(index: int, value: string);
+
+    background: Theme.fill-hover;
+    border-radius: Theme.radius-medium;
+    min-height: size == ControlSize.small ? Theme.control-height-small
+        : size == ControlSize.large ? Theme.control-height-large
+        : Theme.control-height-medium;
+    preferred-height: self.min-height;
+    max-height: self.min-height;
+    accessible-role: tab-list;
+    accessible-label: accessible-name;
+    accessible-enabled: enabled;
+    accessible-item-count: options.length;
+
+    HorizontalLayout {
+        padding: Theme.border-width;
+        spacing: Theme.border-width;
+
+        for option[index] in root.options: Button {
+            text: option;
+            size: root.size;
+            enabled: root.enabled;
+            checked: root.selected-index == index;
+            variant: root.selected-index == index ? ButtonVariant.default : ButtonVariant.text;
+            clicked => {
+                if (root.selected-index != index) {
+                    root.selected-index = index;
+                    root.selected(index, option);
+                }
+            }
+        }
+    }
+}

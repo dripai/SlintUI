@@ -1,0 +1,100 @@
+import { Theme, ControlSize } from "../tokens/theme.slint";
+import { FocusRing } from "../primitives/focus-ring.slint";
+
+export component Switch inherits Rectangle {
+    in property <string> text: "";
+    in-out property <bool> checked: false;
+    in property <bool> enabled: true;
+    in property <ControlSize> size: ControlSize.medium;
+    in property <string> accessible-name: text;
+    out property <bool> has-focus <=> focus-scope.has-focus;
+
+    callback toggled(checked: bool);
+
+    private property <length> track-width: size == ControlSize.large ? Theme.switch-width-large
+        : size == ControlSize.small ? Theme.switch-width-small
+        : Theme.switch-width-medium;
+    private property <length> track-height: size == ControlSize.large ? Theme.switch-height-large
+        : size == ControlSize.small ? Theme.switch-height-small
+        : Theme.switch-height-medium;
+    private property <length> thumb-size: track-height - Theme.switch-thumb-inset * 2;
+
+    min-height: max(Theme.control-height-small, Theme.line-height-body);
+    preferred-height: self.min-height;
+    background: transparent;
+    accessible-role: switch;
+    accessible-label: accessible-name;
+    accessible-enabled: enabled;
+    accessible-checkable: true;
+    accessible-checked: checked;
+    accessible-action-default() => { root.toggle(); }
+
+    public function toggle() {
+        if (enabled) {
+            root.checked = !root.checked;
+            root.toggled(root.checked);
+        }
+    }
+
+    HorizontalLayout {
+        spacing: Theme.space-2;
+        cross-axis-alignment: center;
+
+        track := Rectangle {
+            width: root.track-width;
+            height: root.track-height;
+            border-radius: self.height / 2;
+            background: !root.enabled ? Theme.bg-disabled
+                : root.checked ? (touch.pressed ? Theme.color-primary-active : touch.has-hover ? Theme.color-primary-hover : Theme.color-primary)
+                : touch.pressed ? Theme.fill-pressed
+                : touch.has-hover ? Theme.fill-hover
+                : Theme.border-default;
+
+            thumb := Rectangle {
+                width: root.thumb-size;
+                height: root.thumb-size;
+                x: root.checked ? parent.width - self.width - Theme.switch-thumb-inset : Theme.switch-thumb-inset;
+                y: Theme.switch-thumb-inset;
+                border-radius: self.height / 2;
+                background: root.enabled ? Theme.bg-surface : Theme.text-disabled;
+                animate x { duration: Theme.motion-fast; }
+            }
+
+            FocusRing {
+                active: root.has-focus && root.enabled;
+                target-width: parent.width;
+                target-height: parent.height;
+                radius: parent.border-radius;
+            }
+        }
+
+        if root.text != "": Text {
+            text: root.text;
+            color: root.enabled ? Theme.text-primary : Theme.text-disabled;
+            font-size: Theme.font-size-body;
+            min-height: Theme.line-height-body;
+            vertical-alignment: center;
+            wrap: word-wrap;
+            accessible-role: none;
+        }
+    }
+
+    touch := TouchArea {
+        enabled: root.enabled;
+        mouse-cursor: root.enabled ? pointer : default;
+        clicked => { root.toggle(); }
+    }
+
+    focus-scope := FocusScope {
+        x: 0px;
+        width: 0px;
+        enabled: root.enabled;
+        key-pressed(event) => {
+            if (event.text == Key.Space) {
+                root.toggle();
+                return accept;
+            }
+            return reject;
+        }
+    }
+}

@@ -1,0 +1,26 @@
+import { Theme } from "../tokens/theme.slint";
+
+export enum SurfaceVariant { layout, surface, elevated, control }
+
+export component Surface inherits Rectangle {
+    in property <SurfaceVariant> variant: SurfaceVariant.surface;
+    in property <bool> bordered: false;
+    in property <length> radius: Theme.radius-medium;
+    in property <length> content-padding: 0px;
+
+    background: variant == SurfaceVariant.layout ? Theme.bg-layout
+        : variant == SurfaceVariant.elevated ? Theme.bg-elevated
+        : variant == SurfaceVariant.control ? Theme.bg-control
+        : Theme.bg-surface;
+    border-width: bordered ? Theme.border-width : 0px;
+    border-color: Theme.border-default;
+    border-radius: radius;
+
+    inner := Rectangle {
+        x: root.content-padding;
+        y: root.content-padding;
+        width: max(0px, root.width - root.content-padding * 2);
+        height: max(0px, root.height - root.content-padding * 2);
+        @children
+    }
+}

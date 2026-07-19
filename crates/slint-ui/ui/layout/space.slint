@@ -1,0 +1,9 @@
+import { Theme } from "../tokens/theme.slint";
+
+export component Space inherits HorizontalLayout {
+    in property <length> gap: Theme.space-2;
+
+    spacing: gap;
+    cross-axis-alignment: center;
+    @children
+}

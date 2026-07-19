@@ -1,0 +1,15 @@
+import { ComboBox as StandardComboBox } from "std-widgets.slint";
+import { Theme, ControlSize } from "../tokens/theme.slint";
+
+export component Select inherits StandardComboBox {
+    in property <string> accessible-name: "";
+    in property <ControlSize> size: ControlSize.medium;
+
+    min-width: Theme.control-min-width;
+    min-height: size == ControlSize.small ? Theme.control-height-small
+        : size == ControlSize.large ? Theme.control-height-large
+        : Theme.control-height-medium;
+    preferred-height: self.min-height;
+    max-height: self.min-height;
+    accessible-label: accessible-name;
+}

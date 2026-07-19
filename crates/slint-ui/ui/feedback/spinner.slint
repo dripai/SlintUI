@@ -1,0 +1,29 @@
+import { Theme } from "../tokens/theme.slint";
+
+export enum SpinnerSize { small, medium, large }
+
+export component Spinner inherits Rectangle {
+    in property <SpinnerSize> size: SpinnerSize.medium;
+    in property <string> accessible-name: "";
+    in property <color> indicator-color: Theme.color-primary;
+
+    width: size == SpinnerSize.small ? Theme.icon-size-small
+        : size == SpinnerSize.large ? Theme.icon-size-x-large
+        : Theme.icon-size-large;
+    height: self.width;
+    background: transparent;
+    accessible-role: progress-indicator;
+    accessible-label: accessible-name;
+
+    Image {
+        source: @image-url("../../assets/icons/spinner.svg");
+        width: parent.width;
+        height: parent.height;
+        image-fit: contain;
+        colorize: root.indicator-color;
+        transform-origin: { x: self.width / 2, y: self.height / 2 };
+        transform-rotation: Theme.reduced-motion ? 0deg
+            : Math.mod(animation-tick() / 1ms, Theme.spinner-cycle / 1ms) * 360deg / (Theme.spinner-cycle / 1ms);
+        accessible-role: none;
+    }
+}

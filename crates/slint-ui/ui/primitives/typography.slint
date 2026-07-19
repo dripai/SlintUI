@@ -1,0 +1,26 @@
+import { Theme, Direction } from "../tokens/theme.slint";
+
+export enum TypographyStyle { caption, body, label, title-small, title-medium, title-large }
+
+export component Typography inherits Text {
+    in property <TypographyStyle> style: TypographyStyle.body;
+
+    color: Theme.text-primary;
+    font-size: style == TypographyStyle.caption ? Theme.font-size-caption
+        : style == TypographyStyle.title-small ? Theme.font-size-title-small
+        : style == TypographyStyle.title-medium ? Theme.font-size-title-medium
+        : style == TypographyStyle.title-large ? Theme.font-size-title-large
+        : Theme.font-size-body;
+    font-weight: style == TypographyStyle.label || style == TypographyStyle.title-small || style == TypographyStyle.title-medium
+        ? Theme.font-weight-medium
+        : style == TypographyStyle.title-large ? Theme.font-weight-semibold
+        : Theme.font-weight-regular;
+    min-height: style == TypographyStyle.caption ? Theme.line-height-caption
+        : style == TypographyStyle.title-small ? Theme.line-height-title-small
+        : style == TypographyStyle.title-medium ? Theme.line-height-title-medium
+        : style == TypographyStyle.title-large ? Theme.line-height-title-large
+        : Theme.line-height-body;
+    vertical-alignment: center;
+    horizontal-alignment: Theme.direction == Direction.rtl ? right : left;
+    wrap: word-wrap;
+}

@@ -1,0 +1,22 @@
+import { Theme } from "../tokens/theme.slint";
+import { Surface, SurfaceVariant } from "../primitives/surface.slint";
+
+export component Toolbar inherits Surface {
+    in property <string> accessible-name: "Toolbar";
+
+    variant: SurfaceVariant.surface;
+    bordered: true;
+    radius: Theme.radius-medium;
+    min-height: Theme.row-height;
+    accessible-role: groupbox;
+    accessible-label: accessible-name;
+
+    HorizontalLayout {
+        padding-left: Theme.space-2;
+        padding-right: Theme.space-2;
+        spacing: Theme.space-1;
+        cross-axis-alignment: center;
+        @children
+    }
+}
+

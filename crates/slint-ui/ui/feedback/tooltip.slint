@@ -1,0 +1,8 @@
+export component HelpTooltip inherits Rectangle {
+    in property <string> content: "";
+    background: transparent;
+
+    Tooltip {
+        text: @markdown("\{root.content}");
+    }
+}

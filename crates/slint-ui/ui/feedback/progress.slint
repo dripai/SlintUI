@@ -1,0 +1,37 @@
+import { Theme } from "../tokens/theme.slint";
+
+export component Progress inherits Rectangle {
+    in property <float> value: 0.0;
+    in property <bool> indeterminate: false;
+    in property <string> accessible-name: "";
+
+    private property <float> normalized-value: max(0.0, min(1.0, value));
+    private property <float> animation-phase: indeterminate && !Theme.reduced-motion
+        ? Math.mod(animation-tick() / 1ms, Theme.progress-cycle / 1ms) / (Theme.progress-cycle / 1ms)
+        : 0.0;
+
+    min-width: Theme.progress-min-width;
+    min-height: Theme.progress-track-height;
+    preferred-height: Theme.progress-track-height;
+    max-height: Theme.progress-track-height;
+    background: Theme.fill-pressed;
+    border-radius: self.height / 2;
+    clip: true;
+    accessible-role: progress-indicator;
+    accessible-label: accessible-name;
+    accessible-value-minimum: 0.0;
+    accessible-value-maximum: 100.0;
+    accessible-value: indeterminate ? "" : round(normalized-value * 100) + "%";
+
+    indicator := Rectangle {
+        x: root.indeterminate
+            ? (Theme.reduced-motion
+                ? (root.width - self.width) / 2
+                : (root.width + self.width) * root.animation-phase - self.width)
+            : 0px;
+        width: root.indeterminate ? max(Theme.progress-indicator-min-width, root.width * 0.3) : root.width * root.normalized-value;
+        height: parent.height;
+        background: Theme.color-primary;
+        border-radius: parent.border-radius;
+    }
+}

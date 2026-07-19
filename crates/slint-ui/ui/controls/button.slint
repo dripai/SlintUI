@@ -1,0 +1,124 @@
+import { Theme, ThemeMode, ControlSize } from "../tokens/theme.slint";
+import { FocusRing } from "../primitives/focus-ring.slint";
+import { Spinner, SpinnerSize } from "../feedback/spinner.slint";
+
+export enum ButtonVariant { default, primary, danger, text, link }
+
+export component Button inherits Rectangle {
+    in property <string> text: "";
+    in property <image> icon;
+    in property <ButtonVariant> variant: ButtonVariant.default;
+    in property <ControlSize> size: ControlSize.medium;
+    in property <bool> enabled: true;
+    in property <bool> loading: false;
+    in property <bool> checkable: false;
+    in-out property <bool> checked: false;
+    in property <bool> keyboard-focusable: true;
+    in property <string> accessible-name: text;
+    out property <bool> has-focus <=> focus-scope.has-focus;
+
+    callback clicked();
+
+    public function activate() {
+        if (interactive) {
+            if (checkable) { root.checked = !root.checked; }
+            root.clicked();
+        }
+    }
+
+    private property <length> control-height: size == ControlSize.small ? Theme.control-height-small
+        : size == ControlSize.large ? Theme.control-height-large
+        : Theme.control-height-medium;
+    private property <bool> interactive: enabled && !loading;
+    private property <bool> emphasized: variant == ButtonVariant.primary || variant == ButtonVariant.danger;
+    private property <color> accent: variant == ButtonVariant.danger ? Theme.color-error : Theme.color-primary;
+    private property <color> accent-hover: variant == ButtonVariant.danger ? Theme.color-error-hover : Theme.color-primary-hover;
+    private property <color> accent-active: variant == ButtonVariant.danger ? Theme.color-error-active : Theme.color-primary-active;
+
+    min-height: control-height;
+    max-height: control-height;
+    preferred-height: control-height;
+    min-width: text == "" ? control-height : control-height + Theme.control-padding-horizontal;
+    preferred-width: max(self.min-width, content.preferred-width + Theme.control-padding-horizontal * 2);
+    border-radius: variant == ButtonVariant.link ? 0px : Theme.radius-medium;
+    border-width: variant == ButtonVariant.default && enabled ? Theme.border-width : 0px;
+    border-color: Theme.border-default;
+    background: !enabled ? Theme.bg-disabled
+        : emphasized ? (touch-area.pressed ? accent-active : touch-area.has-hover ? accent-hover : accent)
+        : checked ? Theme.selection-bg
+        : variant == ButtonVariant.text || variant == ButtonVariant.link ? (touch-area.pressed ? Theme.fill-pressed : touch-area.has-hover ? Theme.fill-hover : transparent)
+        : touch-area.pressed ? Theme.fill-pressed
+        : touch-area.has-hover ? Theme.fill-hover
+        : Theme.bg-control;
+
+    accessible-role: button;
+    accessible-label: accessible-name;
+    accessible-enabled: interactive;
+    accessible-checkable: checkable;
+    accessible-checked: checked;
+    accessible-action-default() => { root.activate(); }
+
+    content := HorizontalLayout {
+        padding-left: Theme.control-padding-horizontal;
+        padding-right: Theme.control-padding-horizontal;
+        spacing: Theme.space-2;
+        alignment: center;
+        cross-axis-alignment: center;
+
+        if root.loading: Spinner {
+            size: SpinnerSize.small;
+            indicator-color: root.emphasized ? Theme.text-on-accent : Theme.icon-default;
+            accessible-name: root.accessible-name;
+        }
+
+        if root.icon.width > 0 && !root.loading: Image {
+            source: root.icon;
+            width: Theme.icon-size-small;
+            height: Theme.icon-size-small;
+            image-fit: contain;
+            colorize: root.emphasized ? Theme.text-on-accent : root.variant == ButtonVariant.link ? root.accent : Theme.icon-default;
+            accessible-role: none;
+        }
+
+        if root.text != "": Text {
+            text: root.text;
+            color: !root.enabled ? Theme.text-disabled
+                : root.emphasized ? Theme.text-on-accent
+                : root.checked && Theme.mode == ThemeMode.high-contrast ? Theme.bg-layout
+                : root.variant == ButtonVariant.link ? root.accent
+                : Theme.text-primary;
+            font-size: Theme.font-size-body;
+            font-weight: root.emphasized ? Theme.font-weight-medium : Theme.font-weight-regular;
+            vertical-alignment: center;
+            horizontal-alignment: center;
+            overflow: elide;
+            accessible-role: none;
+        }
+    }
+
+    touch-area := TouchArea {
+        enabled: root.interactive;
+        mouse-cursor: root.interactive ? pointer : default;
+        clicked => { root.activate(); }
+    }
+
+    focus-scope := FocusScope {
+        x: 0px;
+        width: 0px;
+        enabled: root.interactive && root.keyboard-focusable;
+        key-pressed(event) => {
+            if (event.text == Key.Space || event.text == Key.Return) {
+                touch-area.clicked();
+                return accept;
+            }
+            return reject;
+        }
+    }
+
+    FocusRing {
+        active: root.has-focus && root.enabled;
+        target-width: root.width;
+        target-height: root.height;
+        radius: root.border-radius;
+    }
+}

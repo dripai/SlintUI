@@ -1,0 +1,16 @@
+import { Theme, Direction } from "../tokens/theme.slint";
+
+export component Label inherits Text {
+    in property <bool> required: false;
+    in property <bool> muted: false;
+
+    color: muted ? Theme.text-secondary : Theme.text-primary;
+    font-size: Theme.font-size-body;
+    font-weight: Theme.font-weight-medium;
+    min-height: Theme.line-height-body;
+    vertical-alignment: center;
+    horizontal-alignment: Theme.direction == Direction.rtl ? right : left;
+    wrap: word-wrap;
+    accessible-role: text;
+    accessible-label: self.text;
+}

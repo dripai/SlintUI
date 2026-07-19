@@ -1,0 +1,14 @@
+import { ScrollView as StandardScrollView } from "std-widgets.slint";
+
+export component ScrollArea {
+    in-out property <length> viewport-width <=> view.viewport-width;
+    in-out property <length> viewport-height <=> view.viewport-height;
+    in property <bool> enabled <=> view.enabled;
+    in property <bool> mouse-drag-pan-enabled <=> view.mouse-drag-pan-enabled;
+    out property <bool> has-focus <=> view.has-focus;
+
+    view := StandardScrollView {
+        @children
+    }
+}
+

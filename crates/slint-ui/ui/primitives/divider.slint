@@ -1,0 +1,14 @@
+import { Theme } from "../tokens/theme.slint";
+
+export enum DividerOrientation { horizontal, vertical }
+
+export component Divider inherits Rectangle {
+    in property <DividerOrientation> orientation: DividerOrientation.horizontal;
+    in property <bool> subtle: true;
+
+    background: subtle ? Theme.border-secondary : Theme.border-default;
+    min-width: orientation == DividerOrientation.vertical ? Theme.border-width : Theme.separator-min-extent;
+    min-height: orientation == DividerOrientation.horizontal ? Theme.border-width : Theme.separator-min-extent;
+    max-width: orientation == DividerOrientation.vertical ? Theme.border-width : Theme.layout-unbounded-extent;
+    max-height: orientation == DividerOrientation.horizontal ? Theme.border-width : Theme.layout-unbounded-extent;
+}

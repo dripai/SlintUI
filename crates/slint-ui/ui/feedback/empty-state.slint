@@ -1,0 +1,54 @@
+import { Theme } from "../tokens/theme.slint";
+
+export enum EmptyStateKind { no-data, no-results, no-permission }
+
+export component EmptyState inherits Rectangle {
+    in property <EmptyStateKind> kind: EmptyStateKind.no-data;
+    in property <image> icon;
+    in property <string> title: "";
+    in property <string> description: "";
+    in property <string> accessible-name: title;
+
+    background: transparent;
+    min-height: Theme.empty-state-min-height;
+    accessible-role: region;
+    accessible-label: accessible-name;
+    accessible-description: description;
+
+    VerticalLayout {
+        padding: Theme.space-6;
+        spacing: Theme.space-2;
+        alignment: center;
+        cross-axis-alignment: center;
+
+        if root.icon.width > 0: Image {
+            source: root.icon;
+            width: Theme.icon-size-empty-state;
+            height: Theme.icon-size-empty-state;
+            image-fit: contain;
+            colorize: root.kind == EmptyStateKind.no-permission ? Theme.color-warning : Theme.icon-default;
+            accessible-role: none;
+        }
+
+        Text {
+            text: root.title;
+            color: Theme.text-primary;
+            font-size: Theme.font-size-title-small;
+            font-weight: Theme.font-weight-medium;
+            min-height: Theme.line-height-title-small;
+            horizontal-alignment: center;
+            wrap: word-wrap;
+        }
+
+        if root.description != "": Text {
+            text: root.description;
+            color: Theme.text-secondary;
+            font-size: Theme.font-size-body;
+            min-height: Theme.line-height-body;
+            horizontal-alignment: center;
+            wrap: word-wrap;
+        }
+
+        @children
+    }
+}

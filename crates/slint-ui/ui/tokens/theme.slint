@@ -1,0 +1,117 @@
+export enum ThemeMode { light, dark, high-contrast }
+export enum Density { compact, regular, comfortable }
+export enum Direction { ltr, rtl }
+export enum ControlSize { small, medium, large }
+
+export global Theme {
+    in-out property <ThemeMode> mode: ThemeMode.light;
+    in-out property <Density> density: Density.regular;
+    in-out property <Direction> direction: Direction.ltr;
+    in-out property <string> locale: "zh-CN";
+    in-out property <float> text-scale: 1.0;
+    in-out property <float> preview-scale: 1.0;
+    in-out property <bool> reduced-motion: false;
+
+    out property <color> bg-layout: mode == ThemeMode.dark ? #000000 : mode == ThemeMode.high-contrast ? #000000 : #f5f5f5;
+    out property <color> bg-surface: mode == ThemeMode.dark ? #141414 : mode == ThemeMode.high-contrast ? #000000 : #ffffff;
+    out property <color> bg-elevated: mode == ThemeMode.dark ? #1f1f1f : mode == ThemeMode.high-contrast ? #000000 : #ffffff;
+    out property <color> bg-control: bg-surface;
+    out property <color> bg-disabled: mode == ThemeMode.dark ? #ffffff0a : mode == ThemeMode.high-contrast ? #202020 : #0000000a;
+
+    out property <color> text-primary: mode == ThemeMode.dark ? #ffffffd9 : mode == ThemeMode.high-contrast ? #ffffff : #000000e0;
+    out property <color> text-secondary: mode == ThemeMode.dark ? #ffffffa6 : mode == ThemeMode.high-contrast ? #ffffff : #000000a6;
+    out property <color> text-tertiary: mode == ThemeMode.dark ? #ffffff73 : mode == ThemeMode.high-contrast ? #ffffff : #00000073;
+    out property <color> text-disabled: mode == ThemeMode.dark ? #ffffff40 : mode == ThemeMode.high-contrast ? #a0a0a0 : #00000040;
+    out property <color> text-placeholder: text-disabled;
+    out property <color> text-inverse: mode == ThemeMode.dark || mode == ThemeMode.high-contrast ? #000000e0 : #ffffff;
+    out property <color> text-on-accent: mode == ThemeMode.high-contrast ? #000000 : #ffffff;
+
+    out property <color> icon-default: text-tertiary;
+    out property <color> icon-hover: text-primary;
+    out property <color> border-default: mode == ThemeMode.dark ? #424242 : mode == ThemeMode.high-contrast ? #ffffff : #d9d9d9;
+    out property <color> border-secondary: mode == ThemeMode.dark ? #fdfdfd1f : mode == ThemeMode.high-contrast ? #ffffff : #0505050f;
+    out property <color> fill-hover: mode == ThemeMode.dark ? #ffffff14 : mode == ThemeMode.high-contrast ? #ffffff26 : #0000000f;
+    out property <color> fill-pressed: mode == ThemeMode.dark ? #ffffff1f : mode == ThemeMode.high-contrast ? #ffffff40 : #0000001a;
+    out property <color> selection-bg: mode == ThemeMode.dark ? #111a2c : mode == ThemeMode.high-contrast ? #ffffff : #e6f4ff;
+    out property <color> overlay-mask: mode == ThemeMode.dark ? #000000a6 : #00000073;
+
+    out property <color> color-primary: mode == ThemeMode.dark ? #1668dc : mode == ThemeMode.high-contrast ? #00ffff : #1677ff;
+    out property <color> color-primary-hover: mode == ThemeMode.dark ? #3c89e8 : mode == ThemeMode.high-contrast ? #ffffff : #4096ff;
+    out property <color> color-primary-active: mode == ThemeMode.dark ? #1554ad : mode == ThemeMode.high-contrast ? #00ffff : #0958d9;
+    out property <color> color-primary-bg: mode == ThemeMode.dark ? #111a2c : mode == ThemeMode.high-contrast ? #000000 : #e6f4ff;
+    out property <color> color-primary-border: mode == ThemeMode.dark ? #15325b : mode == ThemeMode.high-contrast ? #00ffff : #91caff;
+    out property <color> color-success: mode == ThemeMode.dark ? #49aa19 : mode == ThemeMode.high-contrast ? #00ff00 : #52c41a;
+    out property <color> color-warning: mode == ThemeMode.dark ? #d89614 : mode == ThemeMode.high-contrast ? #ffff00 : #faad14;
+    out property <color> color-error: mode == ThemeMode.dark ? #dc4446 : mode == ThemeMode.high-contrast ? #ff8080 : #ff4d4f;
+    out property <color> color-error-hover: mode == ThemeMode.dark ? #e86e6b : mode == ThemeMode.high-contrast ? #ffffff : #ff7875;
+    out property <color> color-error-active: mode == ThemeMode.dark ? #ad393a : mode == ThemeMode.high-contrast ? #ff8080 : #d9363e;
+    out property <color> focus-outline: mode == ThemeMode.dark ? #3c89e8 : mode == ThemeMode.high-contrast ? #ffff00 : #1677ff;
+
+    out property <length> font-size-caption: 12px * text-scale;
+    out property <length> font-size-body: 14px * text-scale;
+    out property <length> font-size-title-small: 16px * text-scale;
+    out property <length> font-size-title-medium: 20px * text-scale;
+    out property <length> font-size-title-large: 24px * text-scale;
+
+    out property <length> line-height-caption: 20px * text-scale;
+    out property <length> line-height-body: 22px * text-scale;
+    out property <length> line-height-title-small: 24px * text-scale;
+    out property <length> line-height-title-medium: 28px * text-scale;
+    out property <length> line-height-title-large: 32px * text-scale;
+    out property <int> font-weight-regular: 400;
+    out property <int> font-weight-medium: 500;
+    out property <int> font-weight-semibold: 600;
+
+    out property <length> space-1: 4px;
+    out property <length> space-2: 8px;
+    out property <length> space-3: 12px;
+    out property <length> space-4: 16px;
+    out property <length> space-6: 24px;
+    out property <length> space-8: 32px;
+    out property <length> space-12: 48px;
+
+    out property <length> radius-small: 4px;
+    out property <length> radius-medium: 6px;
+    out property <length> radius-large: 8px;
+    out property <length> border-width: mode == ThemeMode.high-contrast ? 2px : 1px;
+    out property <length> focus-ring-width: 2px;
+    out property <length> focus-ring-offset: 2px;
+
+    out property <length> control-height-small: density == Density.comfortable ? 32px : 24px;
+    out property <length> control-height-medium: density == Density.compact ? 28px : density == Density.comfortable ? 40px : 32px;
+    out property <length> control-height-large: density == Density.compact ? 36px : density == Density.comfortable ? 48px : 40px;
+    out property <length> control-padding-horizontal: density == Density.compact ? 8px : density == Density.comfortable ? 16px : 12px;
+    out property <length> row-height: density == Density.compact ? 32px : density == Density.comfortable ? 48px : 40px;
+
+    // Component geometry tokens. Component implementations consume these names
+    // instead of carrying private numeric design decisions.
+    out property <length> icon-size-x-small: 12px;
+    out property <length> icon-size-small: 16px;
+    out property <length> icon-size-medium: 20px;
+    out property <length> icon-size-large: 24px;
+    out property <length> icon-size-x-large: 32px;
+    out property <length> icon-size-empty-state: 48px;
+    out property <length> field-affix-slot: 24px;
+    out property <length> control-min-width: 120px;
+    out property <length> card-min-width: 160px;
+    out property <length> empty-state-min-height: 160px;
+    out property <length> progress-min-width: 80px;
+    out property <length> progress-track-height: 8px;
+    out property <length> progress-indicator-min-width: 24px;
+    out property <length> status-indicator-size: 8px;
+    out property <length> separator-min-extent: 1px;
+    out property <length> layout-unbounded-extent: 100000px;
+    out property <length> switch-width-small: 32px;
+    out property <length> switch-width-medium: 40px;
+    out property <length> switch-width-large: 48px;
+    out property <length> switch-height-small: 16px;
+    out property <length> switch-height-medium: 20px;
+    out property <length> switch-height-large: 24px;
+    out property <length> switch-thumb-inset: 2px;
+
+    out property <duration> motion-fast: reduced-motion ? 0ms : 100ms;
+    out property <duration> motion-medium: reduced-motion ? 0ms : 200ms;
+    out property <duration> motion-slow: reduced-motion ? 0ms : 300ms;
+    out property <duration> progress-cycle: 1200ms;
+    out property <duration> spinner-cycle: 1000ms;
+}

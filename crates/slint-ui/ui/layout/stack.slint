@@ -1,0 +1,10 @@
+import { Theme } from "../tokens/theme.slint";
+
+export component Stack inherits VerticalLayout {
+    in property <length> gap: Theme.space-2;
+
+    spacing: gap;
+    alignment: start;
+    cross-axis-alignment: stretch;
+    @children
+}

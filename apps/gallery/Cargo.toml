@@ -1,0 +1,16 @@
+[package]
+name = "slint-ui-gallery"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+rust-version.workspace = true
+publish = false
+build = "build.rs"
+
+[dependencies]
+png = "0.18"
+slint.workspace = true
+
+[build-dependencies]
+slint-build.workspace = true
+slint-ui = { path = "../../crates/slint-ui" }

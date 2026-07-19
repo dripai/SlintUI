@@ -1,0 +1,40 @@
+import { Theme } from "../tokens/theme.slint";
+import { Label } from "../primitives/label.slint";
+
+export component FormRow inherits VerticalLayout {
+    in property <string> label: "";
+    in property <string> help-text: "";
+    in property <string> error-text: "";
+    in property <bool> required: false;
+    in property <string> accessible-name: label;
+
+    spacing: Theme.space-1;
+    min-height: Theme.line-height-body + Theme.space-1 + Theme.control-height-medium
+        + (error-text != "" || help-text != "" ? Theme.space-1 + Theme.line-height-caption : 0px);
+    accessible-role: groupbox;
+    accessible-label: accessible-name;
+    accessible-description: error-text != "" ? error-text : help-text;
+
+    Label {
+        text: root.label + (root.required ? " *" : "");
+        required: root.required;
+    }
+
+    @children
+
+    if root.error-text != "": Text {
+        text: root.error-text;
+        color: Theme.color-error;
+        font-size: Theme.font-size-caption;
+        min-height: Theme.line-height-caption;
+        wrap: word-wrap;
+    }
+
+    if root.error-text == "" && root.help-text != "": Text {
+        text: root.help-text;
+        color: Theme.text-secondary;
+        font-size: Theme.font-size-caption;
+        min-height: Theme.line-height-caption;
+        wrap: word-wrap;
+    }
+}

@@ -1,0 +1,348 @@
+import {
+    Theme, ThemeMode, Density, Direction, ControlSize,
+    Typography, TypographyStyle, Label, Icon, IconSize, Surface, SurfaceVariant, Divider, FocusRing,
+    ScrollArea, Stack, Space, Card,
+    Button, ButtonVariant, IconButton, ToolButton, Toolbar,
+    Checkbox, CheckState, Switch, TextField, ValidationState, Select, SegmentedControl,
+    FormRow, SettingsSection, Tooltip, Progress, Spinner, EmptyState, EmptyStateKind, StatusBar, StatusTone,
+} from "@slint-ui/index.slint";
+import { GalleryStrings } from "gallery-i18n.slint";
+
+export component GalleryWindow inherits Window {
+    title: GalleryStrings.title;
+    preferred-width: 1180px;
+    preferred-height: 800px;
+    min-width: 840px;
+    min-height: 600px;
+    background: Theme.bg-layout;
+
+    in-out property <int> page: 0;
+    in-out property <ThemeMode> theme-mode <=> Theme.mode;
+    in-out property <Density> density-mode <=> Theme.density;
+    in-out property <Direction> layout-direction <=> Theme.direction;
+    in-out property <string> locale <=> Theme.locale;
+    in-out property <float> preview-scale <=> Theme.preview-scale;
+    in-out property <bool> reduced-motion <=> Theme.reduced-motion;
+    private property <CheckState> checkbox-state: CheckState.checked;
+    private property <bool> switch-value: true;
+    private property <string> user-name: "SlintUI";
+    private property <[string]> locale-options: ["简体中文 · zh-CN", "English · en-US", "العربية · ar-EG"];
+    private property <[string]> select-options: ["Alpha", "Beta", "Gamma"];
+    private property <[string]> theme-options: [GalleryStrings.light, GalleryStrings.dark, GalleryStrings.contrast];
+    private property <[string]> density-options: [GalleryStrings.compact, GalleryStrings.regular, GalleryStrings.comfortable];
+    private property <[string]> scale-options: ["100%", "125%", "150%", "200%"];
+
+    VerticalLayout {
+        spacing: 0px;
+
+        Surface {
+            variant: SurfaceVariant.surface;
+            bordered: true;
+            radius: 0px;
+            min-height: 112px;
+            max-height: 112px;
+
+            VerticalLayout {
+                padding: Theme.space-4;
+                spacing: Theme.space-3;
+
+                Space {
+                    Typography {
+                        text: GalleryStrings.title;
+                        style: TypographyStyle.title-medium;
+                    }
+                    Rectangle { horizontal-stretch: 1; }
+                    Label { text: GalleryStrings.locale; muted: true; }
+                    Select {
+                        accessible-name: GalleryStrings.locale;
+                        model: root.locale-options;
+                        current-index: Theme.locale == "en-US" ? 1 : Theme.locale == "ar-EG" ? 2 : 0;
+                        selected(value) => {
+                            Theme.locale = self.current-index == 1 ? "en-US" : self.current-index == 2 ? "ar-EG" : "zh-CN";
+                            Theme.direction = self.current-index == 2 ? Direction.rtl : Direction.ltr;
+                        }
+                    }
+                }
+
+                Space {
+                    Label { text: GalleryStrings.theme; muted: true; min-width: 48px; wrap: no-wrap; }
+                    SegmentedControl {
+                        options: root.theme-options;
+                        selected-index: Theme.mode == ThemeMode.dark ? 1 : Theme.mode == ThemeMode.high-contrast ? 2 : 0;
+                        selected(index, value) => { Theme.mode = index == 1 ? ThemeMode.dark : index == 2 ? ThemeMode.high-contrast : ThemeMode.light; }
+                    }
+                    Label { text: GalleryStrings.density; muted: true; min-width: 56px; wrap: no-wrap; }
+                    SegmentedControl {
+                        options: root.density-options;
+                        selected-index: Theme.density == Density.compact ? 0 : Theme.density == Density.comfortable ? 2 : 1;
+                        selected(index, value) => { Theme.density = index == 0 ? Density.compact : index == 2 ? Density.comfortable : Density.regular; }
+                    }
+                    Label { text: GalleryStrings.scale; muted: true; min-width: 40px; wrap: no-wrap; }
+                    SegmentedControl {
+                        options: root.scale-options;
+                        selected-index: Theme.preview-scale == 1.25 ? 1 : Theme.preview-scale == 1.5 ? 2 : Theme.preview-scale == 2.0 ? 3 : 0;
+                        selected(index, value) => { Theme.preview-scale = index == 1 ? 1.25 : index == 2 ? 1.5 : index == 3 ? 2.0 : 1.0; }
+                    }
+                }
+            }
+        }
+
+        HorizontalLayout {
+            spacing: 0px;
+
+            Surface {
+                variant: SurfaceVariant.surface;
+                radius: 0px;
+                bordered: true;
+                min-width: 180px;
+                max-width: 180px;
+
+                Stack {
+                    padding: Theme.space-3;
+                    gap: Theme.space-1;
+
+                    Button { text: GalleryStrings.foundations; checked: root.page == 0; variant: ButtonVariant.text; clicked => { root.page = 0; } }
+                    Button { text: GalleryStrings.layout; checked: root.page == 1; variant: ButtonVariant.text; clicked => { root.page = 1; } }
+                    Button { text: GalleryStrings.actions; checked: root.page == 2; variant: ButtonVariant.text; clicked => { root.page = 2; } }
+                    Button { text: GalleryStrings.inputs; checked: root.page == 3; variant: ButtonVariant.text; clicked => { root.page = 3; } }
+                    Button { text: GalleryStrings.feedback; checked: root.page == 4; variant: ButtonVariant.text; clicked => { root.page = 4; } }
+                    Rectangle { vertical-stretch: 1; }
+                    Typography { text: GalleryStrings.subtitle; style: TypographyStyle.caption; color: Theme.text-tertiary; }
+                }
+            }
+
+            ScrollArea {
+                horizontal-stretch: 1;
+                vertical-stretch: 1;
+                mouse-drag-pan-enabled: false;
+
+                preview := Rectangle {
+                    min-width: 620px;
+                    transform-origin: { x: 0px, y: 0px };
+                    transform-scale-x: Theme.preview-scale * 100%;
+                    transform-scale-y: Theme.preview-scale * 100%;
+
+                    Stack {
+                        padding: Theme.space-6;
+                        gap: Theme.space-4;
+
+                        if root.page == 0: Stack {
+                            gap: Theme.space-4;
+                            Typography { text: GalleryStrings.foundations; style: TypographyStyle.title-large; }
+                            Typography { text: GalleryStrings.long-text; style: TypographyStyle.body; }
+                            Card {
+                                width: 560px;
+                                title: "Typography";
+                                Stack {
+                                    Typography { text: GalleryStrings.title; style: TypographyStyle.title-large; }
+                                    Typography { text: GalleryStrings.subtitle; style: TypographyStyle.title-medium; }
+                                    Typography { text: GalleryStrings.long-text; style: TypographyStyle.body; }
+                                    Typography { text: "Caption · 12 / 20"; style: TypographyStyle.caption; color: Theme.text-secondary; }
+                                }
+                            }
+                            Card {
+                                width: 560px;
+                                title: "Surface · Icon · Divider · FocusRing";
+                                Stack {
+                                    Space {
+                                        Icon { source: @image-url("../../../crates/slint-ui/assets/icons/settings.svg"); size: IconSize.large; accessible-name: GalleryStrings.settings; }
+                                        Icon { source: @image-url("../../../crates/slint-ui/assets/icons/plus.svg"); size: IconSize.medium; accessible-name: GalleryStrings.add; }
+                                        Surface { width: 80px; height: 40px; variant: SurfaceVariant.elevated; bordered: true; }
+                                    }
+                                    Divider { orientation: horizontal; }
+                                    Rectangle {
+                                        width: 140px;
+                                        height: 40px;
+                                        border-radius: Theme.radius-medium;
+                                        background: Theme.bg-control;
+                                        FocusRing { active: true; target-width: parent.width; target-height: parent.height; }
+                                    }
+                                }
+                            }
+                        }
+
+                        if root.page == 1: Stack {
+                            gap: Theme.space-4;
+                            Typography { text: GalleryStrings.layout; style: TypographyStyle.title-large; }
+                            Card {
+                                width: 760px;
+                                title: "Stack · Space · Card";
+                                description: GalleryStrings.long-text;
+                                Stack {
+                                    Space {
+                                        Button { text: GalleryStrings.one; }
+                                        Button { text: GalleryStrings.two; }
+                                        Button { text: GalleryStrings.three; }
+                                    }
+                                    Divider { orientation: horizontal; }
+                                    Surface { min-height: 80px; variant: SurfaceVariant.layout; bordered: true; }
+                                }
+                            }
+                            SettingsSection {
+                                title: GalleryStrings.account;
+                                description: GalleryStrings.account-help;
+                                FormRow {
+                                    label: GalleryStrings.user-name;
+                                    required: true;
+                                    TextField { text <=> root.user-name; accessible-name: GalleryStrings.user-name; placeholder-text: GalleryStrings.user-name-placeholder; }
+                                }
+                                FormRow {
+                                    label: GalleryStrings.update;
+                                    help-text: GalleryStrings.long-text;
+                                    Switch { text: GalleryStrings.update; checked <=> root.switch-value; }
+                                }
+                            }
+                        }
+
+                        if root.page == 2: Stack {
+                            gap: Theme.space-4;
+                            Typography { text: GalleryStrings.actions; style: TypographyStyle.title-large; }
+                            Card {
+                                width: 960px;
+                                title: GalleryStrings.button-states;
+                                Stack {
+                                    Space {
+                                        Button { text: GalleryStrings.save; variant: ButtonVariant.primary; }
+                                        Button { text: GalleryStrings.cancel; }
+                                        Button { text: GalleryStrings.delete-action; variant: ButtonVariant.danger; }
+                                        Button { text: GalleryStrings.text-action; variant: ButtonVariant.text; }
+                                        Button { text: GalleryStrings.link-action; variant: ButtonVariant.link; }
+                                    }
+                                    Space {
+                                        Button { text: GalleryStrings.small; size: ControlSize.small; }
+                                        Button { text: GalleryStrings.medium; size: ControlSize.medium; }
+                                        Button { text: GalleryStrings.large; size: ControlSize.large; }
+                                        Button { text: GalleryStrings.loading; loading: true; variant: ButtonVariant.primary; }
+                                        Button { text: GalleryStrings.save; enabled: false; }
+                                    }
+                                }
+                            }
+                            Toolbar {
+                                accessible-name: GalleryStrings.sample-toolbar;
+                                IconButton {
+                                    icon: @image-url("../../../crates/slint-ui/assets/icons/plus.svg");
+                                    accessible-name: GalleryStrings.choose;
+                                    tooltip: GalleryStrings.shortcut-help;
+                                }
+                                ToolButton { text: GalleryStrings.save; checkable: true; checked: true; }
+                                Divider { orientation: vertical; }
+                                ToolButton { text: GalleryStrings.notifications; }
+                            }
+                        }
+
+                        if root.page == 3: Stack {
+                            gap: Theme.space-4;
+                            Typography { text: GalleryStrings.inputs; style: TypographyStyle.title-large; }
+                            Card {
+                                width: 760px;
+                                title: "Checkbox · Switch · SegmentedControl";
+                                Stack {
+                                    Checkbox { text: GalleryStrings.notifications; state <=> root.checkbox-state; }
+                                    Checkbox { text: GalleryStrings.indeterminate; state: CheckState.indeterminate; }
+                                    Checkbox { text: GalleryStrings.disabled; enabled: false; state: CheckState.checked; }
+                                    Switch { text: GalleryStrings.update; checked <=> root.switch-value; }
+                                    SegmentedControl { options: root.select-options; selected-index: 1; accessible-name: GalleryStrings.view-mode; }
+                                }
+                            }
+                            SettingsSection {
+                                title: GalleryStrings.account;
+                                description: GalleryStrings.account-help;
+                                FormRow {
+                                    label: GalleryStrings.user-name;
+                                    TextField { text <=> root.user-name; accessible-name: GalleryStrings.user-name; placeholder-text: GalleryStrings.user-name-placeholder; }
+                                }
+                                FormRow {
+                                    label: GalleryStrings.validation;
+                                    error-text: GalleryStrings.long-text;
+                                    TextField { text: GalleryStrings.invalid-value; accessible-name: GalleryStrings.validation; validation: ValidationState.error; }
+                                }
+                                FormRow {
+                                    label: GalleryStrings.select-label;
+                                    Select { model: root.select-options; current-index: 1; accessible-name: GalleryStrings.select-label; }
+                                }
+                            }
+                        }
+
+                        if root.page == 4: Stack {
+                            gap: Theme.space-4;
+                            Typography { text: GalleryStrings.feedback; style: TypographyStyle.title-large; }
+                            Card {
+                                width: 480px;
+                                title: "Progress · Spinner";
+                                Stack {
+                                    Progress { value: 0.64; accessible-name: GalleryStrings.progress-label; }
+                                    Progress { indeterminate: true; accessible-name: GalleryStrings.loading; }
+                                    Space { Spinner { accessible-name: GalleryStrings.loading; } Label { text: GalleryStrings.loading; } }
+                                }
+                            }
+                            Card {
+                                width: 480px;
+                                title: "EmptyState";
+                                EmptyState {
+                                    kind: EmptyStateKind.no-data;
+                                    icon: @image-url("../../../crates/slint-ui/assets/icons/inbox.svg");
+                                    title: GalleryStrings.empty-title;
+                                    description: GalleryStrings.empty-description;
+                                    Button { text: GalleryStrings.choose; variant: ButtonVariant.primary; }
+                                }
+                            }
+                            StatusBar { text: GalleryStrings.ready; detail: "Slint 1.17.1"; tone: StatusTone.success; }
+                        }
+                    }
+                }
+            }
+        }
+
+        StatusBar {
+            text: GalleryStrings.ready;
+            detail: Theme.locale + " · " + (Theme.direction == Direction.rtl ? "RTL" : "LTR") + " · " + round(Theme.preview-scale * 100) + "%";
+            tone: StatusTone.info;
+        }
+    }
+}
+
+export component InteractionHarness inherits Window {
+    width: 320px;
+    height: 320px;
+    out property <int> button-activations: 0;
+    out property <int> disabled-button-activations: 0;
+    out property <int> icon-button-activations: 0;
+    out property <int> tool-button-activations: 0;
+    out property <bool> tool-button-checked: test-tool-button.checked;
+    out property <bool> checkbox-checked: test-checkbox.state == CheckState.checked;
+    out property <bool> switch-checked: test-switch.checked;
+    out property <bool> disabled-switch-checked: disabled-switch.checked;
+
+    public function activate-button() { test-button.activate(); }
+    public function activate-disabled-button() { disabled-button.activate(); }
+    public function activate-icon-button() { test-icon-button.activate(); }
+    public function activate-tool-button() { test-tool-button.activate(); }
+    public function toggle-checkbox() { test-checkbox.toggle(); }
+    public function toggle-switch() { test-switch.toggle(); }
+    public function toggle-disabled-switch() { disabled-switch.toggle(); }
+
+    Stack {
+        test-button := Button {
+            text: "Test";
+            clicked => { root.button-activations += 1; }
+        }
+        disabled-button := Button {
+            text: "Disabled";
+            enabled: false;
+            clicked => { root.disabled-button-activations += 1; }
+        }
+        test-icon-button := IconButton {
+            icon: @image-url("../../../crates/slint-ui/assets/icons/plus.svg");
+            accessible-name: "Icon action";
+            clicked => { root.icon-button-activations += 1; }
+        }
+        test-tool-button := ToolButton {
+            text: "Tool";
+            checkable: true;
+            clicked => { root.tool-button-activations += 1; }
+        }
+        test-checkbox := Checkbox { text: "Test checkbox"; state: CheckState.indeterminate; }
+        test-switch := Switch { text: "Test switch"; }
+        disabled-switch := Switch { text: "Disabled switch"; enabled: false; }
+    }
+}

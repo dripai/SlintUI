@@ -1,0 +1,144 @@
+import { Theme, ControlSize } from "../tokens/theme.slint";
+import { FocusRing } from "../primitives/focus-ring.slint";
+
+export enum ValidationState { normal, success, warning, error }
+
+export component TextField inherits Rectangle {
+    in-out property <string> text <=> input.text;
+    in property <string> placeholder-text: "";
+    in property <string> accessible-name: "";
+    in property <image> prefix-icon;
+    in property <image> suffix-icon;
+    in property <bool> clearable: false;
+    in property <string> clear-accessible-name: "";
+    in property <bool> enabled: true;
+    in property <bool> read-only: false;
+    in property <InputType> input-type: InputType.text;
+    in property <ControlSize> size: ControlSize.medium;
+    in property <ValidationState> validation: ValidationState.normal;
+    out property <bool> has-focus <=> input.has-focus;
+
+    callback edited(text: string);
+    callback accepted(text: string);
+    callback cleared();
+
+    private property <length> control-height: size == ControlSize.small ? Theme.control-height-small
+        : size == ControlSize.large ? Theme.control-height-large
+        : Theme.control-height-medium;
+    private property <color> validation-color: validation == ValidationState.error ? Theme.color-error
+        : validation == ValidationState.warning ? Theme.color-warning
+        : validation == ValidationState.success ? Theme.color-success
+        : Theme.border-default;
+    private property <bool> has-prefix: prefix-icon.width > 0;
+    private property <bool> has-suffix: suffix-icon.width > 0;
+    private property <bool> show-clear: clearable && enabled && !read-only && text != "";
+    private property <length> leading-space: has-prefix ? Theme.field-affix-slot : 0px;
+    private property <length> trailing-space: show-clear || has-suffix ? Theme.field-affix-slot : 0px;
+
+    min-width: Theme.control-min-width;
+    min-height: control-height;
+    preferred-height: control-height;
+    max-height: control-height;
+    background: enabled ? Theme.bg-control : Theme.bg-disabled;
+    border-width: Theme.border-width;
+    border-color: has-focus ? Theme.focus-outline : validation-color;
+    border-radius: Theme.radius-medium;
+    clip: true;
+    accessible-role: text-input;
+    accessible-label: accessible-name;
+    accessible-enabled: enabled;
+    accessible-read-only: read-only;
+    accessible-placeholder-text: placeholder-text;
+    accessible-value: text;
+
+    if root.has-prefix: Image {
+        x: Theme.control-padding-horizontal;
+        y: (parent.height - self.height) / 2;
+        width: Theme.icon-size-small;
+        height: Theme.icon-size-small;
+        source: root.prefix-icon;
+        image-fit: contain;
+        colorize: Theme.icon-default;
+        accessible-role: none;
+    }
+
+    if root.text == "": Text {
+        x: Theme.control-padding-horizontal + root.leading-space;
+        width: parent.width - Theme.control-padding-horizontal * 2 - root.leading-space - root.trailing-space;
+        height: parent.height;
+        text: root.placeholder-text;
+        color: Theme.text-placeholder;
+        font-size: Theme.font-size-body;
+        vertical-alignment: center;
+        overflow: elide;
+        accessible-role: none;
+    }
+
+    input := TextInput {
+        x: Theme.control-padding-horizontal + root.leading-space;
+        width: parent.width - Theme.control-padding-horizontal * 2 - root.leading-space - root.trailing-space;
+        height: parent.height;
+        enabled: root.enabled;
+        read-only: root.read-only;
+        input-type: root.input-type;
+        single-line: true;
+        font-size: Theme.font-size-body;
+        font-weight: Theme.font-weight-regular;
+        color: root.enabled ? Theme.text-primary : Theme.text-disabled;
+        selection-background-color: Theme.selection-bg;
+        selection-foreground-color: Theme.text-primary;
+        vertical-alignment: center;
+        accessible-role: none;
+        edited => { root.edited(self.text); }
+        accepted => { root.accepted(self.text); }
+    }
+
+    if root.has-suffix && !root.show-clear: Image {
+        x: parent.width - Theme.control-padding-horizontal - self.width;
+        y: (parent.height - self.height) / 2;
+        width: Theme.icon-size-small;
+        height: Theme.icon-size-small;
+        source: root.suffix-icon;
+        image-fit: contain;
+        colorize: Theme.icon-default;
+        accessible-role: none;
+    }
+
+    if root.show-clear: Rectangle {
+        x: parent.width - Theme.control-padding-horizontal - self.width;
+        y: (parent.height - self.height) / 2;
+        width: Theme.icon-size-medium;
+        height: Theme.icon-size-medium;
+        border-radius: Theme.radius-small;
+        background: clear-touch.has-hover ? Theme.fill-hover : transparent;
+        accessible-role: button;
+        accessible-label: root.clear-accessible-name;
+        accessible-action-default() => { clear-touch.clicked(); }
+
+        Text {
+            text: "×";
+            color: Theme.icon-default;
+            font-size: Theme.font-size-body;
+            horizontal-alignment: center;
+            vertical-alignment: center;
+            accessible-role: none;
+        }
+
+        clear-touch := TouchArea {
+            mouse-cursor: pointer;
+            clicked => {
+                root.text = "";
+                root.edited("");
+                root.cleared();
+                input.focus();
+            }
+        }
+    }
+
+    FocusRing {
+        active: root.has-focus && root.enabled;
+        target-width: root.width;
+        target-height: root.height;
+        radius: root.border-radius;
+    }
+}

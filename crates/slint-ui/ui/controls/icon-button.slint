@@ -1,0 +1,16 @@
+import { Theme, ControlSize } from "../tokens/theme.slint";
+import { Button, ButtonVariant } from "button.slint";
+import { HelpTooltip } from "../feedback/tooltip.slint";
+
+export component IconButton inherits Button {
+    in property <string> tooltip: "";
+    text: "";
+    variant: ButtonVariant.text;
+    min-width: self.size == ControlSize.small ? Theme.control-height-small
+        : self.size == ControlSize.large ? Theme.control-height-large
+        : Theme.control-height-medium;
+    max-width: self.min-width;
+    preferred-width: self.min-width;
+
+    if self.tooltip != "": HelpTooltip { content: root.tooltip; }
+}

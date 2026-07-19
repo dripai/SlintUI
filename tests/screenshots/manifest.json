@@ -1,0 +1,41 @@
+{
+  "renderer": "winit-software",
+  "reduced_motion": true,
+  "images": [
+    {
+      "file": "gallery-dark-actions-100.png",
+      "width": 1180,
+      "height": 800,
+      "sha256": "db56360824c74eadf8238f3d10e61d1cf3f4469483f9b3b4315b8a2fa521ad52",
+      "bytes": 43515
+    },
+    {
+      "file": "gallery-high-contrast-inputs-100.png",
+      "width": 1180,
+      "height": 800,
+      "sha256": "8715a9dfba4601d0ce04ab62a25b83bc0df0e0659a88d615a20e2ef3ac529acb",
+      "bytes": 59573
+    },
+    {
+      "file": "gallery-light-feedback-150.png",
+      "width": 1180,
+      "height": 800,
+      "sha256": "c1918404ec9e9dcd2f2ed0f687e4dd6b5c7021b35cd738d16df70ccc7f35c69b",
+      "bytes": 47612
+    },
+    {
+      "file": "gallery-light-foundations-100.png",
+      "width": 1180,
+      "height": 800,
+      "sha256": "eb29bed458d91a7ba7adb1e79ab2c2a62c9f986dbb5d77b2dcae9752cf571847",
+      "bytes": 60053
+    },
+    {
+      "file": "gallery-rtl-inputs-100.png",
+      "width": 1180,
+      "height": 800,
+      "sha256": "19ad0dbeea0072014e2f743629f62a93cada1ee083499e89b33a9dd9b0def1c9",
+      "bytes": 45817
+    }
+  ]
+}
