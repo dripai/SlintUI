@@ -10,6 +10,8 @@ version = "0.1.0"
 edition = "2024"
 license = "MIT"
 rust-version = "1.88"
+repository = "https://github.com/dripai/SlintUI"
+homepage = "https://github.com/dripai/SlintUI"
 
 [workspace.dependencies]
 slint = "=1.17.1"

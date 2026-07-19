@@ -7,6 +7,7 @@
 - 工作区：`slint-ui` 核心 crate、`slint-ui-gallery` 应用和 `@slint-ui/index.slint` 公开入口。
 - 全局环境：浅色、深色、高对比度主题，三种密度，100%–200% 文本与预览缩放，Locale、LTR/RTL 和减少动效状态。
 - 基础原语：Theme、Typography、Label、Icon、Surface、Divider、FocusRing。
+- 图标资源：447 个 outlined、249 个 filled SVG，独立模块按需导入；Checkbox 和 TextField 状态图标不再依赖字体字符。
 - 布局：Stack、Space、Card、ScrollArea。
 - 操作：Button、IconButton、ToolButton、Toolbar。
 - 输入：Checkbox、Switch、TextField、Select、SegmentedControl。

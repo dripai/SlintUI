@@ -115,12 +115,14 @@ export component TextField inherits Rectangle {
         accessible-label: root.clear-accessible-name;
         accessible-action-default() => { clear-touch.clicked(); }
 
-        Text {
-            text: "×";
-            color: Theme.icon-default;
-            font-size: Theme.font-size-body;
-            horizontal-alignment: center;
-            vertical-alignment: center;
+        Image {
+            x: (parent.width - self.width) / 2;
+            y: (parent.height - self.height) / 2;
+            width: Theme.icon-size-x-small;
+            height: Theme.icon-size-x-small;
+            source: @image-url("../../assets/icons/ant-design/outlined/close.svg");
+            image-fit: contain;
+            colorize: Theme.icon-default;
             accessible-role: none;
         }
 

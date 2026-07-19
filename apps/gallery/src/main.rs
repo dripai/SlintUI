@@ -22,7 +22,8 @@ fn run_bounded(
 ) -> Result<(), slint::PlatformError> {
     gallery.show()?;
     let weak = gallery.as_weak();
-    slint::Timer::single_shot(Duration::from_millis(300), move || {
+    // Give the software renderer enough time to paint resource-heavy catalog pages.
+    slint::Timer::single_shot(Duration::from_millis(2_000), move || {
         if let (Some(gallery), Some(path)) = (weak.upgrade(), screenshot.as_deref())
             && let Err(error) = write_snapshot(&gallery, path)
         {
@@ -54,6 +55,7 @@ fn apply_options(gallery: &GalleryWindow, args: &mut impl Iterator<Item = std::f
                 _ => Density::Regular,
             }),
             "--scale" => gallery.set_preview_scale(value.parse().unwrap_or(1.0)),
+            "--icon-style" => gallery.set_icon_style(if value == "filled" { 1 } else { 0 }),
             "--locale" => {
                 gallery.set_locale(value.into());
                 gallery.set_layout_direction(if value.starts_with("ar") {

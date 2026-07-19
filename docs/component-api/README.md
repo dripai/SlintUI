@@ -8,5 +8,7 @@
 - 输入：Checkbox、Switch、TextField、Select、SegmentedControl
 - 反馈：Tooltip、Progress、Spinner、EmptyState、StatusBar
 
+图标资源不从主入口导出。按需导入与完整清单见 [`../iconography.md`](../iconography.md)。
+
 逐组件 API、状态、原生复用和限制见 [`../../design/component-specs/`](../../design/component-specs/README.md)。
 

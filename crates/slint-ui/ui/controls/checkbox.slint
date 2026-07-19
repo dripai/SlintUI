@@ -48,13 +48,16 @@ export component Checkbox inherits Rectangle {
                 : root.state == CheckState.unchecked ? Theme.bg-control
                 : Theme.color-primary;
 
-            if root.state != CheckState.unchecked: Text {
-                text: root.state == CheckState.indeterminate ? "−" : "✓";
-                color: root.enabled ? Theme.text-on-accent : Theme.text-disabled;
-                font-size: Theme.font-size-caption;
-                font-weight: Theme.font-weight-semibold;
-                horizontal-alignment: center;
-                vertical-alignment: center;
+            if root.state != CheckState.unchecked: Image {
+                x: (parent.width - self.width) / 2;
+                y: (parent.height - self.height) / 2;
+                width: Theme.icon-size-x-small;
+                height: Theme.icon-size-x-small;
+                source: root.state == CheckState.indeterminate
+                    ? @image-url("../../assets/icons/ant-design/outlined/minus.svg")
+                    : @image-url("../../assets/icons/ant-design/outlined/check.svg");
+                image-fit: contain;
+                colorize: root.enabled ? Theme.text-on-accent : Theme.text-disabled;
                 accessible-role: none;
             }
 

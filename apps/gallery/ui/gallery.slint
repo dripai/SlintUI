@@ -6,7 +6,20 @@ import {
     Checkbox, CheckState, Switch, TextField, ValidationState, Select, SegmentedControl,
     FormRow, SettingsSection, Tooltip, Progress, Spinner, EmptyState, EmptyStateKind, StatusBar, StatusTone,
 } from "@slint-ui/index.slint";
+import { ListView } from "std-widgets.slint";
 import { GalleryStrings } from "gallery-i18n.slint";
+import { IconCatalog } from "@slint-ui/icons/catalog.slint";
+import { BellOutlined } from "@slint-ui/icons/outlined/bell.slint";
+import { CheckOutlined } from "@slint-ui/icons/outlined/check.slint";
+import { CloseOutlined } from "@slint-ui/icons/outlined/close.slint";
+import { SearchOutlined } from "@slint-ui/icons/outlined.slint";
+import { SettingOutlined } from "@slint-ui/icons/outlined/setting.slint";
+import { UserOutlined } from "@slint-ui/icons/outlined/user.slint";
+import { DotNetOutlined } from "@slint-ui/icons/outlined/dot-net.slint";
+import { HeartFilled } from "@slint-ui/icons/filled/heart.slint";
+import { StarFilled } from "@slint-ui/icons/filled.slint";
+import { TwitchFilled } from "@slint-ui/icons/filled/twitch.slint";
+import { XFilled } from "@slint-ui/icons/filled/x.slint";
 
 export component GalleryWindow inherits Window {
     title: GalleryStrings.title;
@@ -23,6 +36,7 @@ export component GalleryWindow inherits Window {
     in-out property <string> locale <=> Theme.locale;
     in-out property <float> preview-scale <=> Theme.preview-scale;
     in-out property <bool> reduced-motion <=> Theme.reduced-motion;
+    in-out property <int> icon-style: 0;
     private property <CheckState> checkbox-state: CheckState.checked;
     private property <bool> switch-value: true;
     private property <string> user-name: "SlintUI";
@@ -106,6 +120,7 @@ export component GalleryWindow inherits Window {
                     Button { text: GalleryStrings.actions; checked: root.page == 2; variant: ButtonVariant.text; clicked => { root.page = 2; } }
                     Button { text: GalleryStrings.inputs; checked: root.page == 3; variant: ButtonVariant.text; clicked => { root.page = 3; } }
                     Button { text: GalleryStrings.feedback; checked: root.page == 4; variant: ButtonVariant.text; clicked => { root.page = 4; } }
+                    Button { text: GalleryStrings.icons; checked: root.page == 5; variant: ButtonVariant.text; clicked => { root.page = 5; } }
                     Rectangle { vertical-stretch: 1; }
                     Typography { text: GalleryStrings.subtitle; style: TypographyStyle.caption; color: Theme.text-tertiary; }
                 }
@@ -145,8 +160,17 @@ export component GalleryWindow inherits Window {
                                 title: "Surface · Icon · Divider · FocusRing";
                                 Stack {
                                     Space {
-                                        Icon { source: @image-url("../../../crates/slint-ui/assets/icons/settings.svg"); size: IconSize.large; accessible-name: GalleryStrings.settings; }
-                                        Icon { source: @image-url("../../../crates/slint-ui/assets/icons/plus.svg"); size: IconSize.medium; accessible-name: GalleryStrings.add; }
+                                        Icon { source: SettingOutlined.source; size: IconSize.large; accessible-name: GalleryStrings.settings; }
+                                        Icon { source: BellOutlined.source; size: IconSize.medium; accessible-name: GalleryStrings.notifications; }
+                                        Icon { source: SearchOutlined.source; size: IconSize.medium; accessible-name: GalleryStrings.search; }
+                                        Icon { source: UserOutlined.source; size: IconSize.medium; accessible-name: GalleryStrings.user-name; }
+                                        Icon { source: CheckOutlined.source; size: IconSize.medium; accessible-name: GalleryStrings.choose; }
+                                        Icon { source: CloseOutlined.source; size: IconSize.medium; accessible-name: GalleryStrings.cancel; }
+                                        Icon { source: HeartFilled.source; size: IconSize.medium; accessible-name: GalleryStrings.favorite; }
+                                        Icon { source: StarFilled.source; size: IconSize.medium; accessible-name: GalleryStrings.favorite; }
+                                        Icon { source: DotNetOutlined.source; size: IconSize.medium; accessible-name: ".NET"; }
+                                        Icon { source: TwitchFilled.source; size: IconSize.medium; accessible-name: "Twitch"; }
+                                        Icon { source: XFilled.source; size: IconSize.medium; accessible-name: "X"; }
                                         Surface { width: 80px; height: 40px; variant: SurfaceVariant.elevated; bordered: true; }
                                     }
                                     Divider { orientation: horizontal; }
@@ -220,7 +244,7 @@ export component GalleryWindow inherits Window {
                             Toolbar {
                                 accessible-name: GalleryStrings.sample-toolbar;
                                 IconButton {
-                                    icon: @image-url("../../../crates/slint-ui/assets/icons/plus.svg");
+                                    icon: @image-url("../../../crates/slint-ui/assets/icons/ant-design/outlined/plus.svg");
                                     accessible-name: GalleryStrings.choose;
                                     tooltip: GalleryStrings.shortcut-help;
                                 }
@@ -280,13 +304,55 @@ export component GalleryWindow inherits Window {
                                 title: "EmptyState";
                                 EmptyState {
                                     kind: EmptyStateKind.no-data;
-                                    icon: @image-url("../../../crates/slint-ui/assets/icons/inbox.svg");
+                                    icon: @image-url("../../../crates/slint-ui/assets/icons/ant-design/outlined/inbox.svg");
                                     title: GalleryStrings.empty-title;
                                     description: GalleryStrings.empty-description;
                                     Button { text: GalleryStrings.choose; variant: ButtonVariant.primary; }
                                 }
                             }
                             StatusBar { text: GalleryStrings.ready; detail: "Slint 1.17.1"; tone: StatusTone.success; }
+                        }
+
+                        if root.page == 5: Stack {
+                            gap: Theme.space-4;
+                            Typography { text: GalleryStrings.icons; style: TypographyStyle.title-large; }
+                            Typography { text: GalleryStrings.icon-catalog-description; style: TypographyStyle.body; }
+                            SegmentedControl {
+                                width: 320px;
+                                options: [GalleryStrings.outlined, GalleryStrings.filled];
+                                selected-index: root.icon-style;
+                                accessible-name: GalleryStrings.icons;
+                                selected(index, value) => { root.icon-style = index; }
+                            }
+                            Card {
+                                width: 760px;
+                                height: 480px;
+                                title: root.icon-style == 0 ? "Outlined · 447" : "Filled · 249";
+
+                                ListView {
+                                    min-height: 400px;
+                                    vertical-stretch: 1;
+                                    for entry[index] in root.icon-style == 0 ? IconCatalog.outlined : IconCatalog.filled: Rectangle {
+                                        width: parent.width;
+                                        height: Theme.row-height;
+                                        background: Math.mod(index, 2) == 0 ? Theme.bg-surface : Theme.fill-hover;
+
+                                        HorizontalLayout {
+                                            padding-left: Theme.space-3;
+                                            padding-right: Theme.space-3;
+                                            spacing: Theme.space-3;
+                                            cross-axis-alignment: center;
+
+                                            Icon {
+                                                source: entry.source;
+                                                size: IconSize.medium;
+                                                accessible-name: entry.name;
+                                            }
+                                            Label { text: entry.name; }
+                                        }
+                                    }
+                                }
+                            }
                         }
                     }
                 }
@@ -332,7 +398,7 @@ export component InteractionHarness inherits Window {
             clicked => { root.disabled-button-activations += 1; }
         }
         test-icon-button := IconButton {
-            icon: @image-url("../../../crates/slint-ui/assets/icons/plus.svg");
+            icon: @image-url("../../../crates/slint-ui/assets/icons/ant-design/outlined/plus.svg");
             accessible-name: "Icon action";
             clicked => { root.icon-button-activations += 1; }
         }

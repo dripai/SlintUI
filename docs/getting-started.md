@@ -33,5 +33,20 @@ slint_build::compile_with_config("ui/app.slint", config)?;
 import { Button, TextField, Theme } from "@slint-ui/index.slint";
 ```
 
+按需使用图标：
+
+```slint
+import { Icon, IconSize } from "@slint-ui/index.slint";
+import { SearchOutlined } from "@slint-ui/icons/outlined/search.slint";
+
+Icon {
+    source: SearchOutlined.source;
+    size: IconSize.small;
+    accessible-name: "搜索";
+}
+```
+
+也可以从 `@slint-ui/icons/outlined.slint` 或 `filled.slint` 导入多个图标；业务代码仍应只列出实际使用的名称。
+
 组件源码不复制到业务仓库；修复后升级组件库版本。
 

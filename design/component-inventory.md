@@ -29,7 +29,7 @@
 |---|---:|---|---|
 | `Theme` | P0 | `ui/tokens/` | 浅色、深色、高对比度语义 Token |
 | `Typography` | P0 | `ui/primitives/typography.slint` | 标题、正文、标签、辅助文本 |
-| `Icon` | P0 | `ui/primitives/icon.slint` | 统一尺寸、颜色和可访问名称 |
+| `Icon` | P0 | `ui/primitives/icon.slint`、`ui/icons/` | 统一尺寸、颜色、可访问名称；696 个 outlined/filled 按需图标资源 |
 | `Surface` | P0 | `ui/primitives/surface.slint` | 背景、边框、圆角和层级表面 |
 | `Divider` | P0 | `ui/primitives/divider.slint` | 水平、垂直分隔 |
 | `FocusRing` | P0 | `ui/primitives/focus-ring.slint` | 统一键盘焦点反馈 |
