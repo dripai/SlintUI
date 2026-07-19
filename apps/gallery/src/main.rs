@@ -116,6 +116,10 @@ mod tests {
         harness.invoke_toggle_checkbox();
         assert!(harness.get_checkbox_checked());
 
+        assert!(!harness.get_disabled_checkbox_checked());
+        harness.invoke_toggle_disabled_checkbox();
+        assert!(!harness.get_disabled_checkbox_checked());
+
         assert!(!harness.get_switch_checked());
         harness.invoke_toggle_switch();
         assert!(harness.get_switch_checked());
@@ -123,5 +127,35 @@ mod tests {
         assert!(!harness.get_disabled_switch_checked());
         harness.invoke_toggle_disabled_switch();
         assert!(!harness.get_disabled_switch_checked());
+
+        assert_eq!(harness.get_segmented_index(), 0);
+        harness.invoke_select_segmented(1);
+        assert_eq!(harness.get_segmented_index(), 1);
+        assert_eq!(harness.get_segmented_value(), "Two");
+        assert_eq!(harness.get_segmented_activations(), 1);
+        harness.invoke_select_segmented(1);
+        harness.invoke_select_segmented(99);
+        assert_eq!(harness.get_segmented_activations(), 1);
+
+        assert_eq!(harness.get_text_field_value(), "Initial");
+        harness.invoke_clear_text_field();
+        assert_eq!(harness.get_text_field_value(), "");
+        assert_eq!(harness.get_text_field_edits(), 1);
+        assert_eq!(harness.get_text_field_clears(), 1);
+        harness.invoke_clear_text_field();
+        assert_eq!(harness.get_text_field_clears(), 1);
+        harness.invoke_clear_disabled_text_field();
+        assert_eq!(harness.get_disabled_text_field_value(), "Locked");
+
+        assert_eq!(harness.get_select_index(), 0);
+        harness.invoke_select_option(2);
+        assert_eq!(harness.get_select_index(), 2);
+        assert_eq!(harness.get_select_value(), "Gamma");
+        assert_eq!(harness.get_select_activations(), 1);
+        harness.invoke_select_option(2);
+        harness.invoke_select_option(-1);
+        assert_eq!(harness.get_select_activations(), 1);
+        harness.invoke_select_disabled_option(1);
+        assert_eq!(harness.get_disabled_select_index(), 0);
     }
 }

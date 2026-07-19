@@ -71,4 +71,59 @@ mod tests {
         assert!(text_field.contains("outlined/close.svg"));
         assert!(!text_field.contains('×'));
     }
+
+    #[test]
+    fn implemented_component_specs_follow_completion_template() {
+        let crate_root = PathBuf::from(env!("CARGO_MANIFEST_DIR"));
+        let spec_root = crate_root.join("../../design/component-specs");
+        let specs = [
+            "button.md",
+            "card.md",
+            "checkbox.md",
+            "divider.md",
+            "empty-state.md",
+            "focus-ring.md",
+            "form-row.md",
+            "icon-button.md",
+            "icon.md",
+            "label.md",
+            "progress.md",
+            "scroll-area.md",
+            "segmented-control.md",
+            "select.md",
+            "settings-section.md",
+            "space.md",
+            "spinner.md",
+            "stack.md",
+            "status-bar.md",
+            "surface.md",
+            "switch.md",
+            "text-field.md",
+            "theme.md",
+            "toolbar.md",
+            "tool-button.md",
+            "tooltip.md",
+            "typography.md",
+        ];
+        let required_sections = [
+            "状态：已实现",
+            "## 用途与边界",
+            "## 公开 API",
+            "## 状态",
+            "无障碍",
+            "Gallery",
+            "测试",
+            "限制",
+        ];
+
+        for spec in specs {
+            let text = fs::read_to_string(spec_root.join(spec)).expect("read component spec");
+            for required in required_sections {
+                assert!(
+                    text.contains(required),
+                    "{spec} is missing completion evidence: {required}"
+                );
+            }
+        }
+    }
 }

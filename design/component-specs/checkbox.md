@@ -2,8 +2,22 @@
 
 状态：已实现。源码：`ui/controls/checkbox.slint`。
 
-- 用途：独立或列表中的选择状态。
-- API：`text`、`state: CheckState`、`enabled`、`accessible-name`、`toggled(state)`、`toggle()`。
-- 行为：unchecked/checked/indeterminate、Hover、Focus、Disabled；Space 切换；用户切换后才触发回调。
-- 图标：checked 和 indeterminate 分别使用 `check.svg`、`minus.svg`，不依赖系统字体字形。
-- 限制：Slint 1.17.1 公开的 checkbox 可访问状态只有布尔 `checked`，不能表达 mixed；不确定态目前有独立视觉，但平台读屏的 mixed 状态待上游能力。
+## 用途与边界
+
+用于独立或列表中的选择状态。立即生效的开关使用 `Switch`，互斥选择使用 `SegmentedControl` 或后续 RadioGroup。
+
+## 公开 API
+
+`text: string = ""`、`state: CheckState = unchecked`、`enabled: bool = true`、`accessible-name: string = text`、`toggled(state)`、`toggle()`；状态为 unchecked/checked/indeterminate。
+
+## 状态与交互
+
+支持 Hover、Focused、Disabled 和三态视觉；不适用 Loading/错误。点击或 Space 调用 `toggle()`，用户切换从 indeterminate/unchecked 进入 checked、从 checked 进入 unchecked，并在更新后触发一次回调；禁用不变化。
+
+## 无障碍与本地化
+
+角色为 checkbox，暴露 enabled、checkable、checked 和默认动作。checked/indeterminate 使用 `check.svg`/`minus.svg`，不依赖字体。Slint 1.17.1 只能公开布尔 checked，mixed 读屏状态仍受上游限制。
+
+## Gallery 与测试
+
+Gallery“输入”页覆盖 checked、indeterminate、disabled 和多语言；自动测试覆盖 indeterminate→checked 及禁用不变。完整规则见四份全局规范。

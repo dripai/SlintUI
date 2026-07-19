@@ -10,6 +10,13 @@ export component SegmentedControl inherits Rectangle {
 
     callback selected(index: int, value: string);
 
+    public function select(index: int) {
+        if (enabled && index >= 0 && index < options.length && selected-index != index) {
+            root.selected-index = index;
+            root.selected(index, root.options[index]);
+        }
+    }
+
     background: Theme.fill-hover;
     border-radius: Theme.radius-medium;
     min-height: size == ControlSize.small ? Theme.control-height-small
@@ -32,12 +39,7 @@ export component SegmentedControl inherits Rectangle {
             enabled: root.enabled;
             checked: root.selected-index == index;
             variant: root.selected-index == index ? ButtonVariant.default : ButtonVariant.text;
-            clicked => {
-                if (root.selected-index != index) {
-                    root.selected-index = index;
-                    root.selected(index, option);
-                }
-            }
+            clicked => { root.select(index); }
         }
     }
 }

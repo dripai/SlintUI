@@ -5,6 +5,13 @@ export component Select inherits StandardComboBox {
     in property <string> accessible-name: "";
     in property <ControlSize> size: ControlSize.medium;
 
+    public function select-index(index: int) {
+        if (self.enabled && index >= 0 && index < self.model.length && self.current-index != index) {
+            root.current-index = index;
+            root.selected(root.model[index]);
+        }
+    }
+
     min-width: Theme.control-min-width;
     min-height: size == ControlSize.small ? Theme.control-height-small
         : size == ControlSize.large ? Theme.control-height-large

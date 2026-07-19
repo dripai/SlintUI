@@ -374,18 +374,36 @@ export component InteractionHarness inherits Window {
     out property <int> disabled-button-activations: 0;
     out property <int> icon-button-activations: 0;
     out property <int> tool-button-activations: 0;
+    out property <int> segmented-activations: 0;
+    out property <int> text-field-edits: 0;
+    out property <int> text-field-clears: 0;
+    out property <int> select-activations: 0;
     out property <bool> tool-button-checked: test-tool-button.checked;
     out property <bool> checkbox-checked: test-checkbox.state == CheckState.checked;
+    out property <bool> disabled-checkbox-checked: disabled-checkbox.state == CheckState.checked;
     out property <bool> switch-checked: test-switch.checked;
     out property <bool> disabled-switch-checked: disabled-switch.checked;
+    out property <int> segmented-index: test-segmented.selected-index;
+    out property <string> segmented-value: test-segmented.options[test-segmented.selected-index];
+    out property <string> text-field-value: test-text-field.text;
+    out property <string> disabled-text-field-value: disabled-text-field.text;
+    out property <int> select-index: test-select.current-index;
+    out property <string> select-value: test-select.current-value;
+    out property <int> disabled-select-index: disabled-select.current-index;
 
     public function activate-button() { test-button.activate(); }
     public function activate-disabled-button() { disabled-button.activate(); }
     public function activate-icon-button() { test-icon-button.activate(); }
     public function activate-tool-button() { test-tool-button.activate(); }
     public function toggle-checkbox() { test-checkbox.toggle(); }
+    public function toggle-disabled-checkbox() { disabled-checkbox.toggle(); }
     public function toggle-switch() { test-switch.toggle(); }
     public function toggle-disabled-switch() { disabled-switch.toggle(); }
+    public function select-segmented(index: int) { test-segmented.select(index); }
+    public function clear-text-field() { test-text-field.clear(); }
+    public function clear-disabled-text-field() { disabled-text-field.clear(); }
+    public function select-option(index: int) { test-select.select-index(index); }
+    public function select-disabled-option(index: int) { disabled-select.select-index(index); }
 
     Stack {
         test-button := Button {
@@ -408,7 +426,33 @@ export component InteractionHarness inherits Window {
             clicked => { root.tool-button-activations += 1; }
         }
         test-checkbox := Checkbox { text: "Test checkbox"; state: CheckState.indeterminate; }
+        disabled-checkbox := Checkbox { text: "Disabled checkbox"; enabled: false; }
         test-switch := Switch { text: "Test switch"; }
         disabled-switch := Switch { text: "Disabled switch"; enabled: false; }
+        test-segmented := SegmentedControl {
+            options: ["One", "Two", "Three"];
+            selected(index, value) => { root.segmented-activations += 1; }
+        }
+        test-text-field := TextField {
+            text: "Initial";
+            clearable: true;
+            clear-accessible-name: "Clear";
+            edited(value) => { root.text-field-edits += 1; }
+            cleared => { root.text-field-clears += 1; }
+        }
+        disabled-text-field := TextField {
+            text: "Locked";
+            clearable: true;
+            enabled: false;
+            clear-accessible-name: "Clear";
+        }
+        test-select := Select {
+            model: ["Alpha", "Beta", "Gamma"];
+            selected(value) => { root.select-activations += 1; }
+        }
+        disabled-select := Select {
+            model: ["Alpha", "Beta"];
+            enabled: false;
+        }
     }
 }
