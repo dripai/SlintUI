@@ -1,0 +1,92 @@
+import { Theme } from "../tokens/theme.slint";
+import { Button, ButtonVariant } from "../controls/button.slint";
+
+export component ModalDialog inherits Window {
+    in property <string> dialog-title: "";
+    in property <string> message: "";
+    in property <string> accept-text: "";
+    in property <string> cancel-text: "";
+    in property <bool> danger: false;
+    in property <bool> busy: false;
+    in property <bool> close-on-escape: true;
+    in property <string> accessible-name: dialog-title;
+
+    callback accepted();
+    callback rejected();
+
+    width: Theme.dialog-min-width;
+    min-width: Theme.dialog-min-width;
+    max-width: Theme.dialog-max-width;
+    min-height: panel.preferred-height;
+    background: Theme.bg-layout;
+
+    public function accept() {
+        if (!busy) { root.accepted(); }
+    }
+
+    public function reject() {
+        if (!busy) { root.rejected(); root.hide(); }
+    }
+
+    panel := Rectangle {
+        background: Theme.bg-elevated;
+        border-width: Theme.border-width;
+        border-color: Theme.border-default;
+        border-radius: Theme.radius-large;
+        accessible-role: groupbox;
+        accessible-label: root.accessible-name;
+        accessible-description: root.message;
+
+        VerticalLayout {
+            padding: Theme.space-4;
+            spacing: Theme.space-4;
+
+            VerticalLayout {
+                spacing: Theme.space-2;
+                Text {
+                    text: root.dialog-title;
+                    color: Theme.text-primary;
+                    font-size: Theme.font-size-title-small;
+                    font-weight: Theme.font-weight-medium;
+                    wrap: word-wrap;
+                }
+                if root.message != "": Text {
+                    text: root.message;
+                    color: Theme.text-secondary;
+                    font-size: Theme.font-size-body;
+                    wrap: word-wrap;
+                }
+            }
+
+            @children
+
+            HorizontalLayout {
+                alignment: end;
+                spacing: Theme.space-2;
+                if root.cancel-text != "": Button {
+                    text: root.cancel-text;
+                    enabled: !root.busy;
+                    clicked => { root.reject(); }
+                }
+                if root.accept-text != "": Button {
+                    text: root.accept-text;
+                    variant: root.danger ? ButtonVariant.danger : ButtonVariant.primary;
+                    loading: root.busy;
+                    clicked => { root.accept(); }
+                }
+            }
+        }
+    }
+
+    FocusScope {
+        key-pressed(event) => {
+            if (event.text == Key.Escape && root.close-on-escape) { root.reject(); return EventResult.accept; }
+            return EventResult.reject;
+        }
+    }
+}
+
+export component ConfirmDialog inherits ModalDialog {
+    in property <bool> dangerous: false;
+    danger: dangerous;
+}

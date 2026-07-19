@@ -5,6 +5,8 @@ import {
     Button, ButtonVariant, IconButton, ToolButton, Toolbar,
     Checkbox, CheckState, Switch, TextField, ValidationState, Select, SegmentedControl,
     FormRow, SettingsSection, Tooltip, Progress, Spinner, EmptyState, EmptyStateKind, StatusBar, StatusTone,
+    SplitPane, Tabs, TabItem, PopupMenu, PopupMenuEntry, Table, Tree, TreeItem, Form, FormError,
+    Toast, ToastMessage, ToastTone,
 } from "@slint-ui/index.slint";
 import { ListView } from "std-widgets.slint";
 import { GalleryStrings } from "gallery-i18n.slint";
@@ -45,6 +47,36 @@ export component GalleryWindow inherits Window {
     private property <[string]> theme-options: [GalleryStrings.light, GalleryStrings.dark, GalleryStrings.contrast];
     private property <[string]> density-options: [GalleryStrings.compact, GalleryStrings.regular, GalleryStrings.comfortable];
     private property <[string]> scale-options: ["100%", "125%", "150%", "200%"];
+    private property <[TabItem]> p1-tabs: [
+        { text: GalleryStrings.overview, accessible-name: GalleryStrings.overview, enabled: true, closable: false },
+        { text: GalleryStrings.details, accessible-name: GalleryStrings.details, enabled: true, closable: true },
+        { text: GalleryStrings.disabled, accessible-name: GalleryStrings.disabled, enabled: false, closable: false },
+    ];
+    private property <[PopupMenuEntry]> menu-entries: [
+        { text: GalleryStrings.add, shortcut: "Ctrl+N", enabled: true, checked: false, separator: false, has-submenu: false },
+        { text: GalleryStrings.settings, shortcut: "", enabled: true, checked: true, separator: false, has-submenu: true },
+        { text: "", shortcut: "", enabled: false, checked: false, separator: true, has-submenu: false },
+        { text: GalleryStrings.delete-action, shortcut: "Del", enabled: false, checked: false, separator: false, has-submenu: false },
+    ];
+    private property <[TreeItem]> tree-items: [
+        { text: GalleryStrings.settings, accessible-name: GalleryStrings.settings, level: 0, enabled: true, visible: true, has-children: true, expanded: true },
+        { text: GalleryStrings.account, accessible-name: GalleryStrings.account, level: 1, enabled: true, visible: true, has-children: false, expanded: false },
+        { text: GalleryStrings.notifications, accessible-name: GalleryStrings.notifications, level: 1, enabled: true, visible: true, has-children: false, expanded: false },
+    ];
+    private property <[TableColumn]> table-columns: [
+        { title: GalleryStrings.user-name, min-width: 140px, width: 180px, horizontal-stretch: 1 },
+        { title: GalleryStrings.validation, min-width: 120px, width: 160px, horizontal-stretch: 1 },
+    ];
+    private property <[[StandardListViewItem]]> table-rows: [
+        [{ text: "SlintUI" }, { text: GalleryStrings.ready }],
+        [{ text: "Desktop" }, { text: GalleryStrings.loading }],
+    ];
+    private property <[FormError]> form-errors: [
+        { field: GalleryStrings.user-name, message: GalleryStrings.invalid-value },
+    ];
+    private property <[ToastMessage]> toast-messages: [
+        { id: 1, text: GalleryStrings.ready, detail: GalleryStrings.long-text, tone: ToastTone.success, duration: 0ms, dismissible: true },
+    ];
 
     VerticalLayout {
         spacing: 0px;
@@ -121,6 +153,7 @@ export component GalleryWindow inherits Window {
                     Button { text: GalleryStrings.inputs; checked: root.page == 3; variant: ButtonVariant.text; clicked => { root.page = 3; } }
                     Button { text: GalleryStrings.feedback; checked: root.page == 4; variant: ButtonVariant.text; clicked => { root.page = 4; } }
                     Button { text: GalleryStrings.icons; checked: root.page == 5; variant: ButtonVariant.text; clicked => { root.page = 5; } }
+                    Button { text: GalleryStrings.desktop; checked: root.page == 6; variant: ButtonVariant.text; clicked => { root.page = 6; } }
                     Rectangle { vertical-stretch: 1; }
                     Typography { text: GalleryStrings.subtitle; style: TypographyStyle.caption; color: Theme.text-tertiary; }
                 }
@@ -354,6 +387,81 @@ export component GalleryWindow inherits Window {
                                 }
                             }
                         }
+
+                        if root.page == 6: Stack {
+                            gap: Theme.space-4;
+                            Typography { text: GalleryStrings.desktop; style: TypographyStyle.title-large; }
+
+                            Card {
+                                width: 760px;
+                                title: "Tabs · PopupMenu · ContextMenu";
+                                Stack {
+                                    Tabs { tabs: root.p1-tabs; current-index: 0; accessible-name: GalleryStrings.desktop; }
+                                    menu-anchor := Rectangle {
+                                        width: 180px;
+                                        height: Theme.control-height-medium;
+                                        Button { width: parent.width; text: GalleryStrings.open-menu; clicked => { sample-menu.show(); } }
+                                        sample-menu := PopupMenu {
+                                            width: parent.width;
+                                            height: parent.height;
+                                            entries: root.menu-entries;
+                                            accessible-name: GalleryStrings.open-menu;
+                                        }
+                                    }
+                                }
+                            }
+
+                            Card {
+                                width: 760px;
+                                title: "SplitPane · Tree · Table";
+                                split := SplitPane {
+                                    width: 720px;
+                                    height: 260px;
+                                    accessible-name: GalleryStrings.resize-pane;
+
+                                    Surface {
+                                        x: split.first-x;
+                                        y: split.first-y;
+                                        width: split.first-width;
+                                        height: split.first-height;
+                                        bordered: true;
+                                        Tree { width: parent.width; height: parent.height; items: root.tree-items; accessible-name: GalleryStrings.settings; }
+                                    }
+                                    Surface {
+                                        x: split.second-x;
+                                        y: split.second-y;
+                                        width: split.second-width;
+                                        height: split.second-height;
+                                        bordered: true;
+                                        Table {
+                                            width: parent.width;
+                                            height: parent.height;
+                                            columns: root.table-columns;
+                                            rows: root.table-rows;
+                                            accessible-name: GalleryStrings.details;
+                                            empty-text: GalleryStrings.empty-title;
+                                        }
+                                    }
+                                }
+                            }
+
+                            Card {
+                                width: 760px;
+                                title: "Form · Toast · ModalDialog";
+                                Space {
+                                    Form {
+                                        width: 360px;
+                                        errors: root.form-errors;
+                                        accessible-name: GalleryStrings.validation;
+                                        error-summary-title: GalleryStrings.fix-errors;
+                                        TextField { accessible-name: GalleryStrings.user-name; text: GalleryStrings.invalid-value; validation: ValidationState.error; }
+                                        Button { text: GalleryStrings.save; variant: ButtonVariant.primary; clicked => { parent.submit-form(); } }
+                                    }
+                                    Toast { messages: root.toast-messages; accessible-name: GalleryStrings.notifications; }
+                                }
+                                Typography { text: GalleryStrings.dialog-host-note; style: TypographyStyle.caption; color: Theme.text-secondary; }
+                            }
+                        }
                     }
                 }
             }
@@ -390,6 +498,15 @@ export component InteractionHarness inherits Window {
     out property <int> select-index: test-select.current-index;
     out property <string> select-value: test-select.current-value;
     out property <int> disabled-select-index: disabled-select.current-index;
+    out property <int> p1-tab-index: test-tabs.current-index;
+    out property <int> p1-tab-activations: 0;
+    out property <int> p1-tree-index: test-tree.current-index;
+    out property <bool> p1-tree-expanded: test-tree.items[0].expanded;
+    out property <int> p1-tree-toggles: 0;
+    out property <float> p1-split-ratio: test-split.ratio;
+    out property <int> p1-split-changes: 0;
+    out property <int> p1-menu-selections: 0;
+    out property <int> p1-form-invalid-submits: 0;
 
     public function activate-button() { test-button.activate(); }
     public function activate-disabled-button() { disabled-button.activate(); }
@@ -404,6 +521,12 @@ export component InteractionHarness inherits Window {
     public function clear-disabled-text-field() { disabled-text-field.clear(); }
     public function select-option(index: int) { test-select.select-index(index); }
     public function select-disabled-option(index: int) { disabled-select.select-index(index); }
+    public function select-p1-tab(index: int) { test-tabs.select(index); }
+    public function select-p1-tree(index: int) { test-tree.select(index); }
+    public function toggle-p1-tree(index: int) { test-tree.toggle(index); }
+    public function set-p1-split-ratio(value: float) { test-split.set-ratio(value); }
+    public function activate-p1-menu(index: int) { test-menu.activate(index); }
+    public function submit-invalid-p1-form() { test-form.submit-form(); }
 
     Stack {
         test-button := Button {
@@ -453,6 +576,37 @@ export component InteractionHarness inherits Window {
         disabled-select := Select {
             model: ["Alpha", "Beta"];
             enabled: false;
+        }
+        test-tabs := Tabs {
+            tabs: [
+                { text: "One", accessible-name: "One", enabled: true, closable: false },
+                { text: "Two", accessible-name: "Two", enabled: true, closable: false },
+                { text: "Disabled", accessible-name: "Disabled", enabled: false, closable: false },
+            ];
+            selected(index) => { root.p1-tab-activations += 1; }
+        }
+        test-tree := Tree {
+            items: [
+                { text: "Root", accessible-name: "Root", level: 0, enabled: true, visible: true, has-children: true, expanded: false },
+                { text: "Child", accessible-name: "Child", level: 1, enabled: true, visible: true, has-children: false, expanded: false },
+            ];
+            expanded-changed(index, expanded) => { root.p1-tree-toggles += 1; }
+        }
+        test-split := SplitPane {
+            width: 300px;
+            height: 100px;
+            changed(value) => { root.p1-split-changes += 1; }
+        }
+        test-menu := PopupMenu {
+            entries: [
+                { text: "Open", shortcut: "", enabled: true, checked: false, separator: false, has-submenu: false },
+                { text: "Disabled", shortcut: "", enabled: false, checked: false, separator: false, has-submenu: false },
+            ];
+            selected(index) => { root.p1-menu-selections += 1; }
+        }
+        test-form := Form {
+            errors: [{ field: "Name", message: "Required" }];
+            invalid-submit(index) => { root.p1-form-invalid-submits += 1; }
         }
     }
 }

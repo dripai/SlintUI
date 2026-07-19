@@ -1,0 +1,105 @@
+import { Theme } from "../tokens/theme.slint";
+import { FocusRing } from "../primitives/focus-ring.slint";
+
+export enum SplitOrientation { horizontal, vertical }
+
+export component SplitPane inherits Rectangle {
+    in property <SplitOrientation> orientation: SplitOrientation.horizontal;
+    in property <length> minimum-first: Theme.split-pane-min-size;
+    in property <length> minimum-second: Theme.split-pane-min-size;
+    in-out property <float> ratio: 0.5;
+    in property <bool> enabled: true;
+    in property <string> accessible-name: "";
+
+    out property <length> first-x: 0px;
+    out property <length> first-y: 0px;
+    out property <length> first-width: orientation == SplitOrientation.horizontal ? divider-position : self.width;
+    out property <length> first-height: orientation == SplitOrientation.vertical ? divider-position : self.height;
+    out property <length> second-x: orientation == SplitOrientation.horizontal ? divider-position + Theme.split-handle-size : 0px;
+    out property <length> second-y: orientation == SplitOrientation.vertical ? divider-position + Theme.split-handle-size : 0px;
+    out property <length> second-width: orientation == SplitOrientation.horizontal ? self.width - second-x : self.width;
+    out property <length> second-height: orientation == SplitOrientation.vertical ? self.height - second-y : self.height;
+    out property <bool> has-focus <=> focus.has-focus;
+
+    callback changed(ratio: float);
+
+    private property <length> extent: orientation == SplitOrientation.horizontal ? self.width : self.height;
+    private property <length> usable-extent: max(0px, extent - Theme.split-handle-size);
+    private property <length> divider-position: clamp(usable-extent * ratio, minimum-first, max(minimum-first, usable-extent - minimum-second));
+
+    public function set-ratio(value: float) {
+        if (enabled) {
+            root.ratio = clamp(value, 0, 1);
+            root.changed(root.ratio);
+        }
+    }
+
+    accessible-role: slider;
+    accessible-label: accessible-name;
+    accessible-enabled: enabled;
+    accessible-orientation: orientation == SplitOrientation.horizontal ? Orientation.vertical : Orientation.horizontal;
+    accessible-value: ratio * 100;
+    accessible-value-minimum: 0;
+    accessible-value-maximum: 100;
+    accessible-value-step: 5;
+    accessible-action-increment => { root.set-ratio(root.ratio + 0.05); }
+    accessible-action-decrement => { root.set-ratio(root.ratio - 0.05); }
+
+    @children
+
+    handle := Rectangle {
+        x: root.orientation == SplitOrientation.horizontal ? root.divider-position : 0px;
+        y: root.orientation == SplitOrientation.vertical ? root.divider-position : 0px;
+        width: root.orientation == SplitOrientation.horizontal ? Theme.split-handle-size : parent.width;
+        height: root.orientation == SplitOrientation.vertical ? Theme.split-handle-size : parent.height;
+        background: drag.pressed || root.has-focus ? Theme.color-primary-bg : drag.has-hover ? Theme.fill-hover : transparent;
+
+        Rectangle {
+            x: root.orientation == SplitOrientation.horizontal ? (parent.width - self.width) / 2 : Theme.space-6;
+            y: root.orientation == SplitOrientation.vertical ? (parent.height - self.height) / 2 : Theme.space-6;
+            width: root.orientation == SplitOrientation.horizontal ? Theme.border-width : max(0px, parent.width - Theme.space-12);
+            height: root.orientation == SplitOrientation.vertical ? Theme.border-width : max(0px, parent.height - Theme.space-12);
+            background: Theme.border-default;
+        }
+
+        drag := TouchArea {
+            enabled: root.enabled;
+            mouse-cursor: root.orientation == SplitOrientation.horizontal ? col-resize : row-resize;
+            moved => {
+                if (self.pressed) {
+                    root.set-ratio(root.orientation == SplitOrientation.horizontal
+                        ? (root.divider-position + self.mouse-x - self.pressed-x) / root.usable-extent
+                        : (root.divider-position + self.mouse-y - self.pressed-y) / root.usable-extent);
+                }
+            }
+        }
+
+        FocusRing {
+            active: root.has-focus && root.enabled;
+            target-width: parent.width;
+            target-height: parent.height;
+            radius: Theme.radius-small;
+        }
+    }
+
+    focus := FocusScope {
+        x: handle.x;
+        y: handle.y;
+        width: handle.width;
+        height: handle.height;
+        enabled: root.enabled;
+        key-pressed(event) => {
+            if (event.text == Key.LeftArrow || event.text == Key.UpArrow) {
+                root.set-ratio(root.ratio - (event.modifiers.shift ? 0.1 : 0.02));
+                return accept;
+            }
+            if (event.text == Key.RightArrow || event.text == Key.DownArrow) {
+                root.set-ratio(root.ratio + (event.modifiers.shift ? 0.1 : 0.02));
+                return accept;
+            }
+            if (event.text == Key.Home) { root.set-ratio(0); return accept; }
+            if (event.text == Key.End) { root.set-ratio(1); return accept; }
+            return reject;
+        }
+    }
+}

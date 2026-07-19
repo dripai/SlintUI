@@ -1,0 +1,73 @@
+import { Theme, Direction } from "../tokens/theme.slint";
+
+export struct FormError {
+    field: string,
+    message: string,
+}
+
+export component Form inherits Rectangle {
+    in property <[FormError]> errors;
+    in property <bool> enabled: true;
+    in property <bool> submitting: false;
+    in property <string> accessible-name: "";
+    in property <string> error-summary-title: "";
+    out property <bool> valid: errors.length == 0;
+
+    callback submitted();
+    callback invalid-submit(first-error-index: int);
+    callback focus-error-requested(index: int);
+
+    accessible-role: groupbox;
+    accessible-label: accessible-name;
+    accessible-enabled: enabled && !submitting;
+    accessible-description: valid ? "" : error-summary-title;
+
+    public function submit-form() {
+        if (!enabled || submitting) { return; }
+        if (valid) { root.submitted(); }
+        else {
+            root.invalid-submit(0);
+            root.focus-error-requested(0);
+        }
+    }
+
+    VerticalLayout {
+        spacing: Theme.space-3;
+
+        if root.errors.length > 0: Rectangle {
+            min-height: summary.preferred-height + Theme.space-4;
+            background: Theme.bg-surface;
+            border-width: Theme.border-width;
+            border-color: Theme.color-error;
+            border-radius: Theme.radius-medium;
+            accessible-role: groupbox;
+            accessible-label: root.error-summary-title;
+            accessible-live-region: assertive;
+
+            summary := VerticalLayout {
+                padding: Theme.space-2;
+                spacing: Theme.space-1;
+
+                Text {
+                    text: root.error-summary-title;
+                    color: Theme.color-error;
+                    font-size: Theme.font-size-body;
+                    font-weight: Theme.font-weight-medium;
+                    horizontal-alignment: Theme.direction == Direction.rtl ? right : left;
+                    wrap: word-wrap;
+                }
+
+                for error[index] in root.errors: Text {
+                    text: error.field == "" ? error.message : error.field + ": " + error.message;
+                    color: Theme.text-primary;
+                    font-size: Theme.font-size-caption;
+                    horizontal-alignment: Theme.direction == Direction.rtl ? right : left;
+                    wrap: word-wrap;
+                    accessible-action-default => { root.focus-error-requested(index); }
+                }
+            }
+        }
+
+        @children
+    }
+}

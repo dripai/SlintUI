@@ -1,0 +1,148 @@
+import { Theme, Direction } from "../tokens/theme.slint";
+import { FocusRing } from "../primitives/focus-ring.slint";
+
+export struct TabItem {
+    text: string,
+    accessible-name: string,
+    enabled: bool,
+    closable: bool,
+}
+
+export component Tabs inherits Rectangle {
+    in property <[TabItem]> tabs;
+    in-out property <int> current-index: tabs.length > 0 ? 0 : -1;
+    in property <string> accessible-name: "";
+    out property <bool> has-focus <=> focus.has-focus;
+
+    callback selected(index: int);
+    callback close-requested(index: int);
+
+    min-height: Theme.tab-height;
+    accessible-role: tab;
+    accessible-label: accessible-name;
+    accessible-item-count: tabs.length;
+
+    public function select(index: int) {
+        if (index >= 0 && index < tabs.length && tabs[index].enabled && current-index != index) {
+            root.current-index = index;
+            root.selected(index);
+        }
+    }
+
+    public function select-next(step: int) {
+        if (tabs.length <= 0) { return; }
+        root.select(Math.mod(current-index + step + tabs.length, tabs.length));
+    }
+
+    VerticalLayout {
+        spacing: 0px;
+
+        tab-strip := Rectangle {
+            min-height: Theme.tab-height;
+            border-width: 0px;
+
+            HorizontalLayout {
+                spacing: Theme.space-1;
+                for tab[index] in root.tabs: Rectangle {
+                    min-width: Theme.control-height-medium + label.min-width + (tab.closable ? Theme.icon-size-medium : 0px);
+                    min-height: Theme.tab-height;
+                    background: index == root.current-index ? Theme.selection-bg : touch.pressed ? Theme.fill-pressed : touch.has-hover ? Theme.fill-hover : transparent;
+                    border-radius: Theme.radius-medium;
+                    accessible-role: AccessibleRole.tab;
+                    accessible-label: tab.accessible-name == "" ? tab.text : tab.accessible-name;
+                    accessible-enabled: tab.enabled;
+                    accessible-action-default => { root.select(index); }
+
+                    touch := TouchArea {
+                        enabled: tab.enabled;
+                        mouse-cursor: tab.enabled ? pointer : default;
+                        clicked => { root.select(index); }
+                    }
+
+                    HorizontalLayout {
+                        padding-left: Theme.control-padding-horizontal;
+                        padding-right: tab.closable ? Theme.space-1 : Theme.control-padding-horizontal;
+                        spacing: Theme.space-1;
+                        cross-axis-alignment: center;
+
+                        label := Text {
+                            text: tab.text;
+                            color: !tab.enabled ? Theme.text-disabled : index == root.current-index ? Theme.color-primary : Theme.text-primary;
+                            font-size: Theme.font-size-body;
+                            font-weight: index == root.current-index ? Theme.font-weight-medium : Theme.font-weight-regular;
+                            overflow: elide;
+                            vertical-alignment: center;
+                            accessible-role: none;
+                        }
+
+                        if tab.closable: Rectangle {
+                            width: Theme.icon-size-medium;
+                            height: Theme.icon-size-medium;
+                            border-radius: Theme.radius-small;
+                            background: close-touch.has-hover ? Theme.fill-hover : transparent;
+                            accessible-role: button;
+                            accessible-label: "Close";
+                            accessible-enabled: tab.enabled;
+                            accessible-action-default => { root.close-requested(index); }
+
+                            Image {
+                                x: (parent.width - self.width) / 2;
+                                y: (parent.height - self.height) / 2;
+                                width: Theme.icon-size-x-small;
+                                height: Theme.icon-size-x-small;
+                                source: @image-url("../../assets/icons/ant-design/outlined/close.svg");
+                                colorize: Theme.icon-default;
+                                accessible-role: none;
+                            }
+                            close-touch := TouchArea {
+                                enabled: tab.enabled;
+                                clicked => { root.close-requested(index); }
+                            }
+                        }
+                    }
+
+                }
+            }
+
+            Rectangle {
+                y: parent.height - Theme.border-width;
+                width: parent.width;
+                height: Theme.border-width;
+                background: Theme.border-secondary;
+            }
+        }
+
+        content := Rectangle {
+            horizontal-stretch: 1;
+            vertical-stretch: 1;
+            @children
+        }
+    }
+
+    focus := FocusScope {
+        x: 0px;
+        y: 0px;
+        width: tab-strip.width;
+        height: tab-strip.height;
+        key-pressed(event) => {
+            if (event.text == Key.LeftArrow) {
+                root.select-next(Theme.direction == Direction.rtl ? 1 : -1);
+                return accept;
+            }
+            if (event.text == Key.RightArrow) {
+                root.select-next(Theme.direction == Direction.rtl ? -1 : 1);
+                return accept;
+            }
+            if (event.text == Key.Home) { root.select(0); return accept; }
+            if (event.text == Key.End) { root.select(root.tabs.length - 1); return accept; }
+            return reject;
+        }
+    }
+
+    FocusRing {
+        active: root.has-focus;
+        target-width: tab-strip.width;
+        target-height: tab-strip.height;
+        radius: Theme.radius-medium;
+    }
+}

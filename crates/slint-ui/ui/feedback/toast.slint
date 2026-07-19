@@ -1,0 +1,117 @@
+import { Theme } from "../tokens/theme.slint";
+
+export enum ToastTone { info, success, warning, error }
+
+export struct ToastMessage {
+    id: int,
+    text: string,
+    detail: string,
+    tone: ToastTone,
+    duration: duration,
+    dismissible: bool,
+}
+
+component ToastItem inherits Rectangle {
+    in property <ToastMessage> message;
+    callback dismiss-requested(id: int);
+
+    min-width: Theme.toast-width;
+    max-width: Theme.toast-width;
+    min-height: content.preferred-height + Theme.space-4;
+    background: Theme.bg-elevated;
+    border-width: Theme.border-width;
+    border-color: message.tone == ToastTone.error ? Theme.color-error
+        : message.tone == ToastTone.warning ? Theme.color-warning
+        : message.tone == ToastTone.success ? Theme.color-success
+        : Theme.color-primary-border;
+    border-radius: Theme.radius-large;
+    accessible-role: text;
+    accessible-label: message.text;
+    accessible-description: message.detail;
+    accessible-live-region: message.tone == ToastTone.error ? assertive : polite;
+
+    content := HorizontalLayout {
+        padding: Theme.space-2;
+        spacing: Theme.space-2;
+        cross-axis-alignment: start;
+
+        Rectangle {
+            width: Theme.status-indicator-size;
+            height: Theme.status-indicator-size;
+            border-radius: self.width / 2;
+            background: root.message.tone == ToastTone.error ? Theme.color-error
+                : root.message.tone == ToastTone.warning ? Theme.color-warning
+                : root.message.tone == ToastTone.success ? Theme.color-success
+                : Theme.color-primary;
+        }
+
+        VerticalLayout {
+            spacing: Theme.space-1;
+            horizontal-stretch: 1;
+            Text {
+                text: root.message.text;
+                color: Theme.text-primary;
+                font-size: Theme.font-size-body;
+                font-weight: Theme.font-weight-medium;
+                wrap: word-wrap;
+            }
+            if root.message.detail != "": Text {
+                text: root.message.detail;
+                color: Theme.text-secondary;
+                font-size: Theme.font-size-caption;
+                wrap: word-wrap;
+            }
+        }
+
+        if root.message.dismissible: Rectangle {
+            width: Theme.control-height-small;
+            height: Theme.control-height-small;
+            border-radius: Theme.radius-small;
+            background: close.has-hover ? Theme.fill-hover : transparent;
+            accessible-role: button;
+            accessible-label: "Close";
+            accessible-action-default => { root.dismiss-requested(root.message.id); }
+
+            Image {
+                x: (parent.width - self.width) / 2;
+                y: (parent.height - self.height) / 2;
+                width: Theme.icon-size-x-small;
+                height: Theme.icon-size-x-small;
+                source: @image-url("../../assets/icons/ant-design/outlined/close.svg");
+                colorize: Theme.icon-default;
+                accessible-role: none;
+            }
+            close := TouchArea {
+                clicked => { root.dismiss-requested(root.message.id); }
+            }
+        }
+    }
+
+    Timer {
+        interval: root.message.duration;
+        running: root.message.duration > 0ms;
+        triggered => { root.dismiss-requested(root.message.id); }
+    }
+}
+
+export component Toast inherits Rectangle {
+    in property <[ToastMessage]> messages;
+    in property <string> accessible-name: "Notifications";
+    callback dismiss-requested(id: int);
+
+    background: transparent;
+    accessible-role: region;
+    accessible-label: accessible-name;
+    accessible-item-count: messages.length;
+
+    VerticalLayout {
+        spacing: Theme.space-2;
+        alignment: start;
+        cross-axis-alignment: end;
+
+        for message in root.messages: ToastItem {
+            message: message;
+            dismiss-requested(id) => { root.dismiss-requested(id); }
+        }
+    }
+}

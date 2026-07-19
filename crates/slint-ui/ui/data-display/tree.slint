@@ -1,0 +1,157 @@
+import { ScrollView } from "std-widgets.slint";
+import { Theme, Direction } from "../tokens/theme.slint";
+import { FocusRing } from "../primitives/focus-ring.slint";
+
+export struct TreeItem {
+    text: string,
+    accessible-name: string,
+    level: int,
+    enabled: bool,
+    visible: bool,
+    has-children: bool,
+    expanded: bool,
+}
+
+component TreeRow inherits Rectangle {
+    in property <TreeItem> item;
+    in property <bool> selected: false;
+    in property <bool> focused: false;
+
+    callback activated();
+    callback toggle-requested();
+
+    min-height: item.visible ? Theme.row-height : 0px;
+    max-height: item.visible ? Theme.row-height : 0px;
+    visible: item.visible;
+    background: selected ? Theme.selection-bg : touch.pressed ? Theme.fill-pressed : touch.has-hover ? Theme.fill-hover : transparent;
+    accessible-role: list-item;
+    accessible-label: item.accessible-name == "" ? item.text : item.accessible-name;
+    accessible-enabled: item.enabled;
+    accessible-expandable: item.has-children;
+    accessible-expanded: item.expanded;
+    accessible-action-default => { root.activated(); }
+    accessible-action-expand => { if (item.enabled && item.has-children) { root.toggle-requested(); } }
+
+    touch := TouchArea {
+        enabled: root.item.enabled;
+        mouse-cursor: self.enabled ? pointer : default;
+        clicked => { root.activated(); }
+    }
+
+    HorizontalLayout {
+        padding-left: Theme.space-3 + root.item.level * Theme.space-4;
+        padding-right: Theme.space-3;
+        spacing: Theme.space-2;
+        cross-axis-alignment: center;
+
+        Rectangle {
+            width: Theme.icon-size-medium;
+            height: Theme.icon-size-medium;
+            border-radius: Theme.radius-small;
+            background: expand-touch.has-hover ? Theme.fill-hover : transparent;
+
+            if root.item.has-children: Image {
+                x: (parent.width - self.width) / 2;
+                y: (parent.height - self.height) / 2;
+                width: Theme.icon-size-x-small;
+                height: Theme.icon-size-x-small;
+                source: root.item.expanded
+                    ? @image-url("../../assets/icons/ant-design/outlined/down.svg")
+                    : Theme.direction == Direction.rtl
+                        ? @image-url("../../assets/icons/ant-design/outlined/left.svg")
+                        : @image-url("../../assets/icons/ant-design/outlined/right.svg");
+                colorize: root.item.enabled ? Theme.icon-default : Theme.text-disabled;
+                accessible-role: none;
+            }
+
+            expand-touch := TouchArea {
+                enabled: root.item.enabled && root.item.has-children;
+                clicked => { root.toggle-requested(); }
+            }
+        }
+
+        Text {
+            text: root.item.text;
+            color: root.item.enabled ? Theme.text-primary : Theme.text-disabled;
+            font-size: Theme.font-size-body;
+            horizontal-stretch: 1;
+            overflow: elide;
+            vertical-alignment: center;
+            accessible-role: none;
+        }
+    }
+
+    FocusRing {
+        active: root.focused;
+        target-width: root.width;
+        target-height: root.height;
+        radius: Theme.radius-small;
+    }
+}
+
+export component Tree inherits Rectangle {
+    in-out property <[TreeItem]> items;
+    in-out property <int> current-index: -1;
+    in property <bool> enabled: true;
+    in property <string> accessible-name: "";
+    out property <bool> has-focus <=> focus.has-focus;
+
+    callback selected(index: int);
+    callback expanded-changed(index: int, expanded: bool);
+
+    min-width: Theme.card-min-width;
+    min-height: Theme.empty-state-min-height;
+    accessible-role: tree;
+    accessible-label: accessible-name;
+    accessible-enabled: enabled;
+    accessible-item-count: items.length;
+
+    public function select(index: int) {
+        if (enabled && index >= 0 && index < items.length && items[index].visible && items[index].enabled && current-index != index) {
+            root.current-index = index;
+            root.selected(index);
+        }
+    }
+
+    public function toggle(index: int) {
+        if (enabled && index >= 0 && index < items.length && items[index].visible && items[index].enabled && items[index].has-children) {
+            root.items[index].expanded = !root.items[index].expanded;
+            root.expanded-changed(index, root.items[index].expanded);
+        }
+    }
+
+    ScrollView {
+        VerticalLayout {
+            spacing: 0px;
+            for item[index] in root.items: TreeRow {
+                item: item;
+                selected: index == root.current-index;
+                focused: root.has-focus && index == root.current-index;
+                activated => { root.select(index); }
+                toggle-requested => { root.toggle(index); }
+            }
+        }
+    }
+
+    focus := FocusScope {
+        x: 0px;
+        width: 0px;
+        enabled: root.enabled;
+        key-pressed(event) => {
+            if (event.text == Key.DownArrow) { root.select(min(root.items.length - 1, root.current-index + 1)); return accept; }
+            if (event.text == Key.UpArrow) { root.select(max(0, root.current-index - 1)); return accept; }
+            if (event.text == Key.Home) { root.select(0); return accept; }
+            if (event.text == Key.End) { root.select(root.items.length - 1); return accept; }
+            if (event.text == Key.Return || event.text == Key.Space) { root.toggle(root.current-index); return accept; }
+            if ((event.text == Key.RightArrow && Theme.direction == Direction.ltr) || (event.text == Key.LeftArrow && Theme.direction == Direction.rtl)) {
+                if (root.current-index >= 0 && !root.items[root.current-index].expanded) { root.toggle(root.current-index); }
+                return accept;
+            }
+            if ((event.text == Key.LeftArrow && Theme.direction == Direction.ltr) || (event.text == Key.RightArrow && Theme.direction == Direction.rtl)) {
+                if (root.current-index >= 0 && root.items[root.current-index].expanded) { root.toggle(root.current-index); }
+                return accept;
+            }
+            return reject;
+        }
+    }
+}

@@ -1,0 +1,22 @@
+import { Theme } from "../tokens/theme.slint";
+
+export component Overlay inherits Rectangle {
+    in property <bool> active: true;
+    in property <bool> dismiss-on-click: true;
+    in property <string> accessible-name: "";
+
+    callback dismissed();
+
+    visible: active;
+    background: Theme.overlay-mask;
+    accessible-role: region;
+    accessible-label: accessible-name;
+    accessible-enabled: active;
+
+    TouchArea {
+        enabled: root.active && root.dismiss-on-click;
+        clicked => { root.dismissed(); }
+    }
+
+    @children
+}

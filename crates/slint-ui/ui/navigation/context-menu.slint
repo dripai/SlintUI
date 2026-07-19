@@ -1,0 +1,9 @@
+import { PopupMenu, PopupMenuEntry } from "popup-menu.slint";
+
+export component ContextMenu inherits PopupMenu {
+    in property <length> anchor-x: 0px;
+    in property <length> anchor-y: 0px;
+
+    x: anchor-x;
+    y: anchor-y;
+}

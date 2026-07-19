@@ -1,0 +1,65 @@
+import { StandardTableView as NativeTableView } from "std-widgets.slint";
+import { Theme } from "../tokens/theme.slint";
+
+export component Table inherits Rectangle {
+    in property <[[StandardListViewItem]]> rows;
+    in-out property <[TableColumn]> columns;
+    in-out property <int> current-row: -1;
+    in property <bool> enabled: true;
+    in property <string> accessible-name: "";
+    in property <string> empty-text: "";
+    out property <bool> has-focus <=> native.has-focus;
+
+    callback sort-ascending(column: int);
+    callback sort-descending(column: int);
+    callback current-row-changed(row: int);
+    callback row-pointer-event(row: int, event: PointerEvent, position: Point);
+
+    min-width: Theme.card-min-width;
+    min-height: Theme.empty-state-min-height;
+    background: Theme.bg-surface;
+    border-width: Theme.border-width;
+    border-color: Theme.border-default;
+    border-radius: Theme.radius-medium;
+    clip: true;
+    accessible-role: table;
+    accessible-label: accessible-name;
+    accessible-enabled: enabled;
+    accessible-item-count: rows.length;
+
+    public function select-row(index: int) {
+        if (enabled && index >= 0 && index < rows.length && current-row != index) {
+            native.set-current-row(index);
+        }
+    }
+
+    native := NativeTableView {
+        width: parent.width;
+        height: parent.height;
+        rows: root.rows;
+        columns <=> root.columns;
+        current-row <=> root.current-row;
+        enabled: root.enabled;
+        sort-ascending(column) => { root.sort-ascending(column); }
+        sort-descending(column) => { root.sort-descending(column); }
+        current-row-changed(row) => { root.current-row-changed(row); }
+        row-pointer-event(row, event, position) => { root.row-pointer-event(row, event, position); }
+    }
+
+    if rows.length == 0: Rectangle {
+        background: Theme.bg-surface;
+        accessible-role: text;
+        accessible-label: root.empty-text;
+
+        Text {
+            width: parent.width - Theme.space-8;
+            x: Theme.space-4;
+            y: (parent.height - self.height) / 2;
+            text: root.empty-text;
+            color: Theme.text-secondary;
+            font-size: Theme.font-size-body;
+            horizontal-alignment: center;
+            wrap: word-wrap;
+        }
+    }
+}

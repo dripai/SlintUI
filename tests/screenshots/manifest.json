@@ -50,6 +50,13 @@
       "height": 800,
       "sha256": "2205f36d3bb27152683822d5b35bf441452bc21739530500e27891dcd7fba27e",
       "bytes": 46906
+    },
+    {
+      "file": "gallery-light-desktop-p1-100.png",
+      "width": 1180,
+      "height": 800,
+      "sha256": "99cc65fb69cf2f858664f89ab573802c52e2e93a2c389ed182ebb70ccfbe144d",
+      "bytes": 53091
     }
   ]
 }

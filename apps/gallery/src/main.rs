@@ -94,7 +94,7 @@ mod tests {
     use super::*;
 
     #[test]
-    fn p0_controls_change_state_once_per_activation() {
+    fn implemented_controls_change_state_once_per_activation() {
         let harness = InteractionHarness::new().expect("create interaction harness");
 
         assert_eq!(harness.get_button_activations(), 0);
@@ -157,5 +157,30 @@ mod tests {
         assert_eq!(harness.get_select_activations(), 1);
         harness.invoke_select_disabled_option(1);
         assert_eq!(harness.get_disabled_select_index(), 0);
+
+        harness.invoke_select_p1_tab(1);
+        assert_eq!(harness.get_p1_tab_index(), 1);
+        assert_eq!(harness.get_p1_tab_activations(), 1);
+        harness.invoke_select_p1_tab(1);
+        harness.invoke_select_p1_tab(2);
+        assert_eq!(harness.get_p1_tab_activations(), 1);
+
+        harness.invoke_select_p1_tree(1);
+        assert_eq!(harness.get_p1_tree_index(), 1);
+        assert!(!harness.get_p1_tree_expanded());
+        harness.invoke_toggle_p1_tree(0);
+        assert!(harness.get_p1_tree_expanded());
+        assert_eq!(harness.get_p1_tree_toggles(), 1);
+
+        harness.invoke_set_p1_split_ratio(0.75);
+        assert_eq!(harness.get_p1_split_ratio(), 0.75);
+        assert_eq!(harness.get_p1_split_changes(), 1);
+
+        harness.invoke_activate_p1_menu(0);
+        harness.invoke_activate_p1_menu(1);
+        assert_eq!(harness.get_p1_menu_selections(), 1);
+
+        harness.invoke_submit_invalid_p1_form();
+        assert_eq!(harness.get_p1_form_invalid_submits(), 1);
     }
 }
