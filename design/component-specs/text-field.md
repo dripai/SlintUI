@@ -22,4 +22,4 @@
 
 ## Gallery、测试与限制
 
-Gallery“输入”页覆盖普通、错误、选择器组合、RTL 和高对比度；自动测试覆盖清除、edited/cleared 单次回调、重复清除和禁用不变。清除图标使用 `close.svg`。遵循四份全局规范。
+Gallery“数据录入 / TextField”页覆盖普通、错误和禁用状态；RTL 和高对比度由全局环境验证。自动测试覆盖清除、edited/cleared 单次回调、重复清除和禁用不变。清除图标使用 `close.svg`。遵循四份全局规范。

@@ -20,4 +20,4 @@
 
 ## Gallery 与测试
 
-Gallery“输入”页覆盖 checked、indeterminate、disabled 和多语言；自动测试覆盖 indeterminate→checked 及禁用不变。完整规则见四份全局规范。
+Gallery“数据录入 / Checkbox”页覆盖 checked 和多语言；indeterminate、disabled 由交互 Harness 与组件规格验证。完整规则见四份全局规范。

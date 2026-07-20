@@ -14,6 +14,8 @@ import {
 } from "@slint-ui/index.slint";
 import { ListView } from "std-widgets.slint";
 import { GalleryStrings } from "gallery-i18n.slint";
+import { ComponentDetail } from "component-detail.slint";
+import { GalleryNavigation } from "gallery-navigation.slint";
 import { IconCatalog } from "@slint-ui/icons/catalog.slint";
 import { BellOutlined } from "@slint-ui/icons/outlined/bell.slint";
 import { CheckOutlined } from "@slint-ui/icons/outlined/check.slint";
@@ -36,6 +38,7 @@ export component GalleryWindow inherits Window {
     background: Theme.bg-layout;
 
     in-out property <int> page: 0;
+    in-out property <int> section: 0;
     in-out property <ThemeMode> theme-mode <=> Theme.mode;
     in-out property <Density> density-mode <=> Theme.density;
     in-out property <Direction> layout-direction <=> Theme.direction;
@@ -48,11 +51,11 @@ export component GalleryWindow inherits Window {
     private property <CheckState> checkbox-state: CheckState.checked;
     private property <bool> switch-value: true;
     private property <string> user-name: "SlintUI";
-    private property <[string]> locale-options: ["简体中文 · zh-CN", "English · en-US", "العربية · ar-EG"];
+    private property <[string]> locale-options: ["简体中文", "English", "العربية"];
     private property <[string]> select-options: ["Alpha", "Beta", "Gamma"];
     private property <[string]> theme-options: [GalleryStrings.light, GalleryStrings.dark, GalleryStrings.contrast];
     private property <[string]> density-options: [GalleryStrings.compact, GalleryStrings.regular, GalleryStrings.comfortable];
-    private property <[string]> scale-options: ["100%", "125%", "150%", "200%"];
+    private property <[string]> scale-options: ["1×", "1.25×", "1.5×", "2×"];
     private property <[TabItem]> p1-tabs: [
         { text: GalleryStrings.overview, accessible-name: GalleryStrings.overview, enabled: true, closable: false },
         { text: GalleryStrings.details, accessible-name: GalleryStrings.details, enabled: true, closable: true },
@@ -132,21 +135,52 @@ export component GalleryWindow inherits Window {
             variant: SurfaceVariant.surface;
             bordered: true;
             radius: 0px;
-            min-height: 112px;
-            max-height: 112px;
+            min-height: 104px;
+            max-height: 104px;
 
             VerticalLayout {
-                padding: Theme.space-4;
-                spacing: Theme.space-3;
+                padding: Theme.space-3;
+                spacing: Theme.space-2;
 
                 Space {
                     Typography {
                         text: GalleryStrings.title;
                         style: TypographyStyle.title-medium;
                     }
-                    Rectangle { horizontal-stretch: 1; }
-                    Label { text: GalleryStrings.locale; muted: true; }
+                }
+
+                Space {
+                    Label { text: GalleryStrings.global; muted: true; min-width: 40px; wrap: no-wrap; }
+                    SegmentedControl {
+                        min-width: 200px;
+                        max-width: 220px;
+                        size: ControlSize.small;
+                        options: root.theme-options;
+                        selected-index: Theme.mode == ThemeMode.dark ? 1 : Theme.mode == ThemeMode.high-contrast ? 2 : 0;
+                        selected(index, value) => { Theme.mode = index == 1 ? ThemeMode.dark : index == 2 ? ThemeMode.high-contrast : ThemeMode.light; }
+                    }
+                    Label { text: GalleryStrings.density; muted: true; min-width: 40px; wrap: no-wrap; }
+                    SegmentedControl {
+                        min-width: 260px;
+                        max-width: 270px;
+                        size: ControlSize.small;
+                        options: root.density-options;
+                        selected-index: Theme.density == Density.compact ? 0 : Theme.density == Density.comfortable ? 2 : 1;
+                        selected(index, value) => { Theme.density = index == 0 ? Density.compact : index == 2 ? Density.comfortable : Density.regular; }
+                    }
+                    Label { text: GalleryStrings.scale; muted: true; min-width: 32px; wrap: no-wrap; }
+                    SegmentedControl {
+                        min-width: 240px;
+                        max-width: 240px;
+                        size: ControlSize.small;
+                        options: root.scale-options;
+                        selected-index: Theme.preview-scale == 1.25 ? 1 : Theme.preview-scale == 1.5 ? 2 : Theme.preview-scale == 2.0 ? 3 : 0;
+                        selected(index, value) => { Theme.preview-scale = index == 1 ? 1.25 : index == 2 ? 1.5 : index == 3 ? 2.0 : 1.0; }
+                    }
+                    Label { text: GalleryStrings.locale; muted: true; min-width: 32px; wrap: no-wrap; }
                     Select {
+                        min-width: 136px;
+                        max-width: 152px;
                         accessible-name: GalleryStrings.locale;
                         model: root.locale-options;
                         current-index: Theme.locale == "en-US" ? 1 : Theme.locale == "ar-EG" ? 2 : 0;
@@ -154,27 +188,6 @@ export component GalleryWindow inherits Window {
                             Theme.locale = self.current-index == 1 ? "en-US" : self.current-index == 2 ? "ar-EG" : "zh-CN";
                             Theme.direction = self.current-index == 2 ? Direction.rtl : Direction.ltr;
                         }
-                    }
-                }
-
-                Space {
-                    Label { text: GalleryStrings.theme; muted: true; min-width: 48px; wrap: no-wrap; }
-                    SegmentedControl {
-                        options: root.theme-options;
-                        selected-index: Theme.mode == ThemeMode.dark ? 1 : Theme.mode == ThemeMode.high-contrast ? 2 : 0;
-                        selected(index, value) => { Theme.mode = index == 1 ? ThemeMode.dark : index == 2 ? ThemeMode.high-contrast : ThemeMode.light; }
-                    }
-                    Label { text: GalleryStrings.density; muted: true; min-width: 56px; wrap: no-wrap; }
-                    SegmentedControl {
-                        options: root.density-options;
-                        selected-index: Theme.density == Density.compact ? 0 : Theme.density == Density.comfortable ? 2 : 1;
-                        selected(index, value) => { Theme.density = index == 0 ? Density.compact : index == 2 ? Density.comfortable : Density.regular; }
-                    }
-                    Label { text: GalleryStrings.scale; muted: true; min-width: 40px; wrap: no-wrap; }
-                    SegmentedControl {
-                        options: root.scale-options;
-                        selected-index: Theme.preview-scale == 1.25 ? 1 : Theme.preview-scale == 1.5 ? 2 : Theme.preview-scale == 2.0 ? 3 : 0;
-                        selected(index, value) => { Theme.preview-scale = index == 1 ? 1.25 : index == 2 ? 1.5 : index == 3 ? 2.0 : 1.0; }
                     }
                 }
             }
@@ -187,378 +200,50 @@ export component GalleryWindow inherits Window {
                 variant: SurfaceVariant.surface;
                 radius: 0px;
                 bordered: true;
-                min-width: 180px;
-                max-width: 180px;
+                min-width: 220px;
+                max-width: 220px;
 
-                Stack {
-                    padding: Theme.space-3;
-                    gap: Theme.space-1;
-
-                    Button { text: GalleryStrings.foundations; checked: root.page == 0; variant: ButtonVariant.text; clicked => { root.page = 0; } }
-                    Button { text: GalleryStrings.layout; checked: root.page == 1; variant: ButtonVariant.text; clicked => { root.page = 1; } }
-                    Button { text: GalleryStrings.actions; checked: root.page == 2; variant: ButtonVariant.text; clicked => { root.page = 2; } }
-                    Button { text: GalleryStrings.inputs; checked: root.page == 3; variant: ButtonVariant.text; clicked => { root.page = 3; } }
-                    Button { text: GalleryStrings.feedback; checked: root.page == 4; variant: ButtonVariant.text; clicked => { root.page = 4; } }
-                    Button { text: GalleryStrings.icons; checked: root.page == 5; variant: ButtonVariant.text; clicked => { root.page = 5; } }
-                    Button { text: GalleryStrings.desktop; checked: root.page == 6; variant: ButtonVariant.text; clicked => { root.page = 6; } }
-                    Button { text: GalleryStrings.advanced; checked: root.page == 7; variant: ButtonVariant.text; clicked => { root.page = 7; } }
-                    Rectangle { vertical-stretch: 1; }
-                    Typography { text: GalleryStrings.subtitle; style: TypographyStyle.caption; color: Theme.text-tertiary; }
+                GalleryNavigation {
+                    width: parent.width;
+                    height: parent.height;
+                    page <=> root.page;
+                    section <=> root.section;
+                    general-text: GalleryStrings.general;
+                    layout-text: GalleryStrings.layout;
+                    navigation-text: GalleryStrings.navigation;
+                    data-entry-text: GalleryStrings.inputs;
+                    data-display-text: GalleryStrings.data-display;
+                    feedback-text: GalleryStrings.feedback;
+                    icons-text: GalleryStrings.icons;
                 }
+
             }
 
-            ScrollArea {
+            detail-scroll := ScrollArea {
                 horizontal-stretch: 1;
                 vertical-stretch: 1;
                 mouse-drag-pan-enabled: false;
+                viewport-width: preview.width;
+                viewport-height: preview.height;
 
                 preview := Rectangle {
-                    min-width: 620px;
-                    transform-origin: { x: 0px, y: 0px };
-                    transform-scale-x: Theme.preview-scale * 100%;
-                    transform-scale-y: Theme.preview-scale * 100%;
+                    width: max(detail-scroll.width, (840px + 2 * Theme.space-6) * Theme.preview-scale);
+                    height: detail.content-height * Theme.preview-scale;
 
-                    Stack {
-                        padding: Theme.space-6;
-                        gap: Theme.space-4;
-
-                        if root.page == 0: Stack {
-                            gap: Theme.space-4;
-                            Typography { text: GalleryStrings.foundations; style: TypographyStyle.title-large; }
-                            Typography { text: GalleryStrings.long-text; style: TypographyStyle.body; }
-                            Card {
-                                width: 560px;
-                                title: "Typography";
-                                Stack {
-                                    Typography { text: GalleryStrings.title; style: TypographyStyle.title-large; }
-                                    Typography { text: GalleryStrings.subtitle; style: TypographyStyle.title-medium; }
-                                    Typography { text: GalleryStrings.long-text; style: TypographyStyle.body; }
-                                    Typography { text: "Caption · 12 / 20"; style: TypographyStyle.caption; color: Theme.text-secondary; }
-                                }
-                            }
-                            Card {
-                                width: 560px;
-                                title: "Surface · Icon · Divider · FocusRing";
-                                Stack {
-                                    Space {
-                                        Icon { source: SettingOutlined.source; size: IconSize.large; accessible-name: GalleryStrings.settings; }
-                                        Icon { source: BellOutlined.source; size: IconSize.medium; accessible-name: GalleryStrings.notifications; }
-                                        Icon { source: SearchOutlined.source; size: IconSize.medium; accessible-name: GalleryStrings.search; }
-                                        Icon { source: UserOutlined.source; size: IconSize.medium; accessible-name: GalleryStrings.user-name; }
-                                        Icon { source: CheckOutlined.source; size: IconSize.medium; accessible-name: GalleryStrings.choose; }
-                                        Icon { source: CloseOutlined.source; size: IconSize.medium; accessible-name: GalleryStrings.cancel; }
-                                        Icon { source: HeartFilled.source; size: IconSize.medium; accessible-name: GalleryStrings.favorite; }
-                                        Icon { source: StarFilled.source; size: IconSize.medium; accessible-name: GalleryStrings.favorite; }
-                                        Icon { source: DotNetOutlined.source; size: IconSize.medium; accessible-name: ".NET"; }
-                                        Icon { source: TwitchFilled.source; size: IconSize.medium; accessible-name: "Twitch"; }
-                                        Icon { source: XFilled.source; size: IconSize.medium; accessible-name: "X"; }
-                                        Surface { width: 80px; height: 40px; variant: SurfaceVariant.elevated; bordered: true; }
-                                    }
-                                    Divider { orientation: horizontal; }
-                                    Rectangle {
-                                        width: 140px;
-                                        height: 40px;
-                                        border-radius: Theme.radius-medium;
-                                        background: Theme.bg-control;
-                                        FocusRing { active: true; target-width: parent.width; target-height: parent.height; }
-                                    }
-                                }
-                            }
-                        }
-
-                        if root.page == 1: Stack {
-                            gap: Theme.space-4;
-                            Typography { text: GalleryStrings.layout; style: TypographyStyle.title-large; }
-                            Card {
-                                width: 760px;
-                                title: "Stack · Space · Card";
-                                description: GalleryStrings.long-text;
-                                Stack {
-                                    Space {
-                                        Button { text: GalleryStrings.one; }
-                                        Button { text: GalleryStrings.two; }
-                                        Button { text: GalleryStrings.three; }
-                                    }
-                                    Divider { orientation: horizontal; }
-                                    Surface { min-height: 80px; variant: SurfaceVariant.layout; bordered: true; }
-                                }
-                            }
-                            SettingsSection {
-                                title: GalleryStrings.account;
-                                description: GalleryStrings.account-help;
-                                FormRow {
-                                    label: GalleryStrings.user-name;
-                                    required: true;
-                                    TextField { text <=> root.user-name; accessible-name: GalleryStrings.user-name; placeholder-text: GalleryStrings.user-name-placeholder; }
-                                }
-                                FormRow {
-                                    label: GalleryStrings.update;
-                                    help-text: GalleryStrings.long-text;
-                                    Switch { text: GalleryStrings.update; checked <=> root.switch-value; }
-                                }
-                            }
-                        }
-
-                        if root.page == 2: Stack {
-                            gap: Theme.space-4;
-                            Typography { text: GalleryStrings.actions; style: TypographyStyle.title-large; }
-                            Card {
-                                width: 960px;
-                                title: GalleryStrings.button-states;
-                                Stack {
-                                    Space {
-                                        Button { text: GalleryStrings.save; variant: ButtonVariant.primary; }
-                                        Button { text: GalleryStrings.cancel; }
-                                        Button { text: GalleryStrings.delete-action; variant: ButtonVariant.danger; }
-                                        Button { text: GalleryStrings.text-action; variant: ButtonVariant.text; }
-                                        Button { text: GalleryStrings.link-action; variant: ButtonVariant.link; }
-                                    }
-                                    Space {
-                                        Button { text: GalleryStrings.small; size: ControlSize.small; }
-                                        Button { text: GalleryStrings.medium; size: ControlSize.medium; }
-                                        Button { text: GalleryStrings.large; size: ControlSize.large; }
-                                        Button { text: GalleryStrings.loading; loading: true; variant: ButtonVariant.primary; }
-                                        Button { text: GalleryStrings.save; enabled: false; }
-                                    }
-                                }
-                            }
-                            Toolbar {
-                                accessible-name: GalleryStrings.sample-toolbar;
-                                IconButton {
-                                    icon: @image-url("../../../crates/slint-ui/assets/icons/ant-design/outlined/plus.svg");
-                                    accessible-name: GalleryStrings.choose;
-                                    tooltip: GalleryStrings.shortcut-help;
-                                }
-                                ToolButton { text: GalleryStrings.save; checkable: true; checked: true; }
-                                Divider { orientation: vertical; }
-                                ToolButton { text: GalleryStrings.notifications; }
-                            }
-                        }
-
-                        if root.page == 3: Stack {
-                            gap: Theme.space-4;
-                            Typography { text: GalleryStrings.inputs; style: TypographyStyle.title-large; }
-                            Card {
-                                width: 760px;
-                                title: "Checkbox · Switch · SegmentedControl";
-                                Stack {
-                                    Checkbox { text: GalleryStrings.notifications; state <=> root.checkbox-state; }
-                                    Checkbox { text: GalleryStrings.indeterminate; state: CheckState.indeterminate; }
-                                    Checkbox { text: GalleryStrings.disabled; enabled: false; state: CheckState.checked; }
-                                    Switch { text: GalleryStrings.update; checked <=> root.switch-value; }
-                                    SegmentedControl { options: root.select-options; selected-index: 1; accessible-name: GalleryStrings.view-mode; }
-                                }
-                            }
-                            SettingsSection {
-                                title: GalleryStrings.account;
-                                description: GalleryStrings.account-help;
-                                FormRow {
-                                    label: GalleryStrings.user-name;
-                                    TextField { text <=> root.user-name; accessible-name: GalleryStrings.user-name; placeholder-text: GalleryStrings.user-name-placeholder; }
-                                }
-                                FormRow {
-                                    label: GalleryStrings.validation;
-                                    error-text: GalleryStrings.long-text;
-                                    TextField { text: GalleryStrings.invalid-value; accessible-name: GalleryStrings.validation; validation: ValidationState.error; }
-                                }
-                                FormRow {
-                                    label: GalleryStrings.select-label;
-                                    Select { model: root.select-options; current-index: 1; accessible-name: GalleryStrings.select-label; }
-                                }
-                            }
-                        }
-
-                        if root.page == 4: Stack {
-                            gap: Theme.space-4;
-                            Typography { text: GalleryStrings.feedback; style: TypographyStyle.title-large; }
-                            Card {
-                                width: 480px;
-                                title: "Progress · Spinner";
-                                Stack {
-                                    Progress { value: 0.64; accessible-name: GalleryStrings.progress-label; }
-                                    Progress { indeterminate: true; accessible-name: GalleryStrings.loading; }
-                                    Space { Spinner { accessible-name: GalleryStrings.loading; } Label { text: GalleryStrings.loading; } }
-                                }
-                            }
-                            Card {
-                                width: 480px;
-                                title: "EmptyState";
-                                EmptyState {
-                                    kind: EmptyStateKind.no-data;
-                                    icon: @image-url("../../../crates/slint-ui/assets/icons/ant-design/outlined/inbox.svg");
-                                    title: GalleryStrings.empty-title;
-                                    description: GalleryStrings.empty-description;
-                                    Button { text: GalleryStrings.choose; variant: ButtonVariant.primary; }
-                                }
-                            }
-                            StatusBar { text: GalleryStrings.ready; detail: "Slint 1.17.1"; tone: StatusTone.success; }
-                        }
-
-                        if root.page == 5: Stack {
-                            gap: Theme.space-4;
-                            Typography { text: GalleryStrings.icons; style: TypographyStyle.title-large; }
-                            Typography { text: GalleryStrings.icon-catalog-description; style: TypographyStyle.body; }
-                            SegmentedControl {
-                                width: 320px;
-                                options: [GalleryStrings.outlined, GalleryStrings.filled];
-                                selected-index: root.icon-style;
-                                accessible-name: GalleryStrings.icons;
-                                selected(index, value) => { root.icon-style = index; }
-                            }
-                            Card {
-                                width: 760px;
-                                height: 480px;
-                                title: root.icon-style == 0 ? "Outlined · 447" : "Filled · 249";
-
-                                ListView {
-                                    min-height: 400px;
-                                    vertical-stretch: 1;
-                                    for entry[index] in root.icon-style == 0 ? IconCatalog.outlined : IconCatalog.filled: Rectangle {
-                                        width: parent.width;
-                                        height: Theme.row-height;
-                                        background: Math.mod(index, 2) == 0 ? Theme.bg-surface : Theme.fill-hover;
-
-                                        HorizontalLayout {
-                                            padding-left: Theme.space-3;
-                                            padding-right: Theme.space-3;
-                                            spacing: Theme.space-3;
-                                            cross-axis-alignment: center;
-
-                                            Icon {
-                                                source: entry.source;
-                                                size: IconSize.medium;
-                                                accessible-name: entry.name;
-                                            }
-                                            Label { text: entry.name; }
-                                        }
-                                    }
-                                }
-                            }
-                        }
-
-                        if root.page == 6: Stack {
-                            gap: Theme.space-4;
-                            Typography { text: GalleryStrings.desktop; style: TypographyStyle.title-large; }
-
-                            Card {
-                                width: 760px;
-                                title: "Tabs · PopupMenu · ContextMenu";
-                                Stack {
-                                    Tabs { tabs: root.p1-tabs; current-index: 0; accessible-name: GalleryStrings.desktop; }
-                                    menu-anchor := Rectangle {
-                                        width: 180px;
-                                        height: Theme.control-height-medium;
-                                        Button { width: parent.width; text: GalleryStrings.open-menu; clicked => { sample-menu.show(); } }
-                                        sample-menu := PopupMenu {
-                                            width: parent.width;
-                                            height: parent.height;
-                                            entries: root.menu-entries;
-                                            accessible-name: GalleryStrings.open-menu;
-                                        }
-                                    }
-                                }
-                            }
-
-                            Card {
-                                width: 760px;
-                                title: "SplitPane · Tree · Table";
-                                split := SplitPane {
-                                    width: 720px;
-                                    height: 260px;
-                                    accessible-name: GalleryStrings.resize-pane;
-
-                                    Surface {
-                                        x: split.first-x;
-                                        y: split.first-y;
-                                        width: split.first-width;
-                                        height: split.first-height;
-                                        bordered: true;
-                                        Tree { width: parent.width; height: parent.height; items: root.tree-items; accessible-name: GalleryStrings.settings; }
-                                    }
-                                    Surface {
-                                        x: split.second-x;
-                                        y: split.second-y;
-                                        width: split.second-width;
-                                        height: split.second-height;
-                                        bordered: true;
-                                        Table {
-                                            width: parent.width;
-                                            height: parent.height;
-                                            columns: root.table-columns;
-                                            rows: root.table-rows;
-                                            accessible-name: GalleryStrings.details;
-                                            empty-text: GalleryStrings.empty-title;
-                                        }
-                                    }
-                                }
-                            }
-
-                            Card {
-                                width: 760px;
-                                title: "Form · Toast · ModalDialog";
-                                Space {
-                                    Form {
-                                        width: 360px;
-                                        errors: root.form-errors;
-                                        accessible-name: GalleryStrings.validation;
-                                        error-summary-title: GalleryStrings.fix-errors;
-                                        TextField { accessible-name: GalleryStrings.user-name; text: GalleryStrings.invalid-value; validation: ValidationState.error; }
-                                        Button { text: GalleryStrings.save; variant: ButtonVariant.primary; clicked => { parent.submit-form(); } }
-                                    }
-                                    Toast { messages: root.toast-messages; accessible-name: GalleryStrings.notifications; }
-                                }
-                                Typography { text: GalleryStrings.dialog-host-note; style: TypographyStyle.caption; color: Theme.text-secondary; }
-                            }
-                        }
-
-                        if root.page == 7: Stack {
-                            gap: Theme.space-4;
-                            Typography { text: GalleryStrings.advanced; style: TypographyStyle.title-large; }
-
-                            Card { width: 820px; title: "Navigation · Commands";
-                                Stack {
-                                    SplitButton { text: GalleryStrings.save; menu-entries: root.menu-entries; menu-accessible-name: GalleryStrings.open-menu; }
-                                    Breadcrumb { items: root.p2-breadcrumbs; accessible-name: GalleryStrings.advanced; }
-                                    Steps { width: 760px; steps: root.p2-steps; current-index: 1; accessible-name: GalleryStrings.advanced; }
-                                    Pagination { current-page: 3; page-count: 12; page-size-options: ["10 / page", "20 / page"]; previous-accessible-name: GalleryStrings.previous; next-accessible-name: GalleryStrings.next; page-accessible-name: GalleryStrings.advanced; }
-                                    Space {
-                                        NavigationRail { height: 180px; items: root.p2-rail-items; current-index: 0; accessible-name: GalleryStrings.advanced; }
-                                        Button { text: "CommandPalette"; clicked => { root.p2-palette-open = true; } }
-                                    }
-                                }
-                            }
-
-                            Card { width: 820px; title: "Selection · Date · Time · Color";
-                                Stack {
-                                    MultiSelect { width: 420px; options: root.p2-multi-options; selected-labels: ["Alpha", "Beta"]; selected-summary: "Alpha, Beta"; placeholder-text: GalleryStrings.choose; accessible-name: GalleryStrings.choose; }
-                                    AutoComplete { width: 420px; text: "Slint"; suggestions: root.p2-suggestions; placeholder-text: GalleryStrings.search; accessible-name: GalleryStrings.search; }
-                                    DatePicker { value: { year: 2026, month: 7, day: 20 }; year-options: ["2025", "2026", "2027"]; year-values: [2025, 2026, 2027]; year-index: 1; month-options: ["01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12"]; month-values: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]; month-index: 6; day-options: ["18", "19", "20", "21"]; day-values: [18, 19, 20, 21]; day-index: 2; accessible-name: "DatePicker"; year-accessible-name: GalleryStrings.year; month-accessible-name: GalleryStrings.month; day-accessible-name: GalleryStrings.day; }
-                                    TimePicker { value: { hour: 9, minute: 30, second: 0 }; hour-options: ["08", "09", "10"]; hour-values: [8, 9, 10]; hour-index: 1; minute-options: ["00", "30"]; minute-values: [0, 30]; minute-index: 1; accessible-name: "TimePicker"; }
-                                    ColorPicker { width: 280px; value: Theme.color-primary; value-label: "Primary"; options: root.p2-colors; accessible-name: "ColorPicker"; }
-                                }
-                            }
-
-                            Card { width: 820px; title: "Data display · Loading";
-                                Stack {
-                                    Space { Avatar { initials: "SU"; accessible-name: "SlintUI"; } Statistic { title: GalleryStrings.progress-label; value: "92"; suffix: "%"; detail: GalleryStrings.ready; tone: StatisticTone.positive; } }
-                                    DataGrid { width: 760px; height: 180px; columns: root.table-columns; rows: root.table-rows; total-row-count: 2048; accessible-name: "DataGrid"; empty-text: GalleryStrings.empty-title; }
-                                    Timeline { width: 760px; items: root.p2-timeline; accessible-name: "Timeline"; }
-                                    Space {
-                                        Calendar { title: "2026-07"; weekday-labels: root.p2-weekdays; days: root.p2-days; accessible-name: "Calendar"; previous-accessible-name: GalleryStrings.previous; next-accessible-name: GalleryStrings.next; }
-                                        ImageView { width: 240px; height: 220px; state: ImageViewState.empty; empty-text: GalleryStrings.empty-title; accessible-name: "ImageView"; }
-                                    }
-                                    Skeleton { width: 520px; rows: 3; show-avatar: true; accessible-name: GalleryStrings.loading; status-text: GalleryStrings.loading; }
-                                }
-                            }
-
-                            Card { width: 820px; title: "Notification · Drawer";
-                                Stack {
-                                    Notification { title: GalleryStrings.notifications; message: GalleryStrings.long-text; tone: NotificationTone.info; action-text: GalleryStrings.details; close-accessible-name: GalleryStrings.cancel; }
-                                    Button { text: "Drawer"; clicked => { root.p2-drawer-open = true; } }
-                                }
-                            }
-                        }
+                    detail := ComponentDetail {
+                        x: 0px;
+                        y: 0px;
+                        width: preview.width / Theme.preview-scale;
+                        transform-origin: { x: 0px, y: 0px };
+                        transform-scale-x: Theme.preview-scale * 100%;
+                        transform-scale-y: Theme.preview-scale * 100%;
+                        page: root.page;
+                        section: root.section;
+                        icon-style: root.icon-style;
+                        drawer-requested => { root.p2-drawer-open = true; }
+                        command-palette-requested => { root.p2-palette-open = true; }
                     }
+
                 }
             }
         }
@@ -843,5 +528,4 @@ export component InteractionHarness inherits Window {
             selected(index) => { root.p2-calendar-activations += 1; }
         }
     }
-
 }

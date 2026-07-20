@@ -22,4 +22,4 @@
 
 ## Gallery、测试与限制
 
-Gallery“操作”页覆盖五种 variant、三种尺寸、Loading 和 Disabled；自动测试覆盖正常、禁用、IconButton、ToolButton 与 checked 单次转换。实现复用 `TouchArea`、`FocusScope` 和可访问回调，遵循四份全局规范。
+Gallery“通用 / Button”页用两张独立示例卡覆盖五种 variant、三种尺寸、图标、Loading 和 Disabled；自动测试覆盖正常、禁用、IconButton、ToolButton 与 checked 单次转换。实现复用 `TouchArea`、`FocusScope` 和可访问回调，遵循四份全局规范。

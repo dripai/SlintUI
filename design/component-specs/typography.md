@@ -21,4 +21,4 @@
 
 ## Gallery、测试与限制
 
-Gallery“基础”页展示全部字阶、长中文/英文/阿拉伯语和缩放环境；非交互组件无需状态转换测试，由编译与截图基线验收。全局规则见 [`../foundations.md`](../foundations.md)、[`../accessibility.md`](../accessibility.md) 和 [`../content-and-localization.md`](../content-and-localization.md)。
+Gallery“通用 / Typography”页展示全部字阶，长中文/英文/阿拉伯语和缩放通过全局环境验证；非交互组件无需状态转换测试，由编译与截图基线验收。全局规则见 [`../foundations.md`](../foundations.md)、[`../accessibility.md`](../accessibility.md) 和 [`../content-and-localization.md`](../content-and-localization.md)。

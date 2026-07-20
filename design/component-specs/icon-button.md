@@ -20,4 +20,4 @@ Default、Hover、Pressed、Focused、Disabled、Loading 和激活行为与 Butt
 
 ## Gallery 与测试
 
-Gallery“操作”页展示带 Tooltip 的图标按钮；自动测试验证 `activate()` 单次触发。Tooltip 焦点触发受 Slint 原生能力限制，重要信息不能只放 Tooltip。遵循四份全局规范。
+Gallery“通用 / IconButton”页展示图标按钮；Tooltip 在“数据展示 / Tooltip”独立页验证。自动测试验证 `activate()` 单次触发。Tooltip 焦点触发受 Slint 原生能力限制，重要信息不能只放 Tooltip。遵循四份全局规范。

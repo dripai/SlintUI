@@ -16,4 +16,4 @@
 
 ## 无障碍、Gallery、测试与限制
 
-FocusRing 不进入可访问树；可访问焦点仍由目标控件声明。Gallery“基础”页展示 active 状态，高对比度截图验证可见性；非交互原语无需单独回调测试。遵循 [`../interaction.md`](../interaction.md) 与 [`../accessibility.md`](../accessibility.md)。
+FocusRing 不进入可访问树；可访问焦点仍由目标控件声明。Gallery“布局 / FocusRing”页展示 active 状态，高对比度截图验证可见性；非交互原语无需单独回调测试。遵循 [`../interaction.md`](../interaction.md) 与 [`../accessibility.md`](../accessibility.md)。

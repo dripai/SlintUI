@@ -44,6 +44,7 @@ fn apply_options(gallery: &GalleryWindow, args: &mut impl Iterator<Item = std::f
 
         match flag {
             "--page" => gallery.set_page(value.parse().unwrap_or(0)),
+            "--section" => gallery.set_section(value.parse().unwrap_or(0)),
             "--theme" => gallery.set_theme_mode(match value {
                 "dark" => ThemeMode::Dark,
                 "high-contrast" => ThemeMode::HighContrast,
@@ -55,7 +56,11 @@ fn apply_options(gallery: &GalleryWindow, args: &mut impl Iterator<Item = std::f
                 _ => Density::Regular,
             }),
             "--scale" => gallery.set_preview_scale(value.parse().unwrap_or(1.0)),
-            "--icon-style" => gallery.set_icon_style(if value == "filled" { 1 } else { 0 }),
+            "--icon-style" => {
+                let style = if value == "filled" { 1 } else { 0 };
+                gallery.set_icon_style(style);
+                gallery.set_section(style);
+            }
             "--locale" => {
                 gallery.set_locale(value.into());
                 gallery.set_layout_direction(if value.starts_with("ar") {

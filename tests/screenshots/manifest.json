@@ -3,67 +3,60 @@
   "reduced_motion": true,
   "images": [
     {
-      "file": "gallery-dark-actions-100.png",
+      "file": "gallery-general-button-100.png",
       "width": 1180,
       "height": 800,
-      "sha256": "4e166870f3ec8b73fd73678feb1fefd74cdff84f368b40290ec6cee3d80eb2e5",
-      "bytes": 44164
+      "sha256": "db8d6034894a24948c914463c53673eef48a98754471c765607f857e89786732",
+      "bytes": 72881
     },
     {
-      "file": "gallery-dark-icons-filled-100.png",
+      "file": "gallery-layout-split-pane-dark-100.png",
       "width": 1180,
       "height": 800,
-      "sha256": "b7ccaa7a7a65917042f703c39e58b3d6181a2c736e229e2de1b4ce3495471154",
-      "bytes": 54255
+      "sha256": "5db266dbf6b49e9d328a8e31e4a0ed0fcc567de2e958145b7eef70a538edfa93",
+      "bytes": 66300
     },
     {
-      "file": "gallery-high-contrast-inputs-100.png",
+      "file": "gallery-navigation-steps-rtl-100.png",
       "width": 1180,
       "height": 800,
-      "sha256": "6e9b2f6801b8628eaf4721cbf55700195274030c63e3624a77814c25792e8d0e",
-      "bytes": 60580
+      "sha256": "a685c0bb61bd6994eec5f46a4f6bbb292c842a27bcb3a71d62466d591da06420",
+      "bytes": 66905
     },
     {
-      "file": "gallery-light-feedback-150.png",
+      "file": "gallery-data-entry-text-field-contrast-100.png",
       "width": 1180,
       "height": 800,
-      "sha256": "8448bd007d81bc5fd5e94b04161a8a9b87fc9918f943c9048411e32c0758c5ff",
-      "bytes": 48568
+      "sha256": "2c0e86ca2efc31ee16b6f9f6388ff2f1f45069782eb5d489c826032b25ab38a4",
+      "bytes": 69239
     },
     {
-      "file": "gallery-light-foundations-100.png",
+      "file": "gallery-data-display-data-grid-100.png",
       "width": 1180,
       "height": 800,
-      "sha256": "67f1bcb5603499fdfbdaf277ea5d0bfddd8bdfae7bcdf9d02184810d9e222b96",
-      "bytes": 63216
+      "sha256": "22b4fe1efeb011ceb2830fc79d56ac8a3fe1cb15d5c98cceb44529ba07b9ead7",
+      "bytes": 60726
     },
     {
-      "file": "gallery-light-icons-100.png",
+      "file": "gallery-feedback-notification-dark-150.png",
       "width": 1180,
       "height": 800,
-      "sha256": "7dd122a0be290d157148011a3d6d7e460f47fe6f7540ec63fdd4510bc81b81e6",
-      "bytes": 52501
+      "sha256": "286623f05861925e243c8511eeec3fafb2d9c16dd681f3d8e1da14fab4a7c027",
+      "bytes": 79408
     },
     {
-      "file": "gallery-rtl-inputs-100.png",
+      "file": "gallery-icons-outlined-100.png",
       "width": 1180,
       "height": 800,
-      "sha256": "2205f36d3bb27152683822d5b35bf441452bc21739530500e27891dcd7fba27e",
-      "bytes": 46906
+      "sha256": "705c914c7042c781a1e287d15cfb30be81c9e1d4d93895fd72dc8379b5445ba6",
+      "bytes": 61276
     },
     {
-      "file": "gallery-light-desktop-p1-100.png",
+      "file": "gallery-icons-filled-dark-100.png",
       "width": 1180,
       "height": 800,
-      "sha256": "99cc65fb69cf2f858664f89ab573802c52e2e93a2c389ed182ebb70ccfbe144d",
-      "bytes": 53091
-    },
-    {
-      "file": "gallery-light-advanced-p2-100.png",
-      "width": 1180,
-      "height": 800,
-      "sha256": "ff764dc4812753d56425ef176a8a0332f9377f7d15269418e0168b11d35c05b9",
-      "bytes": 59192
+      "sha256": "fca7dcc583686b222f2f6c54c02acc48b67f82677dfc246f93048bd4f6e83610",
+      "bytes": 67030
     }
   ]
 }

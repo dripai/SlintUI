@@ -19,4 +19,4 @@ Icon 不接收输入或焦点，没有控件状态。固定为 `image` 角色，
 
 ## Gallery、测试与限制
 
-Gallery“基础”和“图标”页覆盖尺寸、主题和完整目录；自动测试核对 696 个资源与模块一一对应。方向图标不自动镜像，由具体导航组件按语义选择。详见 [`../../docs/iconography.md`](../../docs/iconography.md) 及四份全局规范。
+Gallery“通用 / Icon”页展示尺寸语义，“图标 / Outlined、Filled”页浏览完整目录；自动测试核对 696 个资源与模块一一对应。方向图标不自动镜像，由具体导航组件按语义选择。详见 [`../../docs/iconography.md`](../../docs/iconography.md) 及四份全局规范。

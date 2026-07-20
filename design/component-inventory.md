@@ -2,6 +2,8 @@
 
 本文定义 SlintUI 的目标组件范围。分类参考 Ant Design 官方组件总览，并针对 Slint 桌面应用补充窗口、工具栏、快捷键、右键菜单和平台能力。公开组件通过 `@slint-ui` 提供命名空间，组件名称不添加 `Slint` 前缀。清单是规划基线，不表示组件已经实现。
 
+本清单只负责范围、优先级和实施状态，不作为 Gallery 的信息架构。Gallery 的分类、两层导航和单组件详情页统一遵循 [`gallery-information-architecture.md`](gallery-information-architecture.md)，不得把 P0/P1/P2 或里程碑暴露为组件浏览入口。
+
 ## 1. 优先级定义
 
 | 优先级 | 含义 | 进入条件 |

@@ -15,6 +15,6 @@
 根为 groupbox，两个按钮分别命名；文本由调用方本地化，方向图标使用 SVG。
 
 ## Gallery、测试与限制
-Gallery P2 页展示组合；Harness 验证主操作、菜单和禁用项。复用 PopupMenu；暂不提供分裂按钮圆角融合和菜单侧自动翻转。
+Gallery“通用 / SplitButton”页展示主操作与菜单组合；Harness 验证主操作、菜单和禁用项。复用 PopupMenu；暂不提供分裂按钮圆角融合和菜单侧自动翻转。
 
 遵循四份全局规范。

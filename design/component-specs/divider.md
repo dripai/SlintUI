@@ -16,4 +16,4 @@
 
 ## Gallery、测试与限制
 
-Gallery“基础”“布局”“操作”页覆盖水平和垂直组合；非交互组件无需状态转换测试，由编译和截图验收。本组件不提供文字标签，完整规则见 [`../foundations.md`](../foundations.md) 和 [`../accessibility.md`](../accessibility.md)。
+Gallery“布局 / Divider”页集中展示水平和垂直组合；非交互组件无需状态转换测试，由编译和截图验收。本组件不提供文字标签，完整规则见 [`../foundations.md`](../foundations.md) 和 [`../accessibility.md`](../accessibility.md)。
