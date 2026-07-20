@@ -1,0 +1,38 @@
+import { Theme, Direction } from "../tokens/theme.slint";
+import { Button, ButtonVariant } from "../controls/button.slint";
+import { Select } from "../controls/select.slint";
+
+export component Pagination inherits Rectangle {
+    in-out property <int> current-page: 1;
+    in property <int> page-count: 1;
+    in-out property <int> page-size-index: 0;
+    in property <[string]> page-size-options;
+    in property <string> previous-accessible-name: "";
+    in property <string> next-accessible-name: "";
+    in property <string> page-accessible-name: "";
+    callback changed(page: int);
+    callback page-size-changed(index: int, value: string);
+
+    min-height: Theme.control-height-medium;
+    accessible-role: groupbox;
+    accessible-label: page-accessible-name;
+
+    public function select-page(page: int) {
+        let next = clamp(page, 1, max(1, page-count));
+        if (next != current-page) { root.current-page = next; root.changed(next); }
+    }
+
+    HorizontalLayout {
+        spacing: Theme.space-2;
+        cross-axis-alignment: center;
+        Button { icon: Theme.direction == Direction.rtl ? @image-url("../../assets/icons/ant-design/outlined/right.svg") : @image-url("../../assets/icons/ant-design/outlined/left.svg"); variant: ButtonVariant.text; enabled: root.current-page > 1; accessible-name: root.previous-accessible-name; clicked => { root.select-page(root.current-page - 1); } }
+        Text { text: root.current-page + " / " + max(1, root.page-count); color: Theme.text-primary; font-size: Theme.font-size-body; vertical-alignment: center; }
+        Button { icon: Theme.direction == Direction.rtl ? @image-url("../../assets/icons/ant-design/outlined/left.svg") : @image-url("../../assets/icons/ant-design/outlined/right.svg"); variant: ButtonVariant.text; enabled: root.current-page < root.page-count; accessible-name: root.next-accessible-name; clicked => { root.select-page(root.current-page + 1); } }
+        if root.page-size-options.length > 0: Select {
+            model: root.page-size-options;
+            current-index <=> root.page-size-index;
+            accessible-name: root.page-accessible-name;
+            selected(value) => { root.page-size-changed(self.current-index, value); }
+        }
+    }
+}

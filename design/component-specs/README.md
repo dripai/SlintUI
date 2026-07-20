@@ -7,7 +7,7 @@
 - [`../accessibility.md`](../accessibility.md)
 - [`../content-and-localization.md`](../content-and-localization.md)
 
-目录包含 26 个 P0 组件、提前完成的 `ScrollArea`，以及里程碑 D 已完成的 11 份 P1 规格。每份规格明确用途与替代组件、API 类型和默认值、适用状态、输入与焦点、无障碍、本地化、Gallery/测试证据、原生复用和限制；不适用项显式说明，不以省略代替验收。
+目录包含 26 个 P0 组件、提前完成的 `ScrollArea`、里程碑 D 已完成的 11 份 P1 规格，以及里程碑 E 已完成的 20 份 P2 规格，共 58 份。每份规格明确用途与替代组件、API 类型和默认值、适用状态、输入与焦点、无障碍、本地化、Gallery/测试证据、原生复用和限制；不适用项显式说明，不以省略代替验收。
 
-Gallery 的全局环境覆盖浅色、深色、高对比度、三种密度、100%–200% 预览缩放、中文、英文和阿拉伯语 RTL。自动交互测试覆盖 Button、IconButton、ToolButton、Checkbox、Switch、SegmentedControl、TextField 清除和 Select 程序化选择；非交互原语由编译、冒烟和代表性 PNG 基线验收。截图位于 `tests/screenshots/`。
+Gallery 的全局环境覆盖浅色、深色、高对比度、三种密度、100%–200% 预览缩放、中文、英文和阿拉伯语 RTL。自动交互测试覆盖 P0 控件、里程碑 D 交互，以及 P2 的操作、导航、选择、日期时间边界、DataGrid 宿主窗口请求和 Calendar 选择；非交互原语由编译、冒烟和代表性 PNG 基线验收。截图位于 `tests/screenshots/`。
 

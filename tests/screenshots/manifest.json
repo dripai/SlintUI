@@ -57,6 +57,13 @@
       "height": 800,
       "sha256": "99cc65fb69cf2f858664f89ab573802c52e2e93a2c389ed182ebb70ccfbe144d",
       "bytes": 53091
+    },
+    {
+      "file": "gallery-light-advanced-p2-100.png",
+      "width": 1180,
+      "height": 800,
+      "sha256": "ff764dc4812753d56425ef176a8a0332f9377f7d15269418e0168b11d35c05b9",
+      "bytes": 59192
     }
   ]
 }

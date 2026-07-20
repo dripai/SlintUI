@@ -1,0 +1,49 @@
+import { Theme } from "../tokens/theme.slint";
+
+export struct CalendarDay { label: string, accessible-name: string, in-current-month: bool, selected: bool, today: bool, enabled: bool }
+
+export component Calendar inherits Rectangle {
+    in property <[string]> weekday-labels;
+    in property <[CalendarDay]> days;
+    in property <string> title: "";
+    in property <string> accessible-name: title;
+    in property <string> previous-accessible-name: "";
+    in property <string> next-accessible-name: "";
+    callback selected(index: int);
+    callback previous-requested();
+    callback next-requested();
+
+    min-width: Theme.calendar-cell-size * 7 + Theme.space-4;
+    min-height: Theme.control-height-medium + Theme.calendar-cell-size * 7 + Theme.space-4;
+    background: Theme.bg-surface; border-width: Theme.border-width; border-color: Theme.border-default; border-radius: Theme.radius-medium;
+    accessible-role: groupbox; accessible-label: accessible-name;
+
+    public function select(index: int) { if (index >= 0 && index < days.length && days[index].enabled) { root.selected(index); } }
+
+    VerticalLayout { padding: Theme.space-2; spacing: Theme.space-2;
+        HorizontalLayout { cross-axis-alignment: center;
+            Rectangle { width: Theme.control-height-small; height: Theme.control-height-small; accessible-role: button; accessible-label: root.previous-accessible-name; accessible-action-default => { root.previous-requested(); }
+                Image { source: @image-url("../../assets/icons/ant-design/outlined/left.svg"); width: Theme.icon-size-small; height: Theme.icon-size-small; x: (parent.width - self.width)/2; y: (parent.height - self.height)/2; colorize: Theme.icon-default; accessible-role: none; }
+                TouchArea { clicked => { root.previous-requested(); } }
+            }
+            Text { text: root.title; color: Theme.text-primary; font-size: Theme.font-size-body; font-weight: Theme.font-weight-medium; horizontal-alignment: center; horizontal-stretch: 1; }
+            Rectangle { width: Theme.control-height-small; height: Theme.control-height-small; accessible-role: button; accessible-label: root.next-accessible-name; accessible-action-default => { root.next-requested(); }
+                Image { source: @image-url("../../assets/icons/ant-design/outlined/right.svg"); width: Theme.icon-size-small; height: Theme.icon-size-small; x: (parent.width - self.width)/2; y: (parent.height - self.height)/2; colorize: Theme.icon-default; accessible-role: none; }
+                TouchArea { clicked => { root.next-requested(); } }
+            }
+        }
+        Rectangle { height: Theme.calendar-cell-size;
+            for weekday[index] in root.weekday-labels: Text { x: index * Theme.calendar-cell-size; width: Theme.calendar-cell-size; height: Theme.calendar-cell-size; text: weekday; color: Theme.text-secondary; font-size: Theme.font-size-caption; horizontal-alignment: center; vertical-alignment: center; }
+        }
+        Rectangle { height: Theme.calendar-cell-size * 6;
+            for day[index] in root.days: Rectangle {
+                x: Math.mod(index, 7) * Theme.calendar-cell-size; y: Math.floor(index / 7) * Theme.calendar-cell-size; width: Theme.calendar-cell-size; height: Theme.calendar-cell-size;
+                border-radius: Theme.radius-medium; background: day.selected ? Theme.color-primary : day-touch.has-hover && day.enabled ? Theme.fill-hover : transparent;
+                border-width: day.today && !day.selected ? Theme.border-width : 0px; border-color: Theme.color-primary;
+                accessible-role: list-item; accessible-label: day.accessible-name; accessible-enabled: day.enabled; accessible-checkable: true; accessible-checked: day.selected; accessible-action-default => { root.select(index); }
+                Text { text: day.label; color: !day.enabled ? Theme.text-disabled : day.selected ? Theme.text-on-accent : day.in-current-month ? Theme.text-primary : Theme.text-tertiary; font-size: Theme.font-size-body; horizontal-alignment: center; vertical-alignment: center; }
+                day-touch := TouchArea { enabled: day.enabled; clicked => { root.select(index); } }
+            }
+        }
+    }
+}

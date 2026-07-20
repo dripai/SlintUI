@@ -1,0 +1,45 @@
+import { Theme } from "../tokens/theme.slint";
+
+export struct NavigationRailItem { text: string, icon: image, accessible-name: string, enabled: bool }
+
+export component NavigationRail inherits Rectangle {
+    in property <[NavigationRailItem]> items;
+    in-out property <int> current-index: 0;
+    in property <string> accessible-name: "";
+    callback selected(index: int);
+
+    min-width: Theme.navigation-rail-width;
+    max-width: Theme.navigation-rail-width;
+    background: Theme.bg-surface;
+    border-width: Theme.border-width;
+    border-color: Theme.border-secondary;
+    accessible-role: list;
+    accessible-label: accessible-name;
+    accessible-item-count: items.length;
+
+    public function select(index: int) {
+        if (index >= 0 && index < items.length && items[index].enabled && current-index != index) { root.current-index = index; root.selected(index); }
+    }
+
+    VerticalLayout {
+        padding: Theme.space-2;
+        spacing: Theme.space-2;
+        for item[index] in root.items: Rectangle {
+            min-height: Theme.control-height-large + Theme.line-height-caption;
+            border-radius: Theme.radius-medium;
+            background: index == root.current-index ? Theme.selection-bg : touch.has-hover ? Theme.fill-hover : transparent;
+            accessible-role: list-item;
+            accessible-label: item.accessible-name == "" ? item.text : item.accessible-name;
+            accessible-enabled: item.enabled;
+            accessible-action-default => { root.select(index); }
+            VerticalLayout {
+                padding: Theme.space-1;
+                spacing: Theme.space-1;
+                cross-axis-alignment: center;
+                if item.icon.width > 0: Image { source: item.icon; width: Theme.icon-size-medium; height: Theme.icon-size-medium; colorize: item.enabled ? Theme.icon-default : Theme.text-disabled; accessible-role: none; }
+                Text { text: item.text; color: item.enabled ? Theme.text-primary : Theme.text-disabled; font-size: Theme.font-size-caption; horizontal-alignment: center; overflow: elide; }
+            }
+            touch := TouchArea { enabled: item.enabled; clicked => { root.select(index); } }
+        }
+    }
+}

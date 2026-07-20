@@ -1,0 +1,47 @@
+import { Theme } from "../tokens/theme.slint";
+import { Button, ButtonVariant } from "../controls/button.slint";
+
+export enum NotificationTone { info, success, warning, error }
+
+export component Notification inherits Rectangle {
+    in property <string> title: "";
+    in property <string> message: "";
+    in property <NotificationTone> tone: NotificationTone.info;
+    in property <string> action-text: "";
+    in property <string> close-accessible-name: "";
+    in property <bool> dismissible: true;
+    in property <bool> busy: false;
+    in property <string> accessible-name: title;
+    callback action-requested();
+    callback dismiss-requested();
+
+    min-width: Theme.toast-width;
+    max-width: Theme.toast-width;
+    min-height: content.preferred-height + Theme.space-4;
+    background: Theme.bg-elevated;
+    border-width: Theme.border-width;
+    border-color: tone == NotificationTone.error ? Theme.color-error : tone == NotificationTone.warning ? Theme.color-warning : tone == NotificationTone.success ? Theme.color-success : Theme.color-primary-border;
+    border-radius: Theme.radius-large;
+    accessible-role: region;
+    accessible-label: accessible-name;
+    accessible-description: message;
+    accessible-live-region: tone == NotificationTone.error ? assertive : polite;
+
+    content := HorizontalLayout { padding: Theme.space-3; spacing: Theme.space-3; cross-axis-alignment: start;
+        Image {
+            source: root.tone == NotificationTone.success ? @image-url("../../assets/icons/ant-design/outlined/check-circle.svg") : root.tone == NotificationTone.warning ? @image-url("../../assets/icons/ant-design/outlined/warning.svg") : root.tone == NotificationTone.error ? @image-url("../../assets/icons/ant-design/outlined/close-circle.svg") : @image-url("../../assets/icons/ant-design/outlined/info-circle.svg");
+            width: Theme.icon-size-medium; height: Theme.icon-size-medium;
+            colorize: root.tone == NotificationTone.success ? Theme.color-success : root.tone == NotificationTone.warning ? Theme.color-warning : root.tone == NotificationTone.error ? Theme.color-error : Theme.color-primary;
+            accessible-role: none;
+        }
+        VerticalLayout { spacing: Theme.space-2; horizontal-stretch: 1;
+            Text { text: root.title; color: Theme.text-primary; font-size: Theme.font-size-body; font-weight: Theme.font-weight-medium; wrap: word-wrap; }
+            if root.message != "": Text { text: root.message; color: Theme.text-secondary; font-size: Theme.font-size-body; wrap: word-wrap; }
+            if root.action-text != "": Button { text: root.action-text; variant: ButtonVariant.link; loading: root.busy; clicked => { root.action-requested(); } }
+        }
+        if root.dismissible: Rectangle { width: Theme.control-height-small; height: Theme.control-height-small; border-radius: Theme.radius-small; background: close-touch.has-hover ? Theme.fill-hover : transparent; accessible-role: button; accessible-label: root.close-accessible-name; accessible-action-default => { root.dismiss-requested(); }
+            Image { source: @image-url("../../assets/icons/ant-design/outlined/close.svg"); width: Theme.icon-size-x-small; height: Theme.icon-size-x-small; x: (parent.width - self.width)/2; y: (parent.height - self.height)/2; colorize: Theme.icon-default; accessible-role: none; }
+            close-touch := TouchArea { clicked => { root.dismiss-requested(); } }
+        }
+    }
+}

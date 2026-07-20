@@ -1,0 +1,40 @@
+import { Theme } from "../tokens/theme.slint";
+import { Select } from "select.slint";
+
+export struct TimeValue { hour: int, minute: int, second: int }
+
+export component TimePicker inherits Rectangle {
+    in-out property <TimeValue> value;
+    in property <[string]> hour-options;
+    in property <[int]> hour-values;
+    in property <[string]> minute-options;
+    in property <[int]> minute-values;
+    in property <[string]> second-options;
+    in property <[int]> second-values;
+    in-out property <int> hour-index: -1;
+    in-out property <int> minute-index: -1;
+    in-out property <int> second-index: -1;
+    in property <bool> show-seconds: false;
+    in property <bool> enabled: true;
+    in property <string> accessible-name: "";
+    callback changed(value: TimeValue);
+
+    min-height: Theme.control-height-medium;
+    accessible-role: groupbox; accessible-label: accessible-name; accessible-enabled: enabled;
+
+    public function select(hour: int, minute: int, second: int) {
+        if (enabled && hour >= 0 && hour <= 23 && minute >= 0 && minute <= 59 && second >= 0 && second <= 59) {
+            root.value = { hour: hour, minute: minute, second: second };
+            root.changed(root.value);
+        }
+    }
+
+    HorizontalLayout {
+        spacing: Theme.space-2;
+        Select { model: root.hour-options; current-index <=> root.hour-index; enabled: root.enabled; accessible-name: root.accessible-name; selected(_) => { if (self.current-index >= 0 && self.current-index < root.hour-values.length) { root.select(root.hour-values[self.current-index], root.value.minute, root.value.second); } } }
+        Text { text: ":"; color: Theme.text-secondary; font-size: Theme.font-size-body; vertical-alignment: center; }
+        Select { model: root.minute-options; current-index <=> root.minute-index; enabled: root.enabled; accessible-name: root.accessible-name; selected(_) => { if (self.current-index >= 0 && self.current-index < root.minute-values.length) { root.select(root.value.hour, root.minute-values[self.current-index], root.value.second); } } }
+        if root.show-seconds: Text { text: ":"; color: Theme.text-secondary; font-size: Theme.font-size-body; vertical-alignment: center; }
+        if root.show-seconds: Select { model: root.second-options; current-index <=> root.second-index; enabled: root.enabled; accessible-name: root.accessible-name; selected(_) => { if (self.current-index >= 0 && self.current-index < root.second-values.length) { root.select(root.value.hour, root.value.minute, root.second-values[self.current-index]); } } }
+    }
+}

@@ -1,0 +1,25 @@
+import { Theme } from "../tokens/theme.slint";
+
+export component Skeleton inherits Rectangle {
+    in property <int> rows: 3;
+    in property <bool> show-avatar: false;
+    in property <bool> active: true;
+    in property <string> accessible-name: "";
+    in property <string> status-text: "";
+    private property <bool> pulse: false;
+
+    min-width: Theme.card-min-width;
+    min-height: content.preferred-height;
+    accessible-role: progress-indicator;
+    accessible-label: accessible-name;
+    accessible-value: active ? status-text : "";
+
+    content := HorizontalLayout { spacing: Theme.space-3; cross-axis-alignment: start;
+        if root.show-avatar: Rectangle { width: Theme.avatar-size-large; height: Theme.avatar-size-large; border-radius: self.width / 2; background: root.pulse ? Theme.fill-hover : Theme.border-secondary; animate background { duration: Theme.motion-medium; } }
+        VerticalLayout { spacing: Theme.space-2; horizontal-stretch: 1;
+            for row[index] in root.rows: Rectangle { min-height: Theme.line-height-body; max-height: Theme.line-height-body; horizontal-stretch: 1; border-radius: Theme.radius-small; background: root.pulse ? Theme.fill-hover : Theme.border-secondary; animate background { duration: Theme.motion-medium; } }
+        }
+    }
+
+    Timer { interval: Theme.skeleton-cycle; running: root.active && !Theme.reduced-motion; triggered => { root.pulse = !root.pulse; } }
+}

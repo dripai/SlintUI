@@ -7,6 +7,10 @@ import {
     FormRow, SettingsSection, Tooltip, Progress, Spinner, EmptyState, EmptyStateKind, StatusBar, StatusTone,
     SplitPane, Tabs, TabItem, PopupMenu, PopupMenuEntry, Table, Tree, TreeItem, Form, FormError,
     Toast, ToastMessage, ToastTone,
+    SplitButton, Breadcrumb, BreadcrumbItem, Steps, StepItem, StepState, Pagination, NavigationRail, NavigationRailItem, CommandPalette, CommandItem,
+    MultiSelect, MultiSelectOption, AutoComplete, AutoCompleteOption, DatePicker, DateValue, TimePicker, TimeValue, ColorPicker, ColorOption,
+    Avatar, DataGrid, Statistic, StatisticTone, Timeline, TimelineItem, TimelineTone, ImageView, ImageViewState, Calendar, CalendarDay,
+    Notification, NotificationTone, Drawer, DrawerSide, Skeleton,
 } from "@slint-ui/index.slint";
 import { ListView } from "std-widgets.slint";
 import { GalleryStrings } from "gallery-i18n.slint";
@@ -39,6 +43,8 @@ export component GalleryWindow inherits Window {
     in-out property <float> preview-scale <=> Theme.preview-scale;
     in-out property <bool> reduced-motion <=> Theme.reduced-motion;
     in-out property <int> icon-style: 0;
+    private property <bool> p2-drawer-open: false;
+    private property <bool> p2-palette-open: false;
     private property <CheckState> checkbox-state: CheckState.checked;
     private property <bool> switch-value: true;
     private property <string> user-name: "SlintUI";
@@ -76,6 +82,47 @@ export component GalleryWindow inherits Window {
     ];
     private property <[ToastMessage]> toast-messages: [
         { id: 1, text: GalleryStrings.ready, detail: GalleryStrings.long-text, tone: ToastTone.success, duration: 0ms, dismissible: true },
+    ];
+    private property <[BreadcrumbItem]> p2-breadcrumbs: [
+        { text: GalleryStrings.foundations, accessible-name: GalleryStrings.foundations, enabled: true },
+        { text: GalleryStrings.desktop, accessible-name: GalleryStrings.desktop, enabled: true },
+        { text: "P2", accessible-name: "P2", enabled: false },
+    ];
+    private property <[StepItem]> p2-steps: [
+        { title: GalleryStrings.one, description: GalleryStrings.ready, state: StepState.complete, enabled: true },
+        { title: GalleryStrings.two, description: GalleryStrings.loading, state: StepState.current, enabled: true },
+        { title: GalleryStrings.three, description: GalleryStrings.disabled, state: StepState.waiting, enabled: false },
+    ];
+    private property <[NavigationRailItem]> p2-rail-items: [
+        { text: GalleryStrings.overview, icon: @image-url("../../../crates/slint-ui/assets/icons/ant-design/outlined/home.svg"), accessible-name: GalleryStrings.overview, enabled: true },
+        { text: GalleryStrings.settings, icon: @image-url("../../../crates/slint-ui/assets/icons/ant-design/outlined/setting.svg"), accessible-name: GalleryStrings.settings, enabled: true },
+    ];
+    private property <[CommandItem]> p2-commands: [
+        { text: GalleryStrings.search, description: GalleryStrings.long-text, shortcut: "Ctrl+K", enabled: true, visible: true },
+        { text: GalleryStrings.settings, description: GalleryStrings.account-help, shortcut: "Ctrl+,", enabled: true, visible: true },
+    ];
+    private property <[MultiSelectOption]> p2-multi-options: [
+        { text: "Alpha", selected: true, enabled: true }, { text: "Beta", selected: true, enabled: true }, { text: "Gamma", selected: false, enabled: true },
+    ];
+    private property <[AutoCompleteOption]> p2-suggestions: [
+        { text: "SlintUI", detail: GalleryStrings.ready, enabled: true }, { text: "Slint", detail: "1.17.1", enabled: true },
+    ];
+    private property <[ColorOption]> p2-colors: [
+        { name: "Primary", value: Theme.color-primary, enabled: true }, { name: "Success", value: Theme.color-success, enabled: true }, { name: "Error", value: Theme.color-error, enabled: true },
+    ];
+    private property <[TimelineItem]> p2-timeline: [
+        { title: GalleryStrings.ready, detail: GalleryStrings.long-text, time: "09:30", tone: TimelineTone.success, enabled: true },
+        { title: GalleryStrings.loading, detail: GalleryStrings.account-help, time: "10:00", tone: TimelineTone.info, enabled: true },
+    ];
+    private property <[string]> p2-weekdays: ["一", "二", "三", "四", "五", "六", "日"];
+    private property <[CalendarDay]> p2-days: [
+        { label: "1", accessible-name: "1", in-current-month: true, selected: false, today: false, enabled: true },
+        { label: "2", accessible-name: "2", in-current-month: true, selected: true, today: true, enabled: true },
+        { label: "3", accessible-name: "3", in-current-month: true, selected: false, today: false, enabled: true },
+        { label: "4", accessible-name: "4", in-current-month: true, selected: false, today: false, enabled: true },
+        { label: "5", accessible-name: "5", in-current-month: true, selected: false, today: false, enabled: true },
+        { label: "6", accessible-name: "6", in-current-month: true, selected: false, today: false, enabled: true },
+        { label: "7", accessible-name: "7", in-current-month: true, selected: false, today: false, enabled: true },
     ];
 
     VerticalLayout {
@@ -154,6 +201,7 @@ export component GalleryWindow inherits Window {
                     Button { text: GalleryStrings.feedback; checked: root.page == 4; variant: ButtonVariant.text; clicked => { root.page = 4; } }
                     Button { text: GalleryStrings.icons; checked: root.page == 5; variant: ButtonVariant.text; clicked => { root.page = 5; } }
                     Button { text: GalleryStrings.desktop; checked: root.page == 6; variant: ButtonVariant.text; clicked => { root.page = 6; } }
+                    Button { text: GalleryStrings.advanced; checked: root.page == 7; variant: ButtonVariant.text; clicked => { root.page = 7; } }
                     Rectangle { vertical-stretch: 1; }
                     Typography { text: GalleryStrings.subtitle; style: TypographyStyle.caption; color: Theme.text-tertiary; }
                 }
@@ -462,6 +510,54 @@ export component GalleryWindow inherits Window {
                                 Typography { text: GalleryStrings.dialog-host-note; style: TypographyStyle.caption; color: Theme.text-secondary; }
                             }
                         }
+
+                        if root.page == 7: Stack {
+                            gap: Theme.space-4;
+                            Typography { text: GalleryStrings.advanced; style: TypographyStyle.title-large; }
+
+                            Card { width: 820px; title: "Navigation · Commands";
+                                Stack {
+                                    SplitButton { text: GalleryStrings.save; menu-entries: root.menu-entries; menu-accessible-name: GalleryStrings.open-menu; }
+                                    Breadcrumb { items: root.p2-breadcrumbs; accessible-name: GalleryStrings.advanced; }
+                                    Steps { width: 760px; steps: root.p2-steps; current-index: 1; accessible-name: GalleryStrings.advanced; }
+                                    Pagination { current-page: 3; page-count: 12; page-size-options: ["10 / page", "20 / page"]; previous-accessible-name: GalleryStrings.previous; next-accessible-name: GalleryStrings.next; page-accessible-name: GalleryStrings.advanced; }
+                                    Space {
+                                        NavigationRail { height: 180px; items: root.p2-rail-items; current-index: 0; accessible-name: GalleryStrings.advanced; }
+                                        Button { text: "CommandPalette"; clicked => { root.p2-palette-open = true; } }
+                                    }
+                                }
+                            }
+
+                            Card { width: 820px; title: "Selection · Date · Time · Color";
+                                Stack {
+                                    MultiSelect { width: 420px; options: root.p2-multi-options; selected-labels: ["Alpha", "Beta"]; selected-summary: "Alpha, Beta"; placeholder-text: GalleryStrings.choose; accessible-name: GalleryStrings.choose; }
+                                    AutoComplete { width: 420px; text: "Slint"; suggestions: root.p2-suggestions; placeholder-text: GalleryStrings.search; accessible-name: GalleryStrings.search; }
+                                    DatePicker { value: { year: 2026, month: 7, day: 20 }; year-options: ["2025", "2026", "2027"]; year-values: [2025, 2026, 2027]; year-index: 1; month-options: ["01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12"]; month-values: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]; month-index: 6; day-options: ["18", "19", "20", "21"]; day-values: [18, 19, 20, 21]; day-index: 2; accessible-name: "DatePicker"; year-accessible-name: GalleryStrings.year; month-accessible-name: GalleryStrings.month; day-accessible-name: GalleryStrings.day; }
+                                    TimePicker { value: { hour: 9, minute: 30, second: 0 }; hour-options: ["08", "09", "10"]; hour-values: [8, 9, 10]; hour-index: 1; minute-options: ["00", "30"]; minute-values: [0, 30]; minute-index: 1; accessible-name: "TimePicker"; }
+                                    ColorPicker { width: 280px; value: Theme.color-primary; value-label: "Primary"; options: root.p2-colors; accessible-name: "ColorPicker"; }
+                                }
+                            }
+
+                            Card { width: 820px; title: "Data display · Loading";
+                                Stack {
+                                    Space { Avatar { initials: "SU"; accessible-name: "SlintUI"; } Statistic { title: GalleryStrings.progress-label; value: "92"; suffix: "%"; detail: GalleryStrings.ready; tone: StatisticTone.positive; } }
+                                    DataGrid { width: 760px; height: 180px; columns: root.table-columns; rows: root.table-rows; total-row-count: 2048; accessible-name: "DataGrid"; empty-text: GalleryStrings.empty-title; }
+                                    Timeline { width: 760px; items: root.p2-timeline; accessible-name: "Timeline"; }
+                                    Space {
+                                        Calendar { title: "2026-07"; weekday-labels: root.p2-weekdays; days: root.p2-days; accessible-name: "Calendar"; previous-accessible-name: GalleryStrings.previous; next-accessible-name: GalleryStrings.next; }
+                                        ImageView { width: 240px; height: 220px; state: ImageViewState.empty; empty-text: GalleryStrings.empty-title; accessible-name: "ImageView"; }
+                                    }
+                                    Skeleton { width: 520px; rows: 3; show-avatar: true; accessible-name: GalleryStrings.loading; status-text: GalleryStrings.loading; }
+                                }
+                            }
+
+                            Card { width: 820px; title: "Notification · Drawer";
+                                Stack {
+                                    Notification { title: GalleryStrings.notifications; message: GalleryStrings.long-text; tone: NotificationTone.info; action-text: GalleryStrings.details; close-accessible-name: GalleryStrings.cancel; }
+                                    Button { text: "Drawer"; clicked => { root.p2-drawer-open = true; } }
+                                }
+                            }
+                        }
                     }
                 }
             }
@@ -472,6 +568,29 @@ export component GalleryWindow inherits Window {
             detail: Theme.locale + " · " + (Theme.direction == Direction.rtl ? "RTL" : "LTR") + " · " + round(Theme.preview-scale * 100) + "%";
             tone: StatusTone.info;
         }
+    }
+
+    CommandPalette {
+        x: (root.width - self.width) / 2;
+        y: 132px;
+        open: root.p2-palette-open;
+        commands: root.p2-commands;
+        current-index: 0;
+        accessible-name: "CommandPalette";
+        placeholder-text: GalleryStrings.search;
+        close-requested => { root.p2-palette-open = false; }
+        selected(index) => { root.p2-palette-open = false; }
+    }
+
+    Drawer {
+        width: root.width;
+        height: root.height;
+        open: root.p2-drawer-open;
+        side: DrawerSide.end;
+        title: GalleryStrings.details;
+        close-accessible-name: GalleryStrings.cancel;
+        close-requested => { root.p2-drawer-open = false; }
+        Stack { padding: Theme.space-4; Typography { text: GalleryStrings.long-text; style: TypographyStyle.body; } }
     }
 }
 
@@ -507,6 +626,31 @@ export component InteractionHarness inherits Window {
     out property <int> p1-split-changes: 0;
     out property <int> p1-menu-selections: 0;
     out property <int> p1-form-invalid-submits: 0;
+    out property <int> p2-split-activations: 0;
+    out property <int> p2-menu-activations: 0;
+    out property <int> p2-breadcrumb-activations: 0;
+    out property <int> p2-step-index: test-p2-steps.current-index;
+    out property <int> p2-step-activations: 0;
+    out property <int> p2-page: test-p2-pagination.current-page;
+    out property <int> p2-page-activations: 0;
+    out property <int> p2-rail-index: test-p2-rail.current-index;
+    out property <int> p2-rail-activations: 0;
+    out property <int> p2-command-activations: 0;
+    out property <int> p2-multi-activations: 0;
+    out property <int> p2-auto-index: test-p2-auto.current-index;
+    out property <string> p2-auto-value: test-p2-auto.text;
+    out property <int> p2-auto-activations: 0;
+    out property <int> p2-date-year: test-p2-date.value.year;
+    out property <int> p2-date-month: test-p2-date.value.month;
+    out property <int> p2-date-day: test-p2-date.value.day;
+    out property <int> p2-date-activations: 0;
+    out property <int> p2-time-hour: test-p2-time.value.hour;
+    out property <int> p2-time-minute: test-p2-time.value.minute;
+    out property <int> p2-time-activations: 0;
+    out property <int> p2-color-activations: 0;
+    out property <int> p2-range-requests: 0;
+    out property <int> p2-edit-requests: 0;
+    out property <int> p2-calendar-activations: 0;
 
     public function activate-button() { test-button.activate(); }
     public function activate-disabled-button() { disabled-button.activate(); }
@@ -527,6 +671,21 @@ export component InteractionHarness inherits Window {
     public function set-p1-split-ratio(value: float) { test-split.set-ratio(value); }
     public function activate-p1-menu(index: int) { test-menu.activate(index); }
     public function submit-invalid-p1-form() { test-form.submit-form(); }
+    public function activate-p2-split() { test-p2-split.activate(); }
+    public function activate-p2-split-menu(index: int) { test-p2-split.activate-menu(index); }
+    public function select-p2-breadcrumb(index: int) { test-p2-breadcrumb.select(index); }
+    public function select-p2-step(index: int) { test-p2-steps.select(index); }
+    public function select-p2-page(page: int) { test-p2-pagination.select-page(page); }
+    public function select-p2-rail(index: int) { test-p2-rail.select(index); }
+    public function activate-p2-command(index: int) { test-p2-command.activate(index); }
+    public function request-p2-multi(index: int, selected: bool) { test-p2-multi.request-selection(index, selected); }
+    public function choose-p2-auto(index: int) { test-p2-auto.choose(index); }
+    public function select-p2-date(year: int, month: int, day: int) { test-p2-date.select(year, month, day); }
+    public function select-p2-time(hour: int, minute: int, second: int) { test-p2-time.select(hour, minute, second); }
+    public function select-p2-color(index: int) { test-p2-color.select(index); }
+    public function request-p2-range(start: int, count: int) { test-p2-grid.request-range(start, count); }
+    public function request-p2-edit(row: int, column: int) { test-p2-grid.request-edit(row, column); }
+    public function select-p2-calendar(index: int) { test-p2-calendar.select(index); }
 
     Stack {
         test-button := Button {
@@ -608,5 +767,81 @@ export component InteractionHarness inherits Window {
             errors: [{ field: "Name", message: "Required" }];
             invalid-submit(index) => { root.p1-form-invalid-submits += 1; }
         }
+        test-p2-split := SplitButton {
+            text: "Save";
+            menu-entries: [
+                { text: "Open", shortcut: "", enabled: true, checked: false, separator: false, has-submenu: false },
+                { text: "Disabled", shortcut: "", enabled: false, checked: false, separator: false, has-submenu: false },
+            ];
+            clicked => { root.p2-split-activations += 1; }
+            menu-selected(index) => { root.p2-menu-activations += 1; }
+        }
+        test-p2-breadcrumb := Breadcrumb {
+            items: [
+                { text: "Root", accessible-name: "Root", enabled: true },
+                { text: "Current", accessible-name: "Current", enabled: true },
+            ];
+            selected(index) => { root.p2-breadcrumb-activations += 1; }
+        }
+        test-p2-steps := Steps {
+            steps: [
+                { title: "One", description: "", state: StepState.current, enabled: true },
+                { title: "Two", description: "", state: StepState.waiting, enabled: true },
+                { title: "Disabled", description: "", state: StepState.waiting, enabled: false },
+            ];
+            selected(index) => { root.p2-step-activations += 1; }
+        }
+        test-p2-pagination := Pagination { current-page: 1; page-count: 5; changed(page) => { root.p2-page-activations += 1; } }
+        test-p2-rail := NavigationRail {
+            items: [
+                { text: "One", icon: @image-url("../../../crates/slint-ui/assets/icons/ant-design/outlined/home.svg"), accessible-name: "One", enabled: true },
+                { text: "Two", icon: @image-url("../../../crates/slint-ui/assets/icons/ant-design/outlined/setting.svg"), accessible-name: "Two", enabled: true },
+                { text: "Disabled", icon: @image-url("../../../crates/slint-ui/assets/icons/ant-design/outlined/stop.svg"), accessible-name: "Disabled", enabled: false },
+            ];
+            selected(index) => { root.p2-rail-activations += 1; }
+        }
+        test-p2-command := CommandPalette {
+            commands: [
+                { text: "Open", description: "", shortcut: "", enabled: true, visible: true },
+                { text: "Disabled", description: "", shortcut: "", enabled: false, visible: true },
+            ];
+            selected(index) => { root.p2-command-activations += 1; }
+        }
+        test-p2-multi := MultiSelect {
+            options: [
+                { text: "One", selected: false, enabled: true },
+                { text: "Disabled", selected: false, enabled: false },
+            ];
+            selection-requested(index, selected) => { root.p2-multi-activations += 1; }
+        }
+        test-p2-auto := AutoComplete {
+            suggestions: [
+                { text: "Slint", detail: "", enabled: true },
+                { text: "Disabled", detail: "", enabled: false },
+            ];
+            selected(index, value) => { root.p2-auto-activations += 1; }
+        }
+        test-p2-date := DatePicker { value: { year: 2026, month: 7, day: 20 }; changed(value) => { root.p2-date-activations += 1; } }
+        test-p2-time := TimePicker { value: { hour: 9, minute: 30, second: 0 }; changed(value) => { root.p2-time-activations += 1; } }
+        test-p2-color := ColorPicker {
+            options: [{ name: "Blue", value: Theme.color-primary, enabled: true }, { name: "Disabled", value: Theme.text-primary, enabled: false }];
+            changed(index, value) => { root.p2-color-activations += 1; }
+        }
+        test-p2-grid := DataGrid {
+            total-row-count: 100;
+            editable: true;
+            columns: [{ title: "Name", min-width: 80px, width: 120px, horizontal-stretch: 1 }];
+            rows: [[{ text: "SlintUI" }]];
+            range-requested(start, count) => { root.p2-range-requests += 1; }
+            edit-requested(row, column) => { root.p2-edit-requests += 1; }
+        }
+        test-p2-calendar := Calendar {
+            days: [
+                { label: "1", accessible-name: "1", in-current-month: true, selected: false, today: false, enabled: true },
+                { label: "2", accessible-name: "2", in-current-month: true, selected: false, today: false, enabled: false },
+            ];
+            selected(index) => { root.p2-calendar-activations += 1; }
+        }
     }
+
 }

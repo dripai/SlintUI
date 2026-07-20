@@ -1,0 +1,48 @@
+import { Theme, Direction } from "../tokens/theme.slint";
+
+export struct BreadcrumbItem { text: string, accessible-name: string, enabled: bool }
+
+export component Breadcrumb inherits Rectangle {
+    in property <[BreadcrumbItem]> items;
+    in property <string> accessible-name: "";
+    callback selected(index: int);
+
+    min-height: Theme.control-height-medium;
+    accessible-role: list;
+    accessible-label: accessible-name;
+    accessible-item-count: items.length;
+
+    public function select(index: int) {
+        if (index >= 0 && index < items.length - 1 && items[index].enabled) { root.selected(index); }
+    }
+
+    HorizontalLayout {
+        spacing: Theme.space-2;
+        cross-axis-alignment: center;
+        for item[index] in root.items: HorizontalLayout {
+            spacing: Theme.space-2;
+            Text {
+                text: item.text;
+                color: !item.enabled ? Theme.text-disabled : index == root.items.length - 1 ? Theme.text-primary : Theme.color-primary;
+                font-size: Theme.font-size-body;
+                font-weight: index == root.items.length - 1 ? Theme.font-weight-medium : Theme.font-weight-regular;
+                vertical-alignment: center;
+                overflow: elide;
+                accessible-role: list-item;
+                accessible-label: item.accessible-name == "" ? item.text : item.accessible-name;
+                accessible-enabled: item.enabled;
+                accessible-action-default => { root.select(index); }
+            }
+            if index < root.items.length - 1: Image {
+                width: Theme.icon-size-x-small;
+                height: Theme.icon-size-x-small;
+                source: Theme.direction == Direction.rtl
+                    ? @image-url("../../assets/icons/ant-design/outlined/left.svg")
+                    : @image-url("../../assets/icons/ant-design/outlined/right.svg");
+                colorize: Theme.icon-default;
+                accessible-role: none;
+            }
+            TouchArea { enabled: item.enabled && index < root.items.length - 1; clicked => { root.select(index); } }
+        }
+    }
+}

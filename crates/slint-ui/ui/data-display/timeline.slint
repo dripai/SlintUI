@@ -1,0 +1,33 @@
+import { Theme } from "../tokens/theme.slint";
+
+export enum TimelineTone { neutral, info, success, warning, error }
+export struct TimelineItem { title: string, detail: string, time: string, tone: TimelineTone, enabled: bool }
+
+export component Timeline inherits Rectangle {
+    in property <[TimelineItem]> items;
+    in property <string> accessible-name: "";
+    callback selected(index: int);
+
+    min-width: Theme.card-min-width;
+    min-height: timeline-content.preferred-height;
+    accessible-role: list; accessible-label: accessible-name; accessible-item-count: items.length;
+
+    public function select(index: int) { if (index >= 0 && index < items.length && items[index].enabled) { root.selected(index); } }
+
+    timeline-content := VerticalLayout { spacing: 0px;
+        for item[index] in root.items: Rectangle {
+            min-height: row.preferred-height + Theme.space-4;
+            accessible-role: list-item; accessible-label: item.title; accessible-description: item.detail + " " + item.time; accessible-enabled: item.enabled; accessible-action-default => { root.select(index); }
+            Rectangle { x: Theme.icon-size-small / 2 - Theme.border-width / 2; y: index == 0 ? Theme.icon-size-small / 2 : 0px; width: Theme.border-width; height: index == root.items.length - 1 ? Theme.icon-size-small / 2 : parent.height; background: Theme.border-default; }
+            Rectangle { x: 0px; y: Theme.space-2; width: Theme.icon-size-small; height: Theme.icon-size-small; border-radius: self.width / 2; background: item.tone == TimelineTone.success ? Theme.color-success : item.tone == TimelineTone.warning ? Theme.color-warning : item.tone == TimelineTone.error ? Theme.color-error : item.tone == TimelineTone.info ? Theme.color-primary : Theme.border-default; border-width: Theme.border-width; border-color: Theme.bg-surface; }
+            row := HorizontalLayout { x: Theme.icon-size-small + Theme.space-3; width: parent.width - self.x; padding-bottom: Theme.space-4; spacing: Theme.space-3;
+                VerticalLayout { spacing: Theme.space-1; horizontal-stretch: 1;
+                    Text { text: item.title; color: item.enabled ? Theme.text-primary : Theme.text-disabled; font-size: Theme.font-size-body; font-weight: Theme.font-weight-medium; wrap: word-wrap; }
+                    if item.detail != "": Text { text: item.detail; color: Theme.text-secondary; font-size: Theme.font-size-caption; wrap: word-wrap; }
+                }
+                if item.time != "": Text { text: item.time; color: Theme.text-tertiary; font-size: Theme.font-size-caption; }
+            }
+            TouchArea { enabled: item.enabled; clicked => { root.select(index); } }
+        }
+    }
+}

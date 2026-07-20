@@ -1,0 +1,42 @@
+import { Theme } from "../tokens/theme.slint";
+import { Select } from "select.slint";
+
+export struct DateValue { year: int, month: int, day: int }
+
+export component DatePicker inherits Rectangle {
+    in-out property <DateValue> value;
+    in property <[string]> year-options;
+    in property <[int]> year-values;
+    in property <[string]> month-options;
+    in property <[int]> month-values;
+    in property <[string]> day-options;
+    in property <[int]> day-values;
+    in-out property <int> year-index: -1;
+    in-out property <int> month-index: -1;
+    in-out property <int> day-index: -1;
+    in property <bool> enabled: true;
+    in property <string> accessible-name: "";
+    in property <string> year-accessible-name: "";
+    in property <string> month-accessible-name: "";
+    in property <string> day-accessible-name: "";
+    callback changed(value: DateValue);
+
+    min-height: Theme.control-height-medium;
+    accessible-role: groupbox;
+    accessible-label: accessible-name;
+    accessible-enabled: enabled;
+
+    public function select(year: int, month: int, day: int) {
+        if (enabled && month >= 1 && month <= 12 && day >= 1 && day <= 31) {
+            root.value = { year: year, month: month, day: day };
+            root.changed(root.value);
+        }
+    }
+
+    HorizontalLayout {
+        spacing: Theme.space-2;
+        Select { model: root.year-options; current-index <=> root.year-index; enabled: root.enabled; accessible-name: root.year-accessible-name; selected(_) => { if (self.current-index >= 0 && self.current-index < root.year-values.length) { root.select(root.year-values[self.current-index], root.value.month, root.value.day); } } }
+        Select { model: root.month-options; current-index <=> root.month-index; enabled: root.enabled; accessible-name: root.month-accessible-name; selected(_) => { if (self.current-index >= 0 && self.current-index < root.month-values.length) { root.select(root.value.year, root.month-values[self.current-index], root.value.day); } } }
+        Select { model: root.day-options; current-index <=> root.day-index; enabled: root.enabled; accessible-name: root.day-accessible-name; selected(_) => { if (self.current-index >= 0 && self.current-index < root.day-values.length) { root.select(root.value.year, root.value.month, root.day-values[self.current-index]); } } }
+    }
+}

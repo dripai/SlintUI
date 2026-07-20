@@ -1,0 +1,30 @@
+import { Theme } from "../tokens/theme.slint";
+
+export enum StatisticTone { neutral, positive, warning, negative }
+
+export component Statistic inherits Rectangle {
+    in property <string> title: "";
+    in property <string> value: "";
+    in property <string> prefix: "";
+    in property <string> suffix: "";
+    in property <string> detail: "";
+    in property <StatisticTone> tone: StatisticTone.neutral;
+    in property <string> accessible-name: title;
+
+    min-width: Theme.card-min-width;
+    min-height: content.preferred-height;
+    accessible-role: text;
+    accessible-label: accessible-name;
+    accessible-value: prefix + value + suffix;
+    accessible-description: detail;
+
+    content := VerticalLayout { spacing: Theme.space-1;
+        Text { text: root.title; color: Theme.text-secondary; font-size: Theme.font-size-body; overflow: elide; }
+        HorizontalLayout { spacing: Theme.space-1; cross-axis-alignment: center;
+            if root.prefix != "": Text { text: root.prefix; color: Theme.text-secondary; font-size: Theme.font-size-title-small; }
+            Text { text: root.value; color: root.tone == StatisticTone.positive ? Theme.color-success : root.tone == StatisticTone.warning ? Theme.color-warning : root.tone == StatisticTone.negative ? Theme.color-error : Theme.text-primary; font-size: Theme.font-size-title-large; font-weight: Theme.font-weight-semibold; }
+            if root.suffix != "": Text { text: root.suffix; color: Theme.text-secondary; font-size: Theme.font-size-body; }
+        }
+        if root.detail != "": Text { text: root.detail; color: Theme.text-tertiary; font-size: Theme.font-size-caption; wrap: word-wrap; }
+    }
+}

@@ -1,0 +1,72 @@
+import { Theme } from "../tokens/theme.slint";
+import { TextField, ValidationState } from "text-field.slint";
+
+export struct AutoCompleteOption { text: string, detail: string, enabled: bool }
+
+export component AutoComplete inherits Rectangle {
+    in-out property <string> text;
+    in property <[AutoCompleteOption]> suggestions;
+    in property <string> placeholder-text: "";
+    in property <string> accessible-name: "";
+    in property <bool> enabled: true;
+    in property <ValidationState> validation: ValidationState.normal;
+    in-out property <int> current-index: -1;
+    out property <bool> open: popup.is-open;
+    callback edited(text: string);
+    callback selected(index: int, value: string);
+    callback accepted(text: string);
+
+    min-width: Theme.control-min-width;
+    min-height: field.min-height;
+    accessible-role: combobox;
+    accessible-label: accessible-name;
+    accessible-enabled: enabled;
+    accessible-expandable: true;
+    accessible-expanded: open;
+
+    public function show() { if (enabled && suggestions.length > 0) { popup.show(); } }
+    public function close() { popup.close(); }
+    public function choose(index: int) {
+        if (index >= 0 && index < suggestions.length && suggestions[index].enabled) {
+            root.text = suggestions[index].text;
+            root.current-index = index;
+            root.selected(index, root.text);
+            root.close();
+        }
+    }
+
+    field := TextField {
+        width: parent.width;
+        text <=> root.text;
+        placeholder-text: root.placeholder-text;
+        accessible-name: root.accessible-name;
+        enabled: root.enabled;
+        validation: root.validation;
+        suffix-icon: @image-url("../../assets/icons/ant-design/outlined/search.svg");
+        edited(value) => { root.edited(value); root.current-index = -1; root.show(); }
+        accepted(value) => { if (root.current-index >= 0) { root.choose(root.current-index); } else { root.accepted(value); root.close(); } }
+    }
+
+    popup := PopupWindow {
+        y: root.height;
+        width: max(root.width, Theme.popup-min-width);
+        height: min(Theme.popup-max-height, root.suggestions.length * Theme.row-height);
+        close-policy: close-on-click-outside;
+        Rectangle {
+            background: Theme.bg-elevated; border-width: Theme.border-width; border-color: Theme.border-default; border-radius: Theme.radius-large; clip: true;
+            VerticalLayout {
+                for option[index] in root.suggestions: Rectangle {
+                    min-height: Theme.row-height;
+                    background: index == root.current-index || item-touch.has-hover ? Theme.fill-hover : transparent;
+                    accessible-role: list-item; accessible-label: option.text; accessible-description: option.detail; accessible-enabled: option.enabled;
+                    accessible-action-default => { root.choose(index); }
+                    VerticalLayout { padding-left: Theme.space-3; padding-right: Theme.space-3; padding-top: Theme.space-1; padding-bottom: Theme.space-1;
+                        Text { text: option.text; color: option.enabled ? Theme.text-primary : Theme.text-disabled; font-size: Theme.font-size-body; overflow: elide; }
+                        if option.detail != "": Text { text: option.detail; color: Theme.text-secondary; font-size: Theme.font-size-caption; overflow: elide; }
+                    }
+                    item-touch := TouchArea { enabled: option.enabled; clicked => { root.choose(index); } }
+                }
+            }
+        }
+    }
+}

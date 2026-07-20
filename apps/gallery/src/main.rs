@@ -182,5 +182,73 @@ mod tests {
 
         harness.invoke_submit_invalid_p1_form();
         assert_eq!(harness.get_p1_form_invalid_submits(), 1);
+
+        harness.invoke_activate_p2_split();
+        assert_eq!(harness.get_p2_split_activations(), 1);
+        harness.invoke_activate_p2_split_menu(0);
+        harness.invoke_activate_p2_split_menu(1);
+        assert_eq!(harness.get_p2_menu_activations(), 1);
+
+        harness.invoke_select_p2_breadcrumb(0);
+        harness.invoke_select_p2_breadcrumb(1);
+        assert_eq!(harness.get_p2_breadcrumb_activations(), 1);
+
+        harness.invoke_select_p2_step(1);
+        harness.invoke_select_p2_step(2);
+        assert_eq!(harness.get_p2_step_index(), 1);
+        assert_eq!(harness.get_p2_step_activations(), 1);
+
+        harness.invoke_select_p2_page(3);
+        harness.invoke_select_p2_page(99);
+        assert_eq!(harness.get_p2_page(), 5);
+        assert_eq!(harness.get_p2_page_activations(), 2);
+
+        harness.invoke_select_p2_rail(1);
+        harness.invoke_select_p2_rail(2);
+        assert_eq!(harness.get_p2_rail_index(), 1);
+        assert_eq!(harness.get_p2_rail_activations(), 1);
+
+        harness.invoke_activate_p2_command(0);
+        harness.invoke_activate_p2_command(1);
+        assert_eq!(harness.get_p2_command_activations(), 1);
+
+        harness.invoke_request_p2_multi(0, true);
+        harness.invoke_request_p2_multi(1, true);
+        harness.invoke_request_p2_multi(99, true);
+        assert_eq!(harness.get_p2_multi_activations(), 1);
+
+        harness.invoke_choose_p2_auto(0);
+        harness.invoke_choose_p2_auto(1);
+        assert_eq!(harness.get_p2_auto_index(), 0);
+        assert_eq!(harness.get_p2_auto_value(), "Slint");
+        assert_eq!(harness.get_p2_auto_activations(), 1);
+
+        harness.invoke_select_p2_date(2027, 12, 31);
+        harness.invoke_select_p2_date(2027, 13, 1);
+        assert_eq!(harness.get_p2_date_year(), 2027);
+        assert_eq!(harness.get_p2_date_month(), 12);
+        assert_eq!(harness.get_p2_date_day(), 31);
+        assert_eq!(harness.get_p2_date_activations(), 1);
+
+        harness.invoke_select_p2_time(23, 59, 58);
+        harness.invoke_select_p2_time(24, 0, 0);
+        assert_eq!(harness.get_p2_time_hour(), 23);
+        assert_eq!(harness.get_p2_time_minute(), 59);
+        assert_eq!(harness.get_p2_time_activations(), 1);
+
+        harness.invoke_select_p2_color(0);
+        harness.invoke_select_p2_color(1);
+        assert_eq!(harness.get_p2_color_activations(), 1);
+
+        harness.invoke_request_p2_range(90, 20);
+        harness.invoke_request_p2_range(100, 20);
+        assert_eq!(harness.get_p2_range_requests(), 1);
+        harness.invoke_request_p2_edit(20, 0);
+        harness.invoke_request_p2_edit(20, 3);
+        assert_eq!(harness.get_p2_edit_requests(), 1);
+
+        harness.invoke_select_p2_calendar(0);
+        harness.invoke_select_p2_calendar(1);
+        assert_eq!(harness.get_p2_calendar_activations(), 1);
     }
 }

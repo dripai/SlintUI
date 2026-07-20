@@ -1,0 +1,23 @@
+import { Theme, ControlSize } from "../tokens/theme.slint";
+
+export component Avatar inherits Rectangle {
+    in property <image> source;
+    in property <string> initials: "";
+    in property <string> accessible-name: "";
+    in property <ControlSize> size: ControlSize.medium;
+    in property <color> background-color: Theme.color-primary-bg;
+    in property <color> foreground-color: Theme.color-primary;
+    in property <bool> circular: true;
+
+    private property <length> avatar-size: size == ControlSize.small ? Theme.avatar-size-small : size == ControlSize.large ? Theme.avatar-size-large : Theme.avatar-size-medium;
+    min-width: avatar-size; preferred-width: avatar-size; max-width: avatar-size;
+    min-height: avatar-size; preferred-height: avatar-size; max-height: avatar-size;
+    border-radius: circular ? avatar-size / 2 : Theme.radius-medium;
+    background: background-color;
+    clip: true;
+    accessible-role: image;
+    accessible-label: accessible-name;
+
+    if root.source.width > 0: Image { source: root.source; width: parent.width; height: parent.height; image-fit: cover; accessible-role: none; }
+    if root.source.width == 0: Text { text: root.initials; color: root.foreground-color; font-size: Theme.font-size-body; font-weight: Theme.font-weight-medium; horizontal-alignment: center; vertical-alignment: center; overflow: elide; accessible-role: none; }
+}

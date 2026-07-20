@@ -1,0 +1,54 @@
+import { Theme } from "../tokens/theme.slint";
+import { TextField } from "../controls/text-field.slint";
+
+export struct CommandItem { text: string, description: string, shortcut: string, enabled: bool, visible: bool }
+
+export component CommandPalette inherits Rectangle {
+    in property <[CommandItem]> commands;
+    in-out property <string> query: "";
+    in-out property <int> current-index: -1;
+    in property <bool> open: false;
+    in property <string> accessible-name: "";
+    in property <string> placeholder-text: "";
+    callback query-changed(value: string);
+    callback selected(index: int);
+    callback close-requested();
+
+    visible: open;
+    min-width: Theme.command-palette-width;
+    max-width: Theme.command-palette-width;
+    background: Theme.bg-elevated;
+    border-width: Theme.border-width;
+    border-color: Theme.border-default;
+    border-radius: Theme.radius-large;
+    accessible-role: groupbox;
+    accessible-label: accessible-name;
+    accessible-item-count: commands.length;
+
+    public function activate(index: int) { if (index >= 0 && index < commands.length && commands[index].enabled && commands[index].visible) { root.selected(index); } }
+
+    VerticalLayout {
+        padding: Theme.space-3;
+        spacing: Theme.space-2;
+        TextField { text <=> root.query; placeholder-text: root.placeholder-text; accessible-name: root.accessible-name; edited(value) => { root.query-changed(value); } accepted(value) => { root.activate(root.current-index); } }
+        for command[index] in root.commands: Rectangle {
+            visible: command.visible;
+            min-height: command.visible ? Theme.row-height : 0px;
+            max-height: command.visible ? Theme.row-height : 0px;
+            border-radius: Theme.radius-medium;
+            background: index == root.current-index ? Theme.selection-bg : touch.has-hover ? Theme.fill-hover : transparent;
+            accessible-role: list-item;
+            accessible-label: command.text;
+            accessible-description: command.description;
+            accessible-enabled: command.enabled;
+            accessible-action-default => { root.activate(index); }
+            HorizontalLayout {
+                padding-left: Theme.space-2; padding-right: Theme.space-2; spacing: Theme.space-2; cross-axis-alignment: center;
+                VerticalLayout { horizontal-stretch: 1; Text { text: command.text; color: command.enabled ? Theme.text-primary : Theme.text-disabled; font-size: Theme.font-size-body; } if command.description != "": Text { text: command.description; color: Theme.text-secondary; font-size: Theme.font-size-caption; overflow: elide; } }
+                Text { text: command.shortcut; color: Theme.text-tertiary; font-size: Theme.font-size-caption; }
+            }
+            touch := TouchArea { enabled: command.enabled; clicked => { root.current-index = index; root.activate(index); } }
+        }
+    }
+    FocusScope { key-pressed(event) => { if (event.text == Key.Escape) { root.close-requested(); return accept; } return reject; } }
+}

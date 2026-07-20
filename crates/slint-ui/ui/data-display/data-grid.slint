@@ -1,0 +1,51 @@
+import { StandardTableView as NativeTableView } from "std-widgets.slint";
+import { Theme } from "../tokens/theme.slint";
+
+export component DataGrid inherits Rectangle {
+    // Rows are a host-managed window. row-offset maps local rows to the full data set.
+    in property <[[StandardListViewItem]]> rows;
+    in-out property <[TableColumn]> columns;
+    in property <int> row-offset: 0;
+    in property <int> total-row-count: rows.length;
+    in-out property <int> current-row: -1;
+    in property <bool> enabled: true;
+    in property <bool> editable: false;
+    in property <string> accessible-name: "";
+    in property <string> empty-text: "";
+    callback sort-ascending(column: int);
+    callback sort-descending(column: int);
+    callback current-row-changed(global-row: int);
+    callback edit-requested(global-row: int, column: int);
+    callback range-requested(start: int, count: int);
+    callback row-pointer-event(global-row: int, event: PointerEvent, position: Point);
+
+    min-width: Theme.card-min-width;
+    min-height: Theme.empty-state-min-height;
+    background: Theme.bg-surface;
+    border-width: Theme.border-width; border-color: Theme.border-default; border-radius: Theme.radius-medium; clip: true;
+    accessible-role: table; accessible-label: accessible-name; accessible-enabled: enabled; accessible-item-count: total-row-count;
+
+    public function request-range(start: int, count: int) {
+        if (start >= 0 && count > 0 && start < total-row-count) { root.range-requested(start, min(count, total-row-count - start)); }
+    }
+    public function select-row(global-row: int) {
+        let local = global-row - row-offset;
+        if (enabled && local >= 0 && local < rows.length) { native.set-current-row(local); }
+    }
+    public function request-edit(global-row: int, column: int) {
+        if (enabled && editable && global-row >= 0 && global-row < total-row-count && column >= 0 && column < columns.length) { root.edit-requested(global-row, column); }
+    }
+
+    native := NativeTableView {
+        width: parent.width; height: parent.height;
+        rows: root.rows; columns <=> root.columns; current-row <=> root.current-row; enabled: root.enabled;
+        sort-ascending(column) => { root.sort-ascending(column); }
+        sort-descending(column) => { root.sort-descending(column); }
+        current-row-changed(row) => { root.current-row-changed(root.row-offset + row); }
+        row-pointer-event(row, event, position) => { root.row-pointer-event(root.row-offset + row, event, position); }
+    }
+
+    if root.total-row-count == 0: Rectangle { background: Theme.bg-surface; accessible-role: text; accessible-label: root.empty-text;
+        Text { x: Theme.space-4; width: parent.width - Theme.space-8; y: (parent.height - self.height) / 2; text: root.empty-text; color: Theme.text-secondary; font-size: Theme.font-size-body; horizontal-alignment: center; wrap: word-wrap; }
+    }
+}

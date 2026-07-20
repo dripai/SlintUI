@@ -1,0 +1,56 @@
+import { Theme, ControlSize } from "../tokens/theme.slint";
+import { Button, ButtonVariant } from "button.slint";
+import { PopupMenu, PopupMenuEntry } from "../navigation/popup-menu.slint";
+
+export component SplitButton inherits Rectangle {
+    in property <string> text: "";
+    in property <ButtonVariant> variant: ButtonVariant.default;
+    in property <ControlSize> size: ControlSize.medium;
+    in property <bool> enabled: true;
+    in property <bool> loading: false;
+    in property <[PopupMenuEntry]> menu-entries;
+    in property <string> accessible-name: text;
+    in property <string> menu-accessible-name: "";
+
+    callback clicked();
+    callback menu-selected(index: int);
+
+    min-height: size == ControlSize.small ? Theme.control-height-small : size == ControlSize.large ? Theme.control-height-large : Theme.control-height-medium;
+    min-width: main.min-width + menu-button.min-width;
+    accessible-role: groupbox;
+    accessible-label: accessible-name;
+    accessible-enabled: enabled && !loading;
+
+    public function activate() { if (enabled && !loading) { root.clicked(); } }
+    public function activate-menu(index: int) { menu.activate(index); }
+
+    HorizontalLayout {
+        spacing: Theme.border-width;
+        main := Button {
+            text: root.text;
+            variant: root.variant;
+            size: root.size;
+            enabled: root.enabled;
+            loading: root.loading;
+            accessible-name: root.accessible-name;
+            clicked => { root.activate(); }
+        }
+        menu-button := Button {
+            icon: @image-url("../../assets/icons/ant-design/outlined/down.svg");
+            variant: root.variant;
+            size: root.size;
+            enabled: root.enabled && !root.loading && root.menu-entries.length > 0;
+            accessible-name: root.menu-accessible-name;
+            clicked => { menu.show(); }
+        }
+    }
+
+    menu := PopupMenu {
+        y: root.height;
+        width: root.width;
+        height: 0px;
+        entries: root.menu-entries;
+        accessible-name: root.menu-accessible-name;
+        selected(index) => { root.menu-selected(index); }
+    }
+}

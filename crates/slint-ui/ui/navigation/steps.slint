@@ -1,0 +1,72 @@
+import { Theme } from "../tokens/theme.slint";
+
+export enum StepState { waiting, current, complete, error }
+export struct StepItem { title: string, description: string, state: StepState, enabled: bool }
+
+export component Steps inherits Rectangle {
+    in property <[StepItem]> steps;
+    in-out property <int> current-index: 0;
+    in property <string> accessible-name: "";
+    callback selected(index: int);
+
+    min-height: Theme.control-height-large + Theme.line-height-caption;
+    accessible-role: list;
+    accessible-label: accessible-name;
+    accessible-item-count: steps.length;
+
+    public function select(index: int) {
+        if (index >= 0 && index < steps.length && steps[index].enabled && current-index != index) {
+            root.current-index = index;
+            root.selected(index);
+        }
+    }
+
+    HorizontalLayout {
+        spacing: Theme.space-2;
+        for step[index] in root.steps: Rectangle {
+            min-width: Theme.control-min-width;
+            min-height: Theme.control-height-large + Theme.line-height-caption;
+            accessible-role: list-item;
+            accessible-label: step.title;
+            accessible-description: step.description;
+            accessible-enabled: step.enabled;
+            accessible-action-default => { root.select(index); }
+
+            VerticalLayout {
+                spacing: Theme.space-1;
+                HorizontalLayout {
+                    spacing: Theme.space-2;
+                    cross-axis-alignment: center;
+                    Rectangle {
+                        width: Theme.icon-size-large;
+                        height: Theme.icon-size-large;
+                        border-radius: self.width / 2;
+                        border-width: Theme.border-width;
+                        border-color: step.state == StepState.error ? Theme.color-error : step.state == StepState.waiting ? Theme.border-default : Theme.color-primary;
+                        background: step.state == StepState.complete ? Theme.color-primary : Theme.bg-control;
+                        if step.state == StepState.complete: Image {
+                            source: @image-url("../../assets/icons/ant-design/outlined/check.svg");
+                            width: Theme.icon-size-small;
+                            height: Theme.icon-size-small;
+                            x: (parent.width - self.width) / 2;
+                            y: (parent.height - self.height) / 2;
+                            colorize: Theme.text-on-accent;
+                            accessible-role: none;
+                        }
+                        if step.state != StepState.complete: Text {
+                            text: "" + (index + 1);
+                            color: step.state == StepState.error ? Theme.color-error : Theme.text-primary;
+                            font-size: Theme.font-size-caption;
+                            horizontal-alignment: center;
+                            vertical-alignment: center;
+                        }
+                    }
+                    Text { text: step.title; color: step.enabled ? Theme.text-primary : Theme.text-disabled; font-size: Theme.font-size-body; font-weight: Theme.font-weight-medium; }
+                    if index < root.steps.length - 1: Rectangle { horizontal-stretch: 1; height: Theme.border-width; background: step.state == StepState.complete ? Theme.color-primary : Theme.border-default; }
+                }
+                if step.description != "": Text { text: step.description; color: Theme.text-secondary; font-size: Theme.font-size-caption; wrap: word-wrap; }
+            }
+            TouchArea { enabled: step.enabled; clicked => { root.select(index); } }
+        }
+    }
+}

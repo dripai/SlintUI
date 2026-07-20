@@ -1,0 +1,89 @@
+import { Theme, ControlSize } from "../tokens/theme.slint";
+
+export struct MultiSelectOption { text: string, selected: bool, enabled: bool }
+
+export component MultiSelect inherits Rectangle {
+    in property <[MultiSelectOption]> options;
+    in property <[string]> selected-labels;
+    in property <string> selected-summary: "";
+    in property <string> placeholder-text: "";
+    in property <string> accessible-name: "";
+    in property <ControlSize> size: ControlSize.medium;
+    in property <bool> enabled: true;
+    out property <bool> open: popup.is-open;
+    callback selection-requested(index: int, selected: bool);
+
+    private property <length> control-height: size == ControlSize.small ? Theme.control-height-small : size == ControlSize.large ? Theme.control-height-large : Theme.control-height-medium;
+    min-width: Theme.control-min-width;
+    min-height: control-height;
+    background: enabled ? Theme.bg-control : Theme.bg-disabled;
+    border-width: Theme.border-width;
+    border-color: open ? Theme.focus-outline : Theme.border-default;
+    border-radius: Theme.radius-medium;
+    accessible-role: combobox;
+    accessible-label: accessible-name;
+    accessible-enabled: enabled;
+    accessible-expandable: true;
+    accessible-expanded: open;
+    accessible-action-expand => { root.show(); }
+
+    public function show() { if (enabled && options.length > 0) { popup.show(); } }
+    public function close() { popup.close(); }
+    public function request-selection(index: int, selected: bool) {
+        if (enabled && index >= 0 && index < options.length && options[index].enabled && options[index].selected != selected) { root.selection-requested(index, selected); }
+    }
+
+    HorizontalLayout {
+        padding-left: Theme.control-padding-horizontal;
+        padding-right: Theme.control-padding-horizontal;
+        spacing: Theme.space-1;
+        cross-axis-alignment: center;
+        Text {
+            text: root.selected-labels.length == 0 ? root.placeholder-text : root.selected-summary;
+            color: root.selected-labels.length == 0 ? Theme.text-placeholder : root.enabled ? Theme.text-primary : Theme.text-disabled;
+            font-size: Theme.font-size-body;
+            horizontal-stretch: 1;
+            overflow: elide;
+            vertical-alignment: center;
+        }
+        Image { source: @image-url("../../assets/icons/ant-design/outlined/down.svg"); width: Theme.icon-size-x-small; height: Theme.icon-size-x-small; colorize: Theme.icon-default; accessible-role: none; }
+    }
+    TouchArea { enabled: root.enabled; mouse-cursor: self.enabled ? pointer : default; clicked => { if (root.open) { root.close(); } else { root.show(); } } }
+
+    popup := PopupWindow {
+        y: root.height;
+        width: max(root.width, Theme.popup-min-width);
+        height: min(Theme.popup-max-height, root.options.length * Theme.row-height + Theme.space-2);
+        close-policy: close-on-click-outside;
+        Rectangle {
+            background: Theme.bg-elevated;
+            border-width: Theme.border-width;
+            border-color: Theme.border-default;
+            border-radius: Theme.radius-large;
+            clip: true;
+            VerticalLayout {
+                padding-top: Theme.space-1;
+                padding-bottom: Theme.space-1;
+                for option[index] in root.options: Rectangle {
+                    min-height: Theme.row-height;
+                    background: item-touch.has-hover && option.enabled ? Theme.fill-hover : transparent;
+                    accessible-role: list-item;
+                    accessible-label: option.text;
+                    accessible-enabled: option.enabled;
+                    accessible-checkable: true;
+                    accessible-checked: option.selected;
+                    accessible-action-default => { root.request-selection(index, !option.selected); }
+                    HorizontalLayout {
+                        padding-left: Theme.space-3; padding-right: Theme.space-3; spacing: Theme.space-2; cross-axis-alignment: center;
+                        Rectangle {
+                            width: Theme.icon-size-small; height: Theme.icon-size-small;
+                            if option.selected: Image { source: @image-url("../../assets/icons/ant-design/outlined/check.svg"); width: Theme.icon-size-small; height: Theme.icon-size-small; colorize: Theme.color-primary; accessible-role: none; }
+                        }
+                        Text { text: option.text; color: option.enabled ? Theme.text-primary : Theme.text-disabled; font-size: Theme.font-size-body; horizontal-stretch: 1; overflow: elide; }
+                    }
+                    item-touch := TouchArea { enabled: option.enabled; clicked => { root.request-selection(index, !option.selected); } }
+                }
+            }
+        }
+    }
+}

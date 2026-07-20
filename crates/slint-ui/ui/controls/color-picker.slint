@@ -1,0 +1,46 @@
+import { Theme } from "../tokens/theme.slint";
+
+export struct ColorOption { name: string, value: color, enabled: bool }
+
+export component ColorPicker inherits Rectangle {
+    in-out property <color> value: transparent;
+    in property <[ColorOption]> options;
+    in property <string> value-label: "";
+    in property <string> accessible-name: "";
+    in property <bool> enabled: true;
+    out property <bool> open: popup.is-open;
+    callback changed(index: int, value: color);
+
+    min-width: Theme.control-min-width;
+    min-height: Theme.control-height-medium;
+    background: enabled ? Theme.bg-control : Theme.bg-disabled;
+    border-width: Theme.border-width; border-color: open ? Theme.focus-outline : Theme.border-default; border-radius: Theme.radius-medium;
+    accessible-role: combobox; accessible-label: accessible-name; accessible-value: value-label; accessible-enabled: enabled; accessible-expandable: true; accessible-expanded: open;
+    accessible-action-expand => { root.show(); }
+
+    public function show() { if (enabled && options.length > 0) { popup.show(); } }
+    public function close() { popup.close(); }
+    public function select(index: int) { if (index >= 0 && index < options.length && options[index].enabled) { root.value = options[index].value; root.changed(index, root.value); root.close(); } }
+
+    HorizontalLayout { padding-left: Theme.control-padding-horizontal; padding-right: Theme.control-padding-horizontal; spacing: Theme.space-2; cross-axis-alignment: center;
+        Rectangle { width: Theme.icon-size-medium; height: Theme.icon-size-medium; border-radius: Theme.radius-small; background: root.value; border-width: Theme.border-width; border-color: Theme.border-default; }
+        Text { text: root.value-label; color: root.enabled ? Theme.text-primary : Theme.text-disabled; font-size: Theme.font-size-body; horizontal-stretch: 1; overflow: elide; }
+        Image { source: @image-url("../../assets/icons/ant-design/outlined/down.svg"); width: Theme.icon-size-x-small; height: Theme.icon-size-x-small; colorize: Theme.icon-default; accessible-role: none; }
+    }
+    TouchArea { enabled: root.enabled; clicked => { if (root.open) { root.close(); } else { root.show(); } } }
+
+    popup := PopupWindow {
+        y: root.height; width: max(root.width, Theme.popup-min-width); height: root.options.length * Theme.row-height + Theme.space-2; close-policy: close-on-click-outside;
+        Rectangle { background: Theme.bg-elevated; border-width: Theme.border-width; border-color: Theme.border-default; border-radius: Theme.radius-large;
+            VerticalLayout { padding-top: Theme.space-1; padding-bottom: Theme.space-1;
+                for option[index] in root.options: Rectangle { min-height: Theme.row-height; background: item-touch.has-hover && option.enabled ? Theme.fill-hover : transparent; accessible-role: list-item; accessible-label: option.name; accessible-enabled: option.enabled; accessible-action-default => { root.select(index); }
+                    HorizontalLayout { padding-left: Theme.space-3; padding-right: Theme.space-3; spacing: Theme.space-2; cross-axis-alignment: center;
+                        Rectangle { width: Theme.icon-size-medium; height: Theme.icon-size-medium; border-radius: Theme.radius-small; background: option.value; border-width: Theme.border-width; border-color: Theme.border-default; }
+                        Text { text: option.name; color: option.enabled ? Theme.text-primary : Theme.text-disabled; font-size: Theme.font-size-body; horizontal-stretch: 1; }
+                    }
+                    item-touch := TouchArea { enabled: option.enabled; clicked => { root.select(index); } }
+                }
+            }
+        }
+    }
+}
