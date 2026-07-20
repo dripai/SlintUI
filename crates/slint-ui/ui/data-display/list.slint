@@ -1,0 +1,43 @@
+import { ListView as NativeListView } from "std-widgets.slint";
+import { Theme } from "../tokens/theme.slint";
+import { FocusRing } from "../primitives/focus-ring.slint";
+
+export struct ListItemData { text: string, description: string, enabled: bool }
+
+export component ListItem inherits Rectangle {
+    in property <ListItemData> item;
+    in property <bool> selected: false;
+    in property <bool> focused: false;
+    callback activated();
+
+    min-height: max(Theme.row-height, content.preferred-height + Theme.space-2);
+    background: selected ? Theme.selection-bg : touch.pressed ? Theme.fill-pressed : touch.has-hover ? Theme.fill-hover : transparent;
+    accessible-role: list-item; accessible-label: item.text; accessible-description: item.description; accessible-enabled: item.enabled; accessible-action-default => { if(item.enabled){ root.activated(); } }
+    content := VerticalLayout { padding-left:Theme.space-3; padding-right:Theme.space-3; padding-top:Theme.space-1; padding-bottom:Theme.space-1; spacing:0px;
+        Text { text:root.item.text; color:root.item.enabled?Theme.text-primary:Theme.text-disabled; font-size:Theme.font-size-body; overflow:elide; }
+        if root.item.description!="": Text { text:root.item.description; color:root.item.enabled?Theme.text-secondary:Theme.text-disabled; font-size:Theme.font-size-caption; overflow:elide; }
+    }
+    touch := TouchArea { enabled:root.item.enabled; mouse-cursor:self.enabled?pointer:default; clicked=>{root.activated();} }
+    FocusRing { active:root.focused; target-width:root.width; target-height:root.height; radius:Theme.radius-small; }
+}
+
+export component List inherits Rectangle {
+    in property <[ListItemData]> items;
+    in-out property <int> current-index: -1;
+    in property <bool> enabled: true;
+    in property <string> accessible-name: "";
+    in property <string> empty-text: "";
+    out property <bool> has-focus <=> focus.has-focus;
+    callback selected(index:int);
+
+    public function select(index:int){ if(enabled && index>=0 && index<items.length && items[index].enabled && current-index!=index){root.current-index=index;root.selected(index);} }
+    public function select-next(step: int) { if (items.length > 0) { root.select(clamp(current-index + step, 0, items.length - 1)); } }
+
+    min-width:Theme.card-min-width; min-height:Theme.empty-state-min-height; background:Theme.bg-surface; border-width:Theme.border-width; border-color:Theme.border-default; border-radius:Theme.radius-medium; clip:true;
+    accessible-role:list; accessible-label:accessible-name; accessible-enabled:enabled; accessible-item-count:items.length;
+    NativeListView { visible:root.items.length>0; width:parent.width; height:parent.height;
+        for item[index] in root.items: ListItem { item:item; selected:index==root.current-index; focused:root.has-focus && index==root.current-index; activated=>{root.select(index);} }
+    }
+    if root.items.length == 0: Text { x: Theme.space-4; width: parent.width - Theme.space-8; height: parent.height; text: root.empty-text; color: Theme.text-secondary; font-size: Theme.font-size-body; horizontal-alignment: center; vertical-alignment: center; wrap: word-wrap; }
+    focus := FocusScope { x: 0px; width: 0px; enabled: root.enabled; key-pressed(event) => { if (event.text == Key.DownArrow) { root.select-next(1); return accept; } if (event.text == Key.UpArrow) { root.select-next(-1); return accept; } if (event.text == Key.Home) { root.select(0); return accept; } if (event.text == Key.End) { root.select(root.items.length - 1); return accept; } return reject; } }
+}

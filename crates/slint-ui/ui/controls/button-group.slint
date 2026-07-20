@@ -1,0 +1,54 @@
+import { Theme, ControlSize } from "../tokens/theme.slint";
+import { Button, ButtonVariant } from "button.slint";
+
+export struct ButtonGroupItem {
+    text: string,
+    enabled: bool,
+    checked: bool,
+}
+
+export component ButtonGroup inherits Rectangle {
+    in property <[ButtonGroupItem]> items;
+    in-out property <int> current-index: -1;
+    in property <bool> enabled: true;
+    in property <ControlSize> size: ControlSize.medium;
+    in property <string> accessible-name: "";
+    callback selected(index: int);
+
+    public function select(index: int) {
+        if (enabled && index >= 0 && index < items.length && items[index].enabled && current-index != index) {
+            root.current-index = index;
+            root.selected(index);
+        }
+    }
+
+    public function select-next(step: int) {
+        if (items.length > 0) { root.select(Math.mod(current-index + step + items.length, items.length)); }
+    }
+
+    min-height: size == ControlSize.small ? Theme.control-height-small : size == ControlSize.large ? Theme.control-height-large : Theme.control-height-medium;
+    preferred-height: self.min-height;
+    max-height: self.min-height;
+    background: Theme.bg-control;
+    border-width: Theme.border-width;
+    border-color: Theme.border-default;
+    border-radius: Theme.radius-medium;
+    clip: true;
+    accessible-role: groupbox;
+    accessible-label: accessible-name;
+    accessible-enabled: enabled;
+    accessible-item-count: items.length;
+
+    HorizontalLayout {
+        spacing: 0px;
+        for item[index] in root.items: Button {
+            text: item.text;
+            size: root.size;
+            enabled: root.enabled && item.enabled;
+            checked: root.current-index == index || item.checked;
+            variant: self.checked ? ButtonVariant.default : ButtonVariant.text;
+            radius: 0px;
+            clicked => { root.select(index); }
+        }
+    }
+}

@@ -43,7 +43,7 @@ export component Steps inherits Rectangle {
                         border-radius: self.width / 2;
                         border-width: Theme.border-width;
                         border-color: step.state == StepState.error ? Theme.color-error : step.state == StepState.waiting ? Theme.border-default : Theme.color-primary;
-                        background: step.state == StepState.complete ? Theme.color-primary : Theme.bg-control;
+                        background: step.state == StepState.complete ? Theme.color-primary-fill : Theme.bg-control;
                         if step.state == StepState.complete: Image {
                             source: @image-url("../../assets/icons/ant-design/outlined/check.svg");
                             width: Theme.icon-size-small;

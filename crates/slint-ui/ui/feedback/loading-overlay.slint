@@ -1,0 +1,24 @@
+import { Theme } from "../tokens/theme.slint";
+import { Spinner } from "spinner.slint";
+import { Button, ButtonVariant } from "../controls/button.slint";
+
+export component LoadingOverlay inherits Rectangle {
+    in property <bool> active: false;
+    in property <string> text: "";
+    in property <bool> cancelable: false;
+    in property <string> cancel-text: "";
+    in property <string> accessible-name: text;
+    callback cancel-requested();
+
+    public function cancel() { if (active && cancelable) { root.cancel-requested(); } }
+
+    visible: active; background: Theme.overlay-mask; accessible-role: region; accessible-label: accessible-name; accessible-enabled: active; accessible-live-region: polite;
+    TouchArea { enabled: root.active; }
+    Rectangle { x: (parent.width - self.width) / 2; y: (parent.height - self.height) / 2; width: max(Theme.overlay-content-min-width, content.preferred-width + Theme.space-8); height: content.preferred-height + Theme.space-6; background: Theme.bg-elevated; border-width: Theme.border-width; border-color: Theme.border-default; border-radius: Theme.radius-large;
+        content := VerticalLayout { padding: Theme.space-4; spacing: Theme.space-3; alignment: center; cross-axis-alignment: center;
+            Spinner { accessible-name: root.accessible-name; }
+            if root.text != "": Text { text: root.text; color: Theme.text-primary; font-size: Theme.font-size-body; horizontal-alignment: center; wrap: word-wrap; }
+            if root.cancelable: Button { text: root.cancel-text; variant: ButtonVariant.link; clicked => { root.cancel(); } }
+        }
+    }
+}

@@ -1,0 +1,22 @@
+import { SpinBox as NativeSpinBox } from "std-widgets.slint";
+import { Theme, ControlSize } from "../tokens/theme.slint";
+
+export component NumberInput inherits NativeSpinBox {
+    in property <string> accessible-name: "";
+    in property <ControlSize> size: ControlSize.medium;
+
+    public function set-value(next: int) {
+        if (root.enabled && !root.read-only && root.value != clamp(next, root.minimum, root.maximum)) {
+            root.value = clamp(next, root.minimum, root.maximum);
+            root.edited(root.value);
+        }
+    }
+
+    public function step-by(direction: int) { root.set-value(root.value + direction * root.step-size); }
+
+    min-width: Theme.control-min-width;
+    min-height: size == ControlSize.small ? Theme.control-height-small : size == ControlSize.large ? Theme.control-height-large : Theme.control-height-medium;
+    preferred-height: self.min-height;
+    max-height: self.min-height;
+    accessible-label: accessible-name;
+}

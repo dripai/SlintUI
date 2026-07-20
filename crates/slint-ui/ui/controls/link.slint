@@ -1,0 +1,52 @@
+import { Theme } from "../tokens/theme.slint";
+import { FocusRing } from "../primitives/focus-ring.slint";
+
+export component Link inherits Rectangle {
+    in property <string> text: "";
+    in property <string> target: "";
+    in property <bool> external: false;
+    in property <bool> enabled: true;
+    in property <string> accessible-name: text;
+    out property <bool> has-focus <=> focus.has-focus;
+    callback activated(target: string);
+
+    public function activate() {
+        if (enabled && target != "") { root.activated(target); }
+    }
+
+    min-height: Theme.control-height-small;
+    min-width: content.preferred-width;
+    background: touch.pressed ? Theme.fill-pressed : touch.has-hover ? Theme.fill-hover : transparent;
+    border-radius: Theme.radius-small;
+    accessible-role: button;
+    accessible-label: accessible-name;
+    accessible-description: target;
+    accessible-enabled: enabled;
+    accessible-action-default => { root.activate(); }
+
+    content := HorizontalLayout {
+        padding-left: Theme.space-1;
+        padding-right: Theme.space-1;
+        spacing: Theme.space-1;
+        cross-axis-alignment: center;
+        Text {
+            text: root.text;
+            color: root.enabled ? (touch.has-hover ? Theme.color-primary-hover : Theme.color-primary) : Theme.text-disabled;
+            font-size: Theme.font-size-body;
+            overflow: elide;
+            vertical-alignment: center;
+            accessible-role: none;
+        }
+        if root.external: Image {
+            width: Theme.icon-size-x-small;
+            height: Theme.icon-size-x-small;
+            source: @image-url("../../assets/icons/ant-design/outlined/export.svg");
+            colorize: root.enabled ? Theme.color-primary : Theme.text-disabled;
+            accessible-role: none;
+        }
+    }
+
+    touch := TouchArea { enabled: root.enabled; mouse-cursor: root.enabled ? pointer : default; clicked => { root.activate(); } }
+    focus := FocusScope { x: 0px; width: 0px; enabled: root.enabled; key-pressed(event) => { if (event.text == Key.Return || event.text == Key.Space) { root.activate(); return accept; } return reject; } }
+    FocusRing { active: root.has-focus && root.enabled; target-width: root.width; target-height: root.height; radius: Theme.radius-small; }
+}

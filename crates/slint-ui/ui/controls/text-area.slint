@@ -1,0 +1,52 @@
+import { TextEdit } from "std-widgets.slint";
+import { Theme } from "../tokens/theme.slint";
+import { ValidationState } from "text-field.slint";
+import { FocusRing } from "../primitives/focus-ring.slint";
+
+export component TextArea inherits Rectangle {
+    in-out property <string> text <=> editor.text;
+    in property <string> placeholder-text: "";
+    in property <string> accessible-name: "";
+    in property <bool> enabled: true;
+    in property <bool> read-only: false;
+    in property <int> max-length: 0;
+    in property <bool> show-count: false;
+    in property <ValidationState> validation: ValidationState.normal;
+    out property <bool> has-focus: editor.has-focus;
+    out property <int> character-count: text.character-count;
+    callback edited(text: string);
+
+    public function replace-text(next: string) {
+        if (enabled && !read-only && text != next) { root.text = next; root.edited(next); }
+    }
+
+    min-width: Theme.control-min-width;
+    min-height: Theme.text-area-min-height;
+    background: enabled ? Theme.bg-control : Theme.bg-disabled;
+    border-width: Theme.border-width;
+    border-color: has-focus ? Theme.focus-outline : validation == ValidationState.error ? Theme.color-error : validation == ValidationState.warning ? Theme.color-warning : validation == ValidationState.success ? Theme.color-success : Theme.border-default;
+    border-radius: Theme.radius-medium;
+    clip: true;
+    accessible-role: text-input;
+    accessible-label: accessible-name;
+    accessible-enabled: enabled;
+    accessible-read-only: read-only;
+    accessible-value: text;
+    accessible-description: show-count ? character-count + (max-length > 0 ? " / " + max-length : "") : "";
+
+    editor := TextEdit {
+        x: Theme.border-width;
+        y: Theme.border-width;
+        width: parent.width - Theme.border-width * 2;
+        height: parent.height - Theme.border-width * 2 - (root.show-count ? Theme.line-height-caption : 0px);
+        placeholder-text: root.placeholder-text;
+        enabled: root.enabled;
+        read-only: root.read-only;
+        wrap: word-wrap;
+        font-size: Theme.font-size-body;
+        edited => { root.edited(self.text); }
+        accessible-role: none;
+    }
+    if root.show-count: Text { x: Theme.space-2; y: parent.height - Theme.line-height-caption; width: parent.width - Theme.space-4; height: Theme.line-height-caption; text: root.character-count + (root.max-length > 0 ? " / " + root.max-length : ""); color: root.max-length > 0 && root.character-count > root.max-length ? Theme.color-error : Theme.text-tertiary; font-size: Theme.font-size-caption; horizontal-alignment: right; vertical-alignment: center; accessible-role: none; }
+    FocusRing { active: root.has-focus && root.enabled; target-width: root.width; target-height: root.height; radius: Theme.radius-medium; }
+}

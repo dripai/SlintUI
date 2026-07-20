@@ -1,0 +1,19 @@
+import { Theme } from "../tokens/theme.slint";
+
+export enum ResultTone { success, info, warning, error }
+
+export component ResultState inherits Rectangle {
+    in property <ResultTone> tone: ResultTone.info;
+    in property <string> title: "";
+    in property <string> description: "";
+    in property <string> accessible-name: title;
+
+    min-width: Theme.card-min-width; min-height: Theme.result-state-min-height;
+    accessible-role: region; accessible-label: accessible-name; accessible-description: description;
+    VerticalLayout { padding: Theme.space-6; spacing: Theme.space-3; alignment: center; cross-axis-alignment: center;
+        Image { width: Theme.icon-size-empty-state; height: Theme.icon-size-empty-state; source: root.tone == ResultTone.success ? @image-url("../../assets/icons/ant-design/outlined/check-circle.svg") : root.tone == ResultTone.warning ? @image-url("../../assets/icons/ant-design/outlined/warning.svg") : root.tone == ResultTone.error ? @image-url("../../assets/icons/ant-design/outlined/close-circle.svg") : @image-url("../../assets/icons/ant-design/outlined/info-circle.svg"); colorize: root.tone == ResultTone.success ? Theme.color-success : root.tone == ResultTone.warning ? Theme.color-warning : root.tone == ResultTone.error ? Theme.color-error : Theme.color-primary; accessible-role: none; }
+        Text { text: root.title; color: Theme.text-primary; font-size: Theme.font-size-title-medium; font-weight: Theme.font-weight-medium; horizontal-alignment: center; wrap: word-wrap; }
+        if root.description != "": Text { text: root.description; color: Theme.text-secondary; font-size: Theme.font-size-body; horizontal-alignment: center; wrap: word-wrap; }
+        @children
+    }
+}

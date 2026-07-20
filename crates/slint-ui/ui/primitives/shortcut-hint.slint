@@ -1,0 +1,12 @@
+import { Theme } from "../tokens/theme.slint";
+
+export component ShortcutHint inherits Rectangle {
+    in property <string> shortcut: "";
+    in property <string> accessible-name: shortcut;
+    in property <bool> enabled: true;
+
+    min-height: Theme.tag-height; max-height: self.min-height; min-width: label.preferred-width + Theme.space-2;
+    background: enabled ? Theme.bg-control : Theme.bg-disabled; border-width: Theme.border-width; border-color: Theme.border-default; border-radius: Theme.radius-small;
+    accessible-role: text; accessible-label: accessible-name;
+    label := Text { width: parent.width; height: parent.height; text: root.shortcut; color: root.enabled ? Theme.text-secondary : Theme.text-disabled; font-size: Theme.font-size-caption; font-weight: Theme.font-weight-medium; horizontal-alignment: center; vertical-alignment: center; accessible-role: none; }
+}

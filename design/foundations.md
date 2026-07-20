@@ -73,7 +73,7 @@ ui/tokens/
 
 ### 3.1 品牌色阶
 
-主色使用蓝色，默认操作色为 `#1677FF`。完整色阶用于生成悬停、按下、浅背景和强调层，不允许组件自行调亮或调暗。
+主色输入仍为 `#1677FF`，但可见文字、图标、边框和实心控件必须映射到经过对比度验证的语义 Token；组件不得直接消费品牌输入或自行调亮、调暗。
 
 | Token | 色值 | 用途 |
 |---|---:|---|
@@ -92,10 +92,10 @@ ui/tokens/
 
 | 语义 Token | 基准色 | 使用边界 |
 |---|---:|---|
-| `color-primary` / `color-info` | `#1677FF` | 主要操作、链接、信息状态 |
-| `color-success` | `#52C41A` | 已完成、可用、校验通过 |
-| `color-warning` | `#FAAD14` | 风险、需要注意、可继续 |
-| `color-error` | `#FF4D4F` | 失败、危险操作、校验错误 |
+| `color-primary` / `color-info` | `#0958D9` | 主要操作、链接、信息状态前景 |
+| `color-success` | `#237804` | 已完成、可用、校验通过前景 |
+| `color-warning` | `#874D00` | 风险、需要注意、可继续前景 |
+| `color-error` | `#CF1322` | 失败、危险操作、校验错误前景 |
 
 功能色必须同时配合图标或文字，不能只依靠颜色表达状态。危险按钮只用于不可逆或高风险操作，普通取消操作不得使用红色。
 
@@ -106,22 +106,24 @@ ui/tokens/
 | 语义 | Primary / Info | Success | Warning | Error |
 |---|---:|---:|---:|---:|
 | `*-bg` | `#E6F4FF` | `#F6FFED` | `#FFFBE6` | `#FFF2F0` |
-| `*-bg-hover` | `#BAE0FF` | `#D9F7BE` | `#FFF1B8` | `#FFF1F0` |
-| `*-border` | `#91CAFF` | `#B7EB8F` | `#FFE58F` | `#FFCCC7` |
-| `*-border-hover` | `#69B1FF` | `#95DE64` | `#FFD666` | `#FFA39E` |
-| `*-hover` | `#4096FF` | `#73D13D` | `#FFC53D` | `#FF7875` |
-| `*-base` | `#1677FF` | `#52C41A` | `#FAAD14` | `#FF4D4F` |
-| `*-active` | `#0958D9` | `#389E0D` | `#D48806` | `#D9363E` |
+| `*-border` / `*-base` | `#0958D9` | `#237804` | `#874D00` | `#CF1322` |
+| `*-hover` | `#003EB3` | `#135200` | `#613400` | `#A8071A` |
+| `*-active` | `#002C8C` | `#092B00` | `#3D1F00` | `#820014` |
+| `*-fill` | `#0958D9` | — | — | `#CF1322` |
+| `*-fill-hover` | `#003EB3` | — | — | `#A8071A` |
+| `*-fill-active` | `#002C8C` | — | — | `#820014` |
 
 深色主题不能复用浅色状态色。首期使用独立基准与低明度背景：
 
 | 语义 | Primary / Info | Success | Warning | Error |
 |---|---:|---:|---:|---:|
 | `*-bg` | `#111A2C` | `#162312` | `#2B2111` | `#2C1618` |
-| `*-border` | `#15325B` | `#274916` | `#594214` | `#5B2526` |
-| `*-hover` | `#3C89E8` | `#6ABE39` | `#E8B339` | `#E86E6B` |
-| `*-base` | `#1668DC` | `#49AA19` | `#D89614` | `#DC4446` |
-| `*-active` | `#1554AD` | `#3C8618` | `#AA7714` | `#AD393A` |
+| `*-border` / `*-base` | `#69B1FF` | `#73D13D` | `#FFC53D` | `#FF7875` |
+| `*-hover` | `#91CAFF` | `#95DE64` | `#FFD666` | `#FFA39E` |
+| `*-active` | `#4096FF` | `#52C41A` | `#D89614` | `#FF4D4F` |
+| `*-fill` | `#1554AD` | — | — | `#A61D24` |
+| `*-fill-hover` | `#1668DC` | — | — | `#C41D2C` |
+| `*-fill-active` | `#15325B` | — | — | `#820014` |
 
 功能色文本是否使用 `*-base`、`*-hover` 或反色文本，必须由语义 Token 决定，组件不得直接引用色阶编号。
 
@@ -135,20 +137,20 @@ ui/tokens/
 | `bg-control` | `#FFFFFF` |
 | `text-primary` | `#000000E0` |
 | `text-secondary` | `#000000A6` |
-| `text-tertiary` | `#00000073` |
+| `text-tertiary` | `#00000099` |
 | `text-disabled` | `#00000040` |
 | `text-placeholder` | `#00000040` |
 | `text-inverse` | `#FFFFFF` |
 | `text-on-accent` | `#FFFFFF` |
-| `icon-default` | `#00000073` |
+| `icon-default` | `#00000099` |
 | `icon-hover` | `#000000E0` |
-| `border-default` | `#D9D9D9` |
+| `border-default` | `#8C8C8C` |
 | `border-secondary` | `#0505050F` |
 | `fill-hover` | `#0000000F` |
 | `fill-pressed` | `#0000001A` |
 | `bg-disabled` | `#0000000A` |
 | `selection-bg` | `#E6F4FF` |
-| `focus-outline` | `#1677FF` |
+| `focus-outline` | `#0958D9` |
 | `overlay-mask` | `#00000073` |
 
 ### 3.5 深色主题
@@ -161,20 +163,20 @@ ui/tokens/
 | `bg-control` | `#141414` |
 | `text-primary` | `#FFFFFFD9` |
 | `text-secondary` | `#FFFFFFA6` |
-| `text-tertiary` | `#FFFFFF73` |
+| `text-tertiary` | `#FFFFFF99` |
 | `text-disabled` | `#FFFFFF40` |
 | `text-placeholder` | `#FFFFFF40` |
 | `text-inverse` | `#000000E0` |
 | `text-on-accent` | `#FFFFFF` |
-| `icon-default` | `#FFFFFF73` |
+| `icon-default` | `#FFFFFF99` |
 | `icon-hover` | `#FFFFFFD9` |
-| `border-default` | `#424242` |
+| `border-default` | `#737373` |
 | `border-secondary` | `#FDFDFD1F` |
 | `fill-hover` | `#FFFFFF14` |
 | `fill-pressed` | `#FFFFFF1F` |
 | `bg-disabled` | `#FFFFFF0A` |
 | `selection-bg` | `#111A2C` |
-| `focus-outline` | `#3C89E8` |
+| `focus-outline` | `#69B1FF` |
 | `overlay-mask` | `#000000A6` |
 
 深色主题不是浅色主题的简单反相。阴影、边框、填充和功能色需要分别验收；浮层必须比承载它的表面更高一级。
@@ -194,17 +196,18 @@ ui/tokens/
 | `border-default` / `border-secondary` | `#FFFFFF` |
 | `fill-hover` / `fill-pressed` | `#FFFFFF26` / `#FFFFFF40` |
 | `selection-bg` | `#FFFFFF` |
-| `color-primary` / `color-primary-active` | `#00FFFF` |
+| `color-primary` / `color-primary-active` / `color-primary-fill` | `#00FFFF` |
 | `color-primary-hover` | `#FFFFFF` |
 | `color-primary-bg` / `color-primary-border` | `#000000` / `#00FFFF` |
 | `color-success` / `color-warning` / `color-error` | `#00FF00` / `#FFFF00` / `#FF8080` |
-| `color-error-hover` / `color-error-active` | `#FFFFFF` / `#FF8080` |
+| `color-error-hover` / `color-error-active` / `color-error-fill` | `#FFFFFF` / `#FF8080` / `#FF8080` |
 | `focus-outline` | `#FFFF00` |
 | `overlay-mask` | `#00000073` |
 
 实施与平台映射遵循以下约束：
 
 - 正文和背景至少达到 WCAG AA；正文、标题等核心文本以 AAA 为目标。
+- 实心操作使用 `*-fill` 系列并与 `text-on-accent` 配对；链接、图标和状态文字使用不透明的前景 `color-*` 系列，禁止互换。
 - 焦点环、选中态和错误态必须有非颜色差异。
 - 禁用态仍需可辨认，但不能被误认为可操作。
 - 系统提供高对比度颜色时，平台增强层优先跟随系统语义色。

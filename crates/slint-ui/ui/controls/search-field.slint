@@ -1,0 +1,13 @@
+import { TextField } from "text-field.slint";
+
+export component SearchField inherits TextField {
+    prefix-icon: @image-url("../../assets/icons/ant-design/outlined/search.svg");
+    clearable: true;
+    callback searched(query: string);
+
+    public function submit() {
+        if (root.enabled) { root.searched(root.text); }
+    }
+
+    accepted(value) => { root.searched(value); }
+}

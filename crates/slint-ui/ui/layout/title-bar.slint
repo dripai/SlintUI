@@ -1,0 +1,40 @@
+import { Theme } from "../tokens/theme.slint";
+
+export component TitleBar inherits Rectangle {
+    in property <string> title: "";
+    in property <image> icon;
+    in property <bool> active: true;
+    in property <bool> show-minimize: true;
+    in property <bool> show-maximize: true;
+    in property <bool> show-close: true;
+    in property <bool> maximized: false;
+    in property <string> minimize-accessible-name: "";
+    in property <string> maximize-accessible-name: "";
+    in property <string> restore-accessible-name: "";
+    in property <string> close-accessible-name: "";
+    callback drag-requested(); callback minimize-requested(); callback maximize-requested(); callback restore-requested(); callback close-requested();
+
+    public function request-minimize() { if (show-minimize) { root.minimize-requested(); } }
+    public function request-toggle-maximize() { if (show-maximize) { if (maximized) { root.restore-requested(); } else { root.maximize-requested(); } } }
+    public function request-close() { if (show-close) { root.close-requested(); } }
+
+    min-height: Theme.title-bar-height; max-height: self.min-height; background: Theme.bg-surface; border-width: Theme.border-width; border-color: Theme.border-secondary; accessible-role: groupbox; accessible-label: title;
+    HorizontalLayout { spacing: Theme.space-2; cross-axis-alignment: center;
+        drag := Rectangle { horizontal-stretch: 1; accessible-role: text; accessible-label: root.title;
+            HorizontalLayout { padding-left: Theme.space-3; padding-right: Theme.space-3; spacing: Theme.space-2; cross-axis-alignment: center;
+                if root.icon.width > 0: Image { width: Theme.icon-size-small; height: Theme.icon-size-small; source: root.icon; colorize: Theme.icon-default; accessible-role: none; }
+                Text { text: root.title; color: root.active ? Theme.text-primary : Theme.text-secondary; font-size: Theme.font-size-body; font-weight: Theme.font-weight-medium; horizontal-stretch: 1; overflow: elide; vertical-alignment: center; }
+            }
+            TouchArea { double-clicked => { root.request-toggle-maximize(); } pointer-event(event) => { if (event.button == PointerEventButton.left && event.kind == PointerEventKind.down) { root.drag-requested(); } } }
+        }
+        if root.show-minimize: Rectangle { width: Theme.title-bar-height; height: Theme.title-bar-height; background: min-touch.has-hover ? Theme.fill-hover : transparent; accessible-role: button; accessible-label: root.minimize-accessible-name; accessible-action-default => { root.request-minimize(); }
+            Image { x: (parent.width - self.width) / 2; y: (parent.height - self.height) / 2; width: Theme.icon-size-small; height: Theme.icon-size-small; source: @image-url("../../assets/icons/ant-design/outlined/minus.svg"); colorize: Theme.icon-default; accessible-role: none; } min-touch := TouchArea { clicked => { root.request-minimize(); } }
+        }
+        if root.show-maximize: Rectangle { width: Theme.title-bar-height; height: Theme.title-bar-height; background: max-touch.has-hover ? Theme.fill-hover : transparent; accessible-role: button; accessible-label: root.maximized ? root.restore-accessible-name : root.maximize-accessible-name; accessible-action-default => { root.request-toggle-maximize(); }
+            Image { x: (parent.width - self.width) / 2; y: (parent.height - self.height) / 2; width: Theme.icon-size-small; height: Theme.icon-size-small; source: root.maximized ? @image-url("../../assets/icons/ant-design/outlined/block.svg") : @image-url("../../assets/icons/ant-design/outlined/border.svg"); colorize: Theme.icon-default; accessible-role: none; } max-touch := TouchArea { clicked => { root.request-toggle-maximize(); } }
+        }
+        if root.show-close: Rectangle { width: Theme.title-bar-height; height: Theme.title-bar-height; background: close-touch.has-hover ? Theme.color-error-fill : transparent; accessible-role: button; accessible-label: root.close-accessible-name; accessible-action-default => { root.request-close(); }
+            Image { x: (parent.width - self.width) / 2; y: (parent.height - self.height) / 2; width: Theme.icon-size-small; height: Theme.icon-size-small; source: @image-url("../../assets/icons/ant-design/outlined/close.svg"); colorize: close-touch.has-hover ? Theme.text-on-accent : Theme.icon-default; accessible-role: none; } close-touch := TouchArea { clicked => { root.request-close(); } }
+        }
+    }
+}

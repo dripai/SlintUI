@@ -38,7 +38,7 @@ export component Calendar inherits Rectangle {
         Rectangle { height: Theme.calendar-cell-size * 6;
             for day[index] in root.days: Rectangle {
                 x: Math.mod(index, 7) * Theme.calendar-cell-size; y: Math.floor(index / 7) * Theme.calendar-cell-size; width: Theme.calendar-cell-size; height: Theme.calendar-cell-size;
-                border-radius: Theme.radius-medium; background: day.selected ? Theme.color-primary : day-touch.has-hover && day.enabled ? Theme.fill-hover : transparent;
+                border-radius: Theme.radius-medium; background: day.selected ? Theme.color-primary-fill : day-touch.has-hover && day.enabled ? Theme.fill-hover : transparent;
                 border-width: day.today && !day.selected ? Theme.border-width : 0px; border-color: Theme.color-primary;
                 accessible-role: list-item; accessible-label: day.accessible-name; accessible-enabled: day.enabled; accessible-checkable: true; accessible-checked: day.selected; accessible-action-default => { root.select(index); }
                 Text { text: day.label; color: !day.enabled ? Theme.text-disabled : day.selected ? Theme.text-on-accent : day.in-current-month ? Theme.text-primary : Theme.text-tertiary; font-size: Theme.font-size-body; horizontal-alignment: center; vertical-alignment: center; }

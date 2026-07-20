@@ -255,5 +255,165 @@ mod tests {
         harness.invoke_select_p2_calendar(0);
         harness.invoke_select_p2_calendar(1);
         assert_eq!(harness.get_p2_calendar_activations(), 1);
+
+        assert_p1_controls_cover_normal_disabled_repeated_and_boundary_paths();
+    }
+
+    fn assert_p1_controls_cover_normal_disabled_repeated_and_boundary_paths() {
+        use std::{cell::Cell, rc::Rc};
+
+        let harness = P1InteractionHarness::new().expect("create P1 interaction harness");
+
+        harness.invoke_select_button_group(1);
+        harness.invoke_select_button_group(1);
+        harness.invoke_select_button_group(2);
+        harness.invoke_select_button_group(99);
+        assert_eq!(harness.get_button_group_index(), 1);
+        assert_eq!(harness.get_button_group_activations(), 1);
+
+        harness.invoke_activate_toggle();
+        harness.invoke_activate_toggle();
+        harness.invoke_activate_disabled_toggle();
+        assert!(!harness.get_toggle_checked());
+        assert_eq!(harness.get_toggle_activations(), 2);
+        assert_eq!(harness.get_disabled_toggle_activations(), 0);
+
+        harness.invoke_activate_link();
+        harness.invoke_activate_link();
+        harness.invoke_activate_disabled_link();
+        assert_eq!(harness.get_link_activations(), 2);
+        assert_eq!(harness.get_disabled_link_activations(), 0);
+
+        harness.invoke_activate_dropdown(0);
+        harness.invoke_activate_dropdown(1);
+        harness.invoke_activate_dropdown(99);
+        assert_eq!(harness.get_dropdown_activations(), 1);
+
+        harness.invoke_replace_text_area("Updated".into());
+        harness.invoke_replace_text_area("Updated".into());
+        harness.invoke_replace_disabled_text_area("Changed".into());
+        assert_eq!(harness.get_text_area_value(), "Updated");
+        assert_eq!(harness.get_text_area_edits(), 1);
+        assert_eq!(harness.get_disabled_text_area_value(), "Locked");
+
+        harness.invoke_submit_search();
+        harness.invoke_submit_search();
+        assert_eq!(harness.get_search_submissions(), 2);
+
+        harness.invoke_set_number(8);
+        harness.invoke_set_number(8);
+        harness.invoke_set_number(99);
+        harness.invoke_set_disabled_number(9);
+        assert_eq!(harness.get_number_value(), 10);
+        assert_eq!(harness.get_number_edits(), 2);
+        assert_eq!(harness.get_disabled_number_value(), 3);
+
+        harness.invoke_set_checkbox(0, true);
+        harness.invoke_set_checkbox(0, true);
+        harness.invoke_set_checkbox(1, true);
+        assert!(harness.get_checkbox_group_checked());
+        assert_eq!(harness.get_checkbox_group_changes(), 1);
+
+        harness.invoke_select_radio(1);
+        harness.invoke_select_radio(1);
+        harness.invoke_select_radio(2);
+        assert_eq!(harness.get_radio_group_index(), 1);
+        assert_eq!(harness.get_radio_group_changes(), 1);
+
+        harness.invoke_choose_combo(0);
+        harness.invoke_choose_combo(1);
+        assert_eq!(harness.get_combo_index(), 0);
+        assert_eq!(harness.get_combo_value(), "Alpha");
+        assert_eq!(harness.get_combo_selections(), 1);
+
+        harness.invoke_set_slider(55.0);
+        harness.invoke_set_slider(55.0);
+        harness.invoke_set_slider(200.0);
+        harness.invoke_set_disabled_slider(80.0);
+        assert_eq!(harness.get_slider_value(), 100.0);
+        assert_eq!(harness.get_slider_changes(), 2);
+        assert_eq!(harness.get_disabled_slider_value(), 20.0);
+
+        harness.invoke_choose_file("new.txt".into());
+        harness.invoke_choose_file("new.txt".into());
+        harness.invoke_browse_file();
+        harness.invoke_choose_disabled_file("changed.txt".into());
+        assert_eq!(harness.get_file_path(), "new.txt");
+        assert_eq!(harness.get_file_changes(), 1);
+        assert_eq!(harness.get_file_browse_requests(), 1);
+        assert_eq!(harness.get_disabled_file_path(), "locked.txt");
+
+        harness.invoke_toggle_tag();
+        harness.invoke_toggle_tag();
+        harness.invoke_close_tag();
+        harness.invoke_toggle_disabled_tag();
+        assert!(!harness.get_tag_selected());
+        assert_eq!(harness.get_tag_toggles(), 2);
+        assert_eq!(harness.get_tag_closes(), 1);
+        assert_eq!(harness.get_disabled_tag_toggles(), 0);
+
+        harness.invoke_select_list(1);
+        harness.invoke_select_list(1);
+        harness.invoke_select_list(2);
+        assert_eq!(harness.get_list_index(), 1);
+        assert_eq!(harness.get_list_selections(), 1);
+
+        harness.invoke_toggle_collapse(0);
+        harness.invoke_toggle_collapse(0);
+        harness.invoke_toggle_collapse(1);
+        assert!(!harness.get_collapse_expanded());
+        assert_eq!(harness.get_collapse_changes(), 2);
+
+        harness.invoke_activate_popover();
+        harness.invoke_activate_popover();
+        harness.invoke_activate_alert();
+        harness.invoke_dismiss_alert();
+        harness.invoke_activate_disabled_alert();
+        harness.invoke_cancel_loading();
+        harness.invoke_cancel_inactive_loading();
+        assert_eq!(harness.get_popover_actions(), 2);
+        assert_eq!(harness.get_alert_actions(), 1);
+        assert_eq!(harness.get_alert_dismissals(), 1);
+        assert_eq!(harness.get_disabled_alert_actions(), 0);
+        assert_eq!(harness.get_loading_cancels(), 1);
+        assert_eq!(harness.get_inactive_loading_cancels(), 0);
+
+        harness.invoke_minimize_title();
+        harness.invoke_toggle_title_maximize();
+        harness.invoke_close_title();
+        assert_eq!(harness.get_title_minimizes(), 1);
+        assert_eq!(harness.get_title_maximizes(), 1);
+        assert_eq!(harness.get_title_restores(), 0);
+        assert_eq!(harness.get_title_closes(), 1);
+
+        harness.invoke_dismiss_overlay();
+        assert_eq!(harness.get_overlay_dismissals(), 1);
+
+        harness.invoke_select_table(1);
+        harness.invoke_select_table(1);
+        harness.invoke_select_table(99);
+        assert_eq!(harness.get_table_row(), 1);
+        assert_eq!(harness.get_table_selections(), 1);
+
+        harness.invoke_dismiss_toast(0);
+        harness.invoke_dismiss_toast(1);
+        harness.invoke_activate_notification();
+        harness.invoke_dismiss_notification();
+        harness.invoke_close_drawer();
+        harness.invoke_retry_image();
+        assert_eq!(harness.get_toast_dismissals(), 1);
+        assert_eq!(harness.get_notification_actions(), 1);
+        assert_eq!(harness.get_notification_dismissals(), 1);
+        assert_eq!(harness.get_drawer_closes(), 1);
+        assert_eq!(harness.get_image_retries(), 1);
+
+        let modal = ModalDialog::new().expect("create modal dialog");
+        let accepted = Rc::new(Cell::new(0));
+        let accepted_for_callback = accepted.clone();
+        modal.on_accepted(move || accepted_for_callback.set(accepted_for_callback.get() + 1));
+        modal.invoke_accept();
+        modal.set_busy(true);
+        modal.invoke_accept();
+        assert_eq!(accepted.get(), 1);
     }
 }

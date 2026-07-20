@@ -1,0 +1,45 @@
+import { Theme } from "../tokens/theme.slint";
+import { Button, ButtonVariant } from "../controls/button.slint";
+
+export enum AlertTone { info, success, warning, error }
+
+export component Alert inherits Rectangle {
+    in property <string> title: "";
+    in property <string> message: "";
+    in property <AlertTone> tone: AlertTone.info;
+    in property <bool> dismissible: false;
+    in property <string> close-accessible-name: "";
+    in property <string> action-text: "";
+    in property <bool> enabled: true;
+    in property <string> accessible-name: title;
+    callback action-requested();
+    callback dismiss-requested();
+
+    public function activate() { if (enabled && action-text != "") { root.action-requested(); } }
+    public function dismiss() { if (enabled && dismissible) { root.dismiss-requested(); } }
+
+    min-width: Theme.card-min-width;
+    min-height: content.preferred-height + Theme.space-4;
+    background: tone == AlertTone.info ? Theme.color-primary-bg : tone == AlertTone.success ? Theme.color-success-bg : tone == AlertTone.warning ? Theme.color-warning-bg : Theme.color-error-bg;
+    border-width: Theme.border-width;
+    border-color: tone == AlertTone.error ? Theme.color-error-border : tone == AlertTone.warning ? Theme.color-warning-border : tone == AlertTone.success ? Theme.color-success-border : Theme.color-primary-border;
+    border-radius: Theme.radius-medium;
+    accessible-role: region;
+    accessible-label: accessible-name;
+    accessible-description: message;
+    accessible-enabled: enabled;
+    accessible-live-region: tone == AlertTone.error ? assertive : polite;
+
+    content := HorizontalLayout { padding: Theme.space-3; spacing: Theme.space-3; cross-axis-alignment: start;
+        Image { width: Theme.icon-size-medium; height: Theme.icon-size-medium; source: root.tone == AlertTone.success ? @image-url("../../assets/icons/ant-design/outlined/check-circle.svg") : root.tone == AlertTone.warning ? @image-url("../../assets/icons/ant-design/outlined/warning.svg") : root.tone == AlertTone.error ? @image-url("../../assets/icons/ant-design/outlined/close-circle.svg") : @image-url("../../assets/icons/ant-design/outlined/info-circle.svg"); colorize: root.tone == AlertTone.success ? Theme.color-success : root.tone == AlertTone.warning ? Theme.color-warning : root.tone == AlertTone.error ? Theme.color-error : Theme.color-primary; accessible-role: none; }
+        VerticalLayout { spacing: Theme.space-1; horizontal-stretch: 1;
+            if root.title != "": Text { text: root.title; color: Theme.text-primary; font-size: Theme.font-size-body; font-weight: Theme.font-weight-medium; wrap: word-wrap; }
+            if root.message != "": Text { text: root.message; color: Theme.text-secondary; font-size: Theme.font-size-body; wrap: word-wrap; }
+            if root.action-text != "": Button { text: root.action-text; variant: ButtonVariant.link; enabled: root.enabled; clicked => { root.activate(); } }
+        }
+        if root.dismissible: Rectangle { width: Theme.control-height-small; height: Theme.control-height-small; border-radius: Theme.radius-small; background: close-touch.has-hover ? Theme.fill-hover : transparent; accessible-role: button; accessible-label: root.close-accessible-name; accessible-enabled: root.enabled; accessible-action-default => { root.dismiss(); }
+            Image { x: (parent.width - self.width) / 2; y: (parent.height - self.height) / 2; width: Theme.icon-size-x-small; height: Theme.icon-size-x-small; source: @image-url("../../assets/icons/ant-design/outlined/close.svg"); colorize: root.enabled ? Theme.icon-default : Theme.text-disabled; accessible-role: none; }
+            close-touch := TouchArea { enabled: root.enabled; clicked => { root.dismiss(); } }
+        }
+    }
+}

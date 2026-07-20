@@ -1,0 +1,44 @@
+import { Theme } from "../tokens/theme.slint";
+import { FocusRing } from "../primitives/focus-ring.slint";
+
+export enum TagTone { neutral, info, success, warning, error }
+
+export component Tag inherits Rectangle {
+    in property <string> text: "";
+    in property <TagTone> tone: TagTone.neutral;
+    in property <bool> closable: false;
+    in property <bool> selectable: false;
+    in-out property <bool> selected: false;
+    in property <bool> enabled: true;
+    in property <string> accessible-name: text;
+    out property <bool> has-focus <=> focus.has-focus;
+    callback toggled(selected: bool);
+    callback close-requested();
+
+    public function toggle() { if (enabled && selectable) { root.selected = !root.selected; root.toggled(root.selected); } }
+    public function close() { if (enabled && closable) { root.close-requested(); } }
+
+    min-height: Theme.tag-height; max-height: self.min-height;
+    min-width: content.preferred-width + Theme.space-2;
+    background: !enabled ? Theme.bg-disabled : selected ? Theme.selection-bg : tone == TagTone.info ? Theme.color-primary-bg : tone == TagTone.success ? Theme.color-success-bg : tone == TagTone.warning ? Theme.color-warning-bg : tone == TagTone.error ? Theme.color-error-bg : Theme.bg-control;
+    border-width: Theme.border-width;
+    border-color: tone == TagTone.error ? Theme.color-error-border : tone == TagTone.warning ? Theme.color-warning-border : tone == TagTone.success ? Theme.color-success-border : tone == TagTone.info ? Theme.color-primary-border : Theme.border-default;
+    border-radius: Theme.radius-small;
+    accessible-role: button;
+    accessible-label: accessible-name;
+    accessible-enabled: enabled;
+    accessible-checkable: selectable;
+    accessible-checked: selected;
+    accessible-action-default => { root.toggle(); }
+
+    content := HorizontalLayout { padding-left: Theme.space-2; padding-right: closable ? Theme.space-1 : Theme.space-2; spacing: Theme.space-1; cross-axis-alignment: center;
+        Text { text: root.text; color: root.enabled ? Theme.text-primary : Theme.text-disabled; font-size: Theme.font-size-caption; overflow: elide; vertical-alignment: center; accessible-role: none; }
+        if root.closable: Rectangle { width: Theme.icon-size-small; height: Theme.icon-size-small; border-radius: Theme.radius-small; background: close-touch.has-hover ? Theme.fill-hover : transparent; accessible-role: button; accessible-label: "Close"; accessible-enabled: root.enabled; accessible-action-default => { root.close(); }
+            Image { x: (parent.width - self.width) / 2; y: (parent.height - self.height) / 2; width: Theme.icon-size-x-small; height: Theme.icon-size-x-small; source: @image-url("../../assets/icons/ant-design/outlined/close.svg"); colorize: root.enabled ? Theme.icon-default : Theme.text-disabled; accessible-role: none; }
+            close-touch := TouchArea { enabled: root.enabled; clicked => { root.close(); } }
+        }
+    }
+    touch := TouchArea { enabled: root.enabled && root.selectable; mouse-cursor: self.enabled ? pointer : default; clicked => { root.toggle(); } }
+    focus := FocusScope { x:0px; width:0px; enabled:root.enabled && (root.selectable || root.closable); key-pressed(event) => { if(event.text==Key.Space || event.text==Key.Return){ root.toggle(); return accept; } return reject; } }
+    FocusRing { active: root.has-focus && root.enabled; target-width: root.width; target-height: root.height; radius: Theme.radius-small; }
+}

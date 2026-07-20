@@ -1,13 +1,14 @@
 import {
     Theme, ThemeMode, Density, ControlSize,
     Typography, TypographyStyle, Label, Icon, IconSize, Surface, SurfaceVariant, Divider, DividerOrientation, FocusRing,
-    ScrollArea, Stack, Space, Card, Overlay, SplitPane, SettingsSection, FormRow, Form, FormError, Toolbar,
-    Button, ButtonVariant, IconButton, ToolButton, SplitButton,
-    Checkbox, CheckState, Switch, TextField, ValidationState, Select, SegmentedControl,
+    ScrollArea, Stack, Space, Card, Overlay, SplitPane, SettingsSection, FormRow, Form, FormError, Toolbar, Flex, Grid, Panel, AppShell, TitleBar,
+    Button, ButtonVariant, IconButton, ToolButton, SplitButton, ButtonGroup, ButtonGroupItem, ToggleButton, Link, ShortcutHint,
+    Checkbox, CheckState, Switch, TextField, ValidationState, Select, SegmentedControl, TextArea, SearchField, NumberInput, CheckboxGroup, CheckboxGroupItem, RadioGroup, RadioGroupItem, ComboBox, Slider, FilePicker,
     MultiSelect, MultiSelectOption, AutoComplete, AutoCompleteOption, DatePicker, TimePicker, ColorPicker, ColorOption,
-    Tabs, TabItem, PopupMenu, PopupMenuEntry, ContextMenu, Breadcrumb, BreadcrumbItem, Steps, StepItem, StepState, Pagination, NavigationRail, NavigationRailItem, CommandPalette, CommandItem,
+    Tabs, TabItem, PopupMenu, PopupMenuEntry, ContextMenu, Dropdown, Breadcrumb, BreadcrumbItem, Steps, StepItem, StepState, Pagination, NavigationRail, NavigationRailItem, CommandPalette, CommandItem,
     Table, Tree, TreeItem, Avatar, DataGrid, Statistic, StatisticTone, Timeline, TimelineItem, TimelineTone, ImageView, ImageViewState, Calendar, CalendarDay, EmptyState, EmptyStateKind,
-    Tooltip, Progress, Spinner, StatusBar, StatusTone, Toast, ToastMessage, ToastTone, Notification, NotificationTone, Drawer, DrawerSide, Skeleton,
+    Badge, BadgeTone, Tag, TagTone, List, ListItemData, DescriptionList, DescriptionItem, Collapse, CollapseItem, Popover,
+    Tooltip, Progress, Spinner, StatusBar, StatusTone, Toast, ToastMessage, ToastTone, Notification, NotificationTone, Drawer, DrawerSide, Skeleton, Alert, AlertTone, ProgressRing, ResultState, ResultTone, LoadingOverlay,
 } from "@slint-ui/index.slint";
 import { ListView } from "std-widgets.slint";
 import { GalleryStrings } from "gallery-i18n.slint";
@@ -24,13 +25,114 @@ export component ComponentDetail inherits Rectangle {
     callback drawer-requested();
     callback command-palette-requested();
 
-    private property <string> general-name: section == 0 ? "Theme" : section == 1 ? "Typography" : section == 2 ? "Label" : section == 3 ? "Icon" : section == 4 ? "Surface" : section == 5 ? "Divider" : section == 6 ? "FocusRing" : section == 7 ? "Button" : section == 8 ? "IconButton" : section == 9 ? "ToolButton" : "SplitButton";
-    private property <string> layout-name: section == 0 ? "Surface" : section == 1 ? "Divider" : section == 2 ? "FocusRing" : section == 3 ? "Stack" : section == 4 ? "Space" : section == 5 ? "ScrollArea" : section == 6 ? "Overlay" : section == 7 ? "SplitPane" : section == 8 ? "Toolbar" : "SettingsSection";
-    private property <string> entry-name: section == 0 ? "Form" : section == 1 ? "FormRow" : section == 2 ? "Checkbox" : section == 3 ? "Switch" : section == 4 ? "TextField" : section == 5 ? "Select" : section == 6 ? "MultiSelect" : section == 7 ? "AutoComplete" : section == 8 ? "DatePicker" : section == 9 ? "TimePicker" : "ColorPicker";
-    private property <string> navigation-name: section == 0 ? "Tabs" : section == 1 ? "PopupMenu" : section == 2 ? "ContextMenu" : section == 3 ? "Breadcrumb" : section == 4 ? "Steps" : section == 5 ? "Pagination" : section == 6 ? "NavigationRail" : "CommandPalette";
-    private property <string> display-name: section == 0 ? "Card" : section == 1 ? "SegmentedControl" : section == 2 ? "Tooltip" : section == 3 ? "Table" : section == 4 ? "Tree" : section == 5 ? "Avatar" : section == 6 ? "DataGrid" : section == 7 ? "Statistic" : section == 8 ? "Timeline" : section == 9 ? "ImageView" : section == 10 ? "Calendar" : "EmptyState";
-    private property <string> feedback-name: section == 0 ? "Progress" : section == 1 ? "Spinner" : section == 2 ? "StatusBar" : section == 3 ? "Toast" : section == 4 ? "ModalDialog" : section == 5 ? "ConfirmDialog" : section == 6 ? "Notification" : section == 7 ? "Drawer" : "Skeleton";
+    private property <string> general-name: section == 0 ? "Theme" : section == 1 ? "Typography" : section == 2 ? "Label" : section == 3 ? "Icon" : section == 4 ? "Surface" : section == 5 ? "Divider" : section == 6 ? "FocusRing" : section == 7 ? "Button" : section == 8 ? "IconButton" : section == 9 ? "ToolButton" : section == 10 ? "SplitButton" : section == 11 ? "ButtonGroup" : section == 12 ? "ToggleButton" : section == 13 ? "Link" : "ShortcutHint";
+    private property <string> layout-name: section == 0 ? "Surface" : section == 1 ? "Divider" : section == 2 ? "FocusRing" : section == 3 ? "Stack" : section == 4 ? "Space" : section == 5 ? "ScrollArea" : section == 6 ? "Overlay" : section == 7 ? "SplitPane" : section == 8 ? "Toolbar" : section == 9 ? "SettingsSection" : section == 10 ? "Flex" : section == 11 ? "Grid" : section == 12 ? "Panel" : section == 13 ? "AppShell" : "TitleBar";
+    private property <string> entry-name: section == 0 ? "Form" : section == 1 ? "FormRow" : section == 2 ? "Checkbox" : section == 3 ? "Switch" : section == 4 ? "TextField" : section == 5 ? "Select" : section == 6 ? "MultiSelect" : section == 7 ? "AutoComplete" : section == 8 ? "DatePicker" : section == 9 ? "TimePicker" : section == 10 ? "ColorPicker" : section == 11 ? "TextArea" : section == 12 ? "SearchField" : section == 13 ? "NumberInput" : section == 14 ? "CheckboxGroup" : section == 15 ? "RadioGroup" : section == 16 ? "ComboBox" : section == 17 ? "Slider" : "FilePicker";
+    private property <string> navigation-name: section == 0 ? "Tabs" : section == 1 ? "PopupMenu" : section == 2 ? "ContextMenu" : section == 3 ? "Breadcrumb" : section == 4 ? "Steps" : section == 5 ? "Pagination" : section == 6 ? "NavigationRail" : section == 7 ? "CommandPalette" : "Dropdown";
+    private property <string> display-name: section == 0 ? "Card" : section == 1 ? "SegmentedControl" : section == 2 ? "Tooltip" : section == 3 ? "Table" : section == 4 ? "Tree" : section == 5 ? "Avatar" : section == 6 ? "DataGrid" : section == 7 ? "Statistic" : section == 8 ? "Timeline" : section == 9 ? "ImageView" : section == 10 ? "Calendar" : section == 11 ? "EmptyState" : section == 12 ? "Badge" : section == 13 ? "Tag" : section == 14 ? "List" : section == 15 ? "DescriptionList" : section == 16 ? "Collapse" : "Popover";
+    private property <string> feedback-name: section == 0 ? "Progress" : section == 1 ? "Spinner" : section == 2 ? "StatusBar" : section == 3 ? "Toast" : section == 4 ? "ModalDialog" : section == 5 ? "ConfirmDialog" : section == 6 ? "Notification" : section == 7 ? "Drawer" : section == 8 ? "Skeleton" : section == 9 ? "Alert" : section == 10 ? "ProgressRing" : section == 11 ? "ResultState" : "LoadingOverlay";
     private property <string> selected-name: page == 0 ? general-name : page == 1 ? layout-name : page == 2 ? "Button" : page == 3 ? entry-name : page == 4 ? feedback-name : page == 5 ? (section == 0 ? "Outlined Icons" : "Filled Icons") : page == 6 ? navigation-name : display-name;
+    private property <[string]> general-api: [
+        "mode · density · direction · locale · text-scale · preview-scale · reduced-motion",
+        "text · style · color · horizontal-alignment · wrap · overflow",
+        "text · muted · required · accessible-name · wrap · overflow",
+        "source · size · color · accessible-name · rtl-mirror",
+        "variant · bordered · radius · background-override",
+        "orientation · color · inset-start · inset-end",
+        "active · target-width · target-height · radius",
+        "text · icon · variant · size · loading · checkable · checked · clicked()",
+        "icon · size · enabled · loading · checked · accessible-name · clicked()",
+        "text · icon · size · checkable · checked · enabled · clicked()",
+        "text · variant · size · loading · menu-entries · clicked() · menu-selected()",
+        "items · current-index · size · enabled · select() · select-next() · selected()",
+        "text · icon · variant · size · enabled · checked · clicked()",
+        "text · target · external · enabled · activate() · activated()",
+        "shortcut · enabled · accessible-name",
+    ];
+    private property <[string]> layout-api: [
+        "variant · bordered · radius · background-override", "orientation · color · inset-start · inset-end",
+        "active · target-width · target-height · radius", "gap · padding · horizontal-alignment · @children",
+        "gap · padding · vertical-alignment · @children", "viewport-width · viewport-height · mouse-drag-pan-enabled",
+        "active · dismissible · accessible-name · dismiss-requested()", "orientation · ratio · min-first · min-second · collapsible · changed()",
+        "accessible-name · enabled · @children", "title · description · @children",
+        "gap · alignment · cross-axis-alignment · stretch constraints · @children",
+        "horizontal-gap · vertical-gap · Row/cell layout constraints · @children",
+        "title · description · bordered · accessible-name · @children",
+        "title/navigation/content/status geometry · navigation-visible · @children",
+        "title · icon · active · window button visibility · drag/minimize/maximize/restore/close callbacks",
+    ];
+    private property <[string]> entry-api: [
+        "errors · enabled · submitting · valid · submit-form() · submitted()", "label · required · help-text · error-text · label-width · @children",
+        "text · state · enabled · accessible-name · toggle() · toggled()", "text · checked · enabled · size · toggle() · toggled()",
+        "text · placeholder-text · prefix-icon · suffix-icon · clearable · read-only · validation",
+        "model · current-index · current-value · enabled · size · select-index() · selected()",
+        "options · selected-labels · selected-summary · request-selection()", "text · suggestions · current-index · choose() · selected()",
+        "value · year/month/day options · select() · changed()", "value · hour/minute/second options · select() · changed()",
+        "value · value-label · options · select() · changed()",
+        "text · placeholder-text · enabled · read-only · max-length · show-count · validation",
+        "text · placeholder-text · clearable · submit() · searched()",
+        "value · minimum · maximum · step-size · read-only · set-value() · step-by()",
+        "items · enabled · error-text · set-checked() · changed()",
+        "items · current-index · enabled · error-text · select() · select-next() · changed()",
+        "text · suggestions · current-index · choose() · selected() · accepted()",
+        "value · minimum · maximum · step · orientation · set-value() · changed()",
+        "path · placeholder-text · browse-text · choose() · browse-requested() · changed()",
+    ];
+    private property <[string]> navigation-api: [
+        "tabs · current-index · select() · select-next() · selected() · close-requested()",
+        "entries · current-index · show() · close() · activate() · selected()",
+        "entries · enabled · open-at-pointer() · selected() · closed()",
+        "items · current-index · max-visible-items · select() · selected()",
+        "steps · current-index · orientation · select() · selected()",
+        "current-page · page-count · page-size-options · select-page() · changed()",
+        "items · current-index · enabled · select() · selected()",
+        "commands · query · current-index · open · activate() · selected()",
+        "text · entries · enabled · size · toggle() · activate() · selected() · closed()",
+    ];
+    private property <[string]> display-api: [
+        "title · description · @children", "options · selected-index · size · enabled · select() · selected()",
+        "content · enabled · accessible-name · @children", "columns · rows · current-row · empty-text · selected() · sort-requested()",
+        "items · current-index · select() · toggle() · selected() · expanded-changed()", "source · initials · size · accessible-name · fallback-icon",
+        "columns · rows · row-offset · total-row-count · editable · request-range/edit()", "title · value · prefix · suffix · detail · tone",
+        "items · pending-text · accessible-name", "source · state · fit · empty-text · error-text · retry-requested()",
+        "title · weekday-labels · days · select() · previous/next-requested()", "kind · icon · title · description · accessible-name · @children",
+        "count · max-count · show-zero · dot · tone · display-text",
+        "text · tone · closable · selectable · selected · toggle()/close()",
+        "items · current-index · enabled · empty-text · select() · select-next()",
+        "items · label-width · bordered · accessible-name",
+        "items · enabled · toggle() · changed()",
+        "trigger-text · title · message · action-text · show()/close()/toggle()",
+    ];
+    private property <[string]> feedback-api: [
+        "value · indeterminate · accessible-name", "size · indicator-color · accessible-name", "text · detail · tone · busy · accessible-name",
+        "messages · accessible-name · dismiss-requested()", "dialog-title · message · accept-text · cancel-text · danger · busy · accept()/reject()",
+        "dialog-title · message · accept-text · cancel-text · dangerous · busy · accept()/reject()", "title · message · tone · action-text · dismissible · busy",
+        "open · side · title · dismissible · close-requested() · @children", "rows · show-avatar · active · accessible-name · status-text",
+        "title · message · tone · dismissible · action-text · activate()/dismiss()",
+        "value · indeterminate · show-value · accessible-name",
+        "tone · title · description · accessible-name · @children",
+        "active · text · cancelable · cancel-text · cancel() · cancel-requested()",
+    ];
+    private property <string> api-note: page == 0 ? general-api[section] : page == 1 ? layout-api[section] : page == 2 ? general-api[7] : page == 3 ? entry-api[section] : page == 4 ? feedback-api[section] : page == 5 ? "Per-icon source constant · Icon.source · Icon.size · Icon.color · accessible-name" : page == 6 ? navigation-api[section] : display-api[section];
+    private property <string> state-note: selected-name == "Theme" ? "Light · Dark · High contrast · three densities · LTR/RTL · 100%–200%"
+        : selected-name == "Typography" || selected-name == "Label" ? "Default · semantic color · wrapping · elision · long text · RTL"
+        : selected-name == "Icon" ? "12/16/20/24px · semantic color · decorative/named · RTL mirror policy"
+        : selected-name == "Surface" || selected-name == "Divider" || selected-name == "FocusRing" || selected-name == "Stack" || selected-name == "Space" || selected-name == "ScrollArea" ? "Default · density · long content · LTR/RTL · 100%–200%; interaction states do not apply"
+        : selected-name == "Progress" || selected-name == "Spinner" || selected-name == "Skeleton" ? "Determinate/indeterminate where applicable · active · reduced motion · contrast themes"
+        : selected-name == "ModalDialog" || selected-name == "ConfirmDialog" || selected-name == "Drawer" || selected-name == "Overlay" || selected-name == "PopupMenu" || selected-name == "ContextMenu" || selected-name == "CommandPalette" ? "Closed · open · focused · disabled item · repeated close · Escape/outside-close boundary"
+        : selected-name == "TextField" || selected-name == "AutoComplete" || selected-name == "DatePicker" || selected-name == "TimePicker" || selected-name == "ColorPicker" || selected-name == "MultiSelect" ? "Default · focused · populated · empty · disabled · read-only/error where applicable · boundary input"
+        : selected-name == "Table" || selected-name == "Tree" || selected-name == "DataGrid" || selected-name == "ImageView" ? "Default · selected · focused · empty · disabled/error where applicable · boundary request"
+        : "Default · Hover · Pressed · Focused · Selected/Checked · Disabled · Loading/Error when applicable · long text";
+    private property <string> token-note: selected-name == "Theme" ? "All semantic color, typography, spacing, radius, control, motion and component geometry tokens"
+        : selected-name == "Typography" || selected-name == "Label" ? "font-size-* · line-height-* · font-weight-* · text-primary/secondary/disabled"
+        : selected-name == "Icon" ? "icon-size-* · icon-default/hover · text-disabled · color-*"
+        : selected-name == "Surface" || selected-name == "Card" ? "bg-surface/elevated/layout · border-* · radius-* · space-* · text-*"
+        : selected-name == "Button" || selected-name == "IconButton" || selected-name == "ToolButton" || selected-name == "SplitButton" ? "control-height-* · control-padding-horizontal · color-primary/error-* · fill-* · radius-medium · motion-fast"
+        : selected-name == "TextField" || selected-name == "Select" || selected-name == "MultiSelect" || selected-name == "AutoComplete" || selected-name == "DatePicker" || selected-name == "TimePicker" || selected-name == "ColorPicker" ? "control-height-* · control-min-width · border-default · focus-outline · validation colors · field-affix-slot"
+        : selected-name == "Checkbox" || selected-name == "Switch" || selected-name == "SegmentedControl" ? "control-height-* · color-primary-* · selection-bg · border-default · focus-outline · radius-*"
+        : selected-name == "ModalDialog" || selected-name == "ConfirmDialog" || selected-name == "Drawer" || selected-name == "Overlay" ? "overlay-mask · bg-elevated · dialog/drawer geometry · border-* · radius-* · space-*"
+        : selected-name == "Progress" || selected-name == "Spinner" || selected-name == "Skeleton" ? "color-primary · bg-disabled · progress/spinner/skeleton-cycle · reduced-motion"
+        : "bg-surface/layout · text-primary/secondary/disabled · border-* · fill-* · selection-bg · focus-outline · radius-* · space-*";
     private property <bool> button-page: (page == 0 && section == 7) || page == 2;
     private property <CheckState> checkbox-state: CheckState.checked;
     private property <bool> switch-value: true;
@@ -97,6 +199,24 @@ export component ComponentDetail inherits Rectangle {
     private property <[ToastMessage]> toasts: [
         { id: 1, text: GalleryStrings.ready, detail: GalleryStrings.long-text, tone: ToastTone.success, duration: 0ms, dismissible: true },
     ];
+    private property <[ButtonGroupItem]> button-group-items: [
+        { text: GalleryStrings.one, enabled: true, checked: false }, { text: GalleryStrings.two, enabled: true, checked: true }, { text: GalleryStrings.disabled, enabled: false, checked: false },
+    ];
+    private property <[CheckboxGroupItem]> checkbox-group-items: [
+        { text: "Alpha", value: "alpha", checked: true, enabled: true }, { text: "Beta", value: "beta", checked: false, enabled: true }, { text: GalleryStrings.disabled, value: "disabled", checked: false, enabled: false },
+    ];
+    private property <[RadioGroupItem]> radio-group-items: [
+        { text: GalleryStrings.one, value: "one", enabled: true }, { text: GalleryStrings.two, value: "two", enabled: true }, { text: GalleryStrings.disabled, value: "disabled", enabled: false },
+    ];
+    private property <[ListItemData]> list-items: [
+        { text: GalleryStrings.account, description: GalleryStrings.account-help, enabled: true }, { text: GalleryStrings.notifications, description: GalleryStrings.long-text, enabled: true }, { text: GalleryStrings.disabled, description: "", enabled: false },
+    ];
+    private property <[DescriptionItem]> description-items: [
+        { label: GalleryStrings.user-name, value: "SlintUI" }, { label: GalleryStrings.validation, value: GalleryStrings.ready }, { label: GalleryStrings.details, value: GalleryStrings.long-text },
+    ];
+    private property <[CollapseItem]> collapse-items: [
+        { title: GalleryStrings.overview, content: GalleryStrings.long-text, enabled: true, expanded: true }, { title: GalleryStrings.details, content: GalleryStrings.account-help, enabled: true, expanded: false }, { title: GalleryStrings.disabled, content: "", enabled: false, expanded: false },
+    ];
 
     out property <length> content-height: content.preferred-height;
     min-width: 680px;
@@ -133,6 +253,10 @@ export component ComponentDetail inherits Rectangle {
             if root.page == 0 && root.section == 8: Space { IconButton { icon: SearchOutlined.source; accessible-name: GalleryStrings.search; tooltip: GalleryStrings.search; } IconButton { icon: SettingOutlined.source; accessible-name: GalleryStrings.settings; enabled: false; } }
             if root.page == 0 && root.section == 9: Space { ToolButton { text: GalleryStrings.save; checkable: true; checked: true; } ToolButton { text: GalleryStrings.notifications; } ToolButton { text: GalleryStrings.disabled; enabled: false; } }
             if root.page == 0 && root.section == 10: Stack { SplitButton { text: GalleryStrings.save; variant: ButtonVariant.primary; menu-entries: root.menu-entries; menu-accessible-name: GalleryStrings.open-menu; } SplitButton { text: GalleryStrings.loading; loading: true; menu-entries: root.menu-entries; menu-accessible-name: GalleryStrings.open-menu; } }
+            if root.page == 0 && root.section == 11: Stack { ButtonGroup { width: 420px; items: root.button-group-items; current-index: 1; accessible-name: "ButtonGroup"; } ButtonGroup { width: 420px; items: root.button-group-items; enabled: false; accessible-name: GalleryStrings.disabled; } }
+            if root.page == 0 && root.section == 12: Space { ToggleButton { text: GalleryStrings.favorite; checked: true; } ToggleButton { text: GalleryStrings.disabled; enabled: false; } }
+            if root.page == 0 && root.section == 13: Stack { Link { text: GalleryStrings.details; target: "https://example.invalid/details"; } Link { text: "External documentation"; target: "https://example.invalid/docs"; external: true; } Link { text: GalleryStrings.disabled; target: "https://example.invalid"; enabled: false; } }
+            if root.page == 0 && root.section == 14: Space { ShortcutHint { shortcut: "Ctrl+K"; } ShortcutHint { shortcut: "⌘⇧P"; } ShortcutHint { shortcut: "Alt+F4"; enabled: false; } }
 
             if root.page == 1 && root.section == 0: Space { Surface { width: 220px; height: 96px; bordered: true; } Surface { width: 220px; height: 96px; variant: SurfaceVariant.elevated; bordered: true; } }
             if root.page == 1 && root.section == 1: Stack { Divider { orientation: DividerOrientation.horizontal; } Space { Label { text: GalleryStrings.one; } Divider { orientation: DividerOrientation.vertical; } Label { text: GalleryStrings.two; } } }
@@ -144,6 +268,11 @@ export component ComponentDetail inherits Rectangle {
             if root.page == 1 && root.section == 7: split := SplitPane { width: 720px; height: 240px; Surface { x: split.first-x; y: split.first-y; width: split.first-width; height: split.first-height; bordered: true; } Surface { x: split.second-x; y: split.second-y; width: split.second-width; height: split.second-height; bordered: true; } }
             if root.page == 1 && root.section == 8: Toolbar { accessible-name: GalleryStrings.sample-toolbar; IconButton { icon: SearchOutlined.source; accessible-name: GalleryStrings.search; } ToolButton { text: GalleryStrings.save; checkable: true; } Divider { orientation: DividerOrientation.vertical; } ToolButton { text: GalleryStrings.settings; } }
             if root.page == 1 && root.section == 9: SettingsSection { title: GalleryStrings.account; description: GalleryStrings.account-help; FormRow { label: GalleryStrings.user-name; TextField { text <=> root.input-value; accessible-name: GalleryStrings.user-name; } } }
+            if root.page == 1 && root.section == 10: Flex { width: 720px; gap: Theme.space-3; Button { text: GalleryStrings.one; horizontal-stretch: 1; } Button { text: GalleryStrings.two; horizontal-stretch: 2; } Button { text: GalleryStrings.three; } }
+            if root.page == 1 && root.section == 11: Grid { width: 720px; Row { Surface { min-height: 72px; bordered: true; } Surface { min-height: 72px; bordered: true; } } Row { Surface { min-height: 72px; bordered: true; } Surface { min-height: 72px; bordered: true; } } }
+            if root.page == 1 && root.section == 12: Panel { width: 620px; title: GalleryStrings.settings; description: GalleryStrings.account-help; Stack { padding: Theme.space-4; Label { text: GalleryStrings.long-text; } Button { text: GalleryStrings.save; variant: ButtonVariant.primary; } } }
+            if root.page == 1 && root.section == 13: shell := AppShell { width: 720px; height: 300px; Label { x: shell.title-x + Theme.space-3; y: shell.title-y; width: shell.title-width - Theme.space-6; height: shell.title-height; text: GalleryStrings.title; } Label { x: shell.navigation-x + Theme.space-3; y: shell.navigation-y + Theme.space-3; width: shell.navigation-width - Theme.space-6; text: GalleryStrings.navigation; } Label { x: shell.content-x + Theme.space-4; y: shell.content-y + Theme.space-4; width: shell.content-width - Theme.space-8; text: GalleryStrings.long-text; wrap: word-wrap; } Label { x: shell.status-x + Theme.space-3; y: shell.status-y; width: shell.status-width - Theme.space-6; height: shell.status-height; text: GalleryStrings.ready; } }
+            if root.page == 1 && root.section == 14: TitleBar { width: 720px; title: GalleryStrings.title; icon: SettingOutlined.source; minimize-accessible-name: "Minimize"; maximize-accessible-name: "Maximize"; restore-accessible-name: "Restore"; close-accessible-name: GalleryStrings.cancel; }
 
             if root.page == 3 && root.section == 0: Form { width: 520px; errors: [{ field: GalleryStrings.user-name, message: GalleryStrings.invalid-value }]; error-summary-title: GalleryStrings.fix-errors; TextField { text: GalleryStrings.invalid-value; validation: ValidationState.error; } Button { text: GalleryStrings.save; variant: ButtonVariant.primary; } }
             if root.page == 3 && root.section == 1: FormRow { width: 620px; label: GalleryStrings.user-name; required: true; help-text: GalleryStrings.account-help; TextField { text <=> root.input-value; accessible-name: GalleryStrings.user-name; } }
@@ -156,6 +285,14 @@ export component ComponentDetail inherits Rectangle {
             if root.page == 3 && root.section == 8: DatePicker { value: { year: 2026, month: 7, day: 20 }; year-options: ["2025", "2026", "2027"]; year-values: [2025, 2026, 2027]; year-index: 1; month-options: ["06", "07", "08"]; month-values: [6, 7, 8]; month-index: 1; day-options: ["19", "20", "21"]; day-values: [19, 20, 21]; day-index: 1; }
             if root.page == 3 && root.section == 9: TimePicker { value: { hour: 9, minute: 30, second: 0 }; hour-options: ["08", "09", "10"]; hour-values: [8, 9, 10]; hour-index: 1; minute-options: ["00", "30"]; minute-values: [0, 30]; minute-index: 1; }
             if root.page == 3 && root.section == 10: ColorPicker { width: 280px; value: Theme.color-primary; value-label: "Primary"; options: root.colors; }
+            if root.page == 3 && root.section == 11: Stack { TextArea { width: 520px; height: 128px; text: GalleryStrings.long-text; show-count: true; max-length: 200; accessible-name: "TextArea"; } TextArea { width: 520px; height: 96px; text: GalleryStrings.disabled; enabled: false; accessible-name: GalleryStrings.disabled; } }
+            if root.page == 3 && root.section == 12: Stack { SearchField { width: 420px; text: "SlintUI"; placeholder-text: GalleryStrings.search; clear-accessible-name: GalleryStrings.cancel; accessible-name: GalleryStrings.search; } SearchField { width: 420px; enabled: false; placeholder-text: GalleryStrings.disabled; accessible-name: GalleryStrings.disabled; } }
+            if root.page == 3 && root.section == 13: Space { NumberInput { value: 8; minimum: 0; maximum: 10; step-size: 2; accessible-name: "NumberInput"; } NumberInput { value: 3; enabled: false; accessible-name: GalleryStrings.disabled; } }
+            if root.page == 3 && root.section == 14: CheckboxGroup { items: root.checkbox-group-items; accessible-name: "CheckboxGroup"; error-text: GalleryStrings.invalid-value; }
+            if root.page == 3 && root.section == 15: RadioGroup { items: root.radio-group-items; current-index: 0; accessible-name: "RadioGroup"; }
+            if root.page == 3 && root.section == 16: ComboBox { width: 420px; text: "Slint"; suggestions: root.suggestions; placeholder-text: GalleryStrings.choose; accessible-name: "ComboBox"; }
+            if root.page == 3 && root.section == 17: Stack { Slider { width: 520px; value: 35; minimum: 0; maximum: 100; step: 5; accessible-name: "Slider"; } Slider { width: 520px; value: 60; enabled: false; accessible-name: GalleryStrings.disabled; } }
+            if root.page == 3 && root.section == 18: FilePicker { width: 620px; path: "C:/workspace/example.txt"; browse-text: GalleryStrings.choose; accessible-name: "FilePicker"; }
 
             if root.page == 6 && root.section == 0: Tabs { width: 620px; tabs: root.tabs; current-index: 0; }
             if root.page == 6 && root.section == 1: menu-anchor := Rectangle { width: 220px; height: Theme.control-height-medium; Button { width: parent.width; text: GalleryStrings.open-menu; clicked => { detail-menu.show(); } } detail-menu := PopupMenu { width: parent.width; height: parent.height; entries: root.menu-entries; } }
@@ -165,10 +302,11 @@ export component ComponentDetail inherits Rectangle {
             if root.page == 6 && root.section == 5: Pagination { current-page: 3; page-count: 12; page-size-options: ["10 / page", "20 / page"]; previous-accessible-name: GalleryStrings.previous; next-accessible-name: GalleryStrings.next; }
             if root.page == 6 && root.section == 6: NavigationRail { height: 220px; items: root.rail-items; current-index: 0; }
             if root.page == 6 && root.section == 7: Button { text: "CommandPalette"; clicked => { root.command-palette-requested(); } }
+            if root.page == 6 && root.section == 8: Dropdown { width: 280px; text: GalleryStrings.open-menu; entries: root.menu-entries; accessible-name: "Dropdown"; }
 
             if root.page == 7 && root.section == 0: Card { width: 420px; title: GalleryStrings.details; description: GalleryStrings.account-help; Label { text: GalleryStrings.long-text; } }
             if root.page == 7 && root.section == 1: SegmentedControl { width: 360px; options: root.options; selected-index: 1; }
-            if root.page == 7 && root.section == 2: IconButton { icon: SettingOutlined.source; accessible-name: GalleryStrings.settings; tooltip: GalleryStrings.shortcut-help; }
+            if root.page == 7 && root.section == 2: Tooltip { content: GalleryStrings.shortcut-help; accessible-name: GalleryStrings.shortcut-help; IconButton { icon: SettingOutlined.source; accessible-name: GalleryStrings.settings; } }
             if root.page == 7 && root.section == 3: Table { width: 720px; height: 260px; columns: root.columns; rows: root.rows; empty-text: GalleryStrings.empty-title; }
             if root.page == 7 && root.section == 4: Tree { width: 420px; height: 240px; items: root.tree-items; }
             if root.page == 7 && root.section == 5: Space { Avatar { initials: "SU"; accessible-name: "SlintUI"; size: ControlSize.small; } Avatar { initials: "UI"; accessible-name: "UI"; } Avatar { initials: "SL"; accessible-name: "Slint"; size: ControlSize.large; } }
@@ -178,6 +316,12 @@ export component ComponentDetail inherits Rectangle {
             if root.page == 7 && root.section == 9: Space { ImageView { width: 260px; height: 220px; state: ImageViewState.empty; empty-text: GalleryStrings.empty-title; } ImageView { width: 260px; height: 220px; state: ImageViewState.error; error-text: GalleryStrings.invalid-value; } }
             if root.page == 7 && root.section == 10: Calendar { title: "2026-07"; weekday-labels: root.weekdays; days: root.days; previous-accessible-name: GalleryStrings.previous; next-accessible-name: GalleryStrings.next; }
             if root.page == 7 && root.section == 11: EmptyState { width: 520px; kind: EmptyStateKind.no-data; icon: @image-url("../../../crates/slint-ui/assets/icons/ant-design/outlined/inbox.svg"); title: GalleryStrings.empty-title; description: GalleryStrings.empty-description; Button { text: GalleryStrings.choose; variant: ButtonVariant.primary; } }
+            if root.page == 7 && root.section == 12: Space { Badge { count: 8; accessible-name: "8 notifications"; } Badge { count: 120; max-count: 99; tone: BadgeTone.info; } Badge { dot: true; tone: BadgeTone.success; accessible-name: GalleryStrings.ready; } }
+            if root.page == 7 && root.section == 13: Space { Tag { text: GalleryStrings.ready; tone: TagTone.success; } Tag { text: GalleryStrings.favorite; selectable: true; selected: true; } Tag { text: GalleryStrings.details; closable: true; } Tag { text: GalleryStrings.disabled; enabled: false; } }
+            if root.page == 7 && root.section == 14: List { width: 620px; height: 240px; items: root.list-items; current-index: 0; accessible-name: "List"; empty-text: GalleryStrings.empty-title; }
+            if root.page == 7 && root.section == 15: DescriptionList { width: 720px; items: root.description-items; bordered: true; accessible-name: "DescriptionList"; }
+            if root.page == 7 && root.section == 16: Collapse { width: 720px; items: root.collapse-items; accessible-name: "Collapse"; }
+            if root.page == 7 && root.section == 17: Popover { width: 280px; trigger-text: "Popover"; title: GalleryStrings.details; message: GalleryStrings.long-text; action-text: GalleryStrings.save; close-text: GalleryStrings.cancel; accessible-name: "Popover"; }
 
             if root.page == 4 && root.section == 0: Stack { Progress { width: 520px; value: 0.64; } Progress { width: 520px; indeterminate: true; } }
             if root.page == 4 && root.section == 1: Space { Spinner { accessible-name: GalleryStrings.loading; } Label { text: GalleryStrings.loading; } }
@@ -188,6 +332,10 @@ export component ComponentDetail inherits Rectangle {
             if root.page == 4 && root.section == 6: Notification { title: GalleryStrings.notifications; message: GalleryStrings.long-text; tone: NotificationTone.info; action-text: GalleryStrings.details; close-accessible-name: GalleryStrings.cancel; }
             if root.page == 4 && root.section == 7: Button { text: "Drawer"; clicked => { root.drawer-requested(); } }
             if root.page == 4 && root.section == 8: Skeleton { width: 560px; rows: 3; show-avatar: true; accessible-name: GalleryStrings.loading; status-text: GalleryStrings.loading; }
+            if root.page == 4 && root.section == 9: Stack { Alert { width: 720px; title: GalleryStrings.notifications; message: GalleryStrings.long-text; tone: AlertTone.info; dismissible: true; close-accessible-name: GalleryStrings.cancel; action-text: GalleryStrings.details; } Alert { width: 720px; title: GalleryStrings.invalid-value; tone: AlertTone.error; } }
+            if root.page == 4 && root.section == 10: Space { ProgressRing { value: 0.68; accessible-name: GalleryStrings.progress-label; } ProgressRing { indeterminate: true; accessible-name: GalleryStrings.loading; } }
+            if root.page == 4 && root.section == 11: ResultState { width: 620px; tone: ResultTone.success; title: GalleryStrings.ready; description: GalleryStrings.long-text; Button { text: GalleryStrings.details; variant: ButtonVariant.primary; } }
+            if root.page == 4 && root.section == 12: Rectangle { width: 720px; height: 260px; background: Theme.bg-layout; Label { x: Theme.space-4; y: Theme.space-4; text: GalleryStrings.details; } LoadingOverlay { width: parent.width; height: parent.height; active: true; text: GalleryStrings.loading; cancelable: true; cancel-text: GalleryStrings.cancel; } }
 
             if root.page == 5: ListView {
                 width: 760px;
@@ -211,16 +359,23 @@ export component ComponentDetail inherits Rectangle {
 
         Card {
             width: 840px;
+            title: GalleryStrings.sizes-and-states;
+            description: GalleryStrings.button-states-help;
+            Typography { text: root.state-note; style: TypographyStyle.body; color: Theme.text-secondary; wrap: word-wrap; }
+        }
+
+        Card {
+            width: 840px;
             title: GalleryStrings.api-and-limits;
             description: GalleryStrings.api-help;
-            Typography { text: GalleryStrings.component-api-note; style: TypographyStyle.body; color: Theme.text-secondary; }
+            Typography { text: root.api-note; style: TypographyStyle.body; color: Theme.text-secondary; wrap: word-wrap; }
         }
 
         Card {
             width: 840px;
             title: GalleryStrings.theme-token;
             description: GalleryStrings.theme-token-help;
-            Typography { text: root.button-page ? "color-primary · color-error · control-height-small/medium/large · radius-medium · motion-fast" : "bg-surface · text-primary · border-default · radius-medium · space-2/3/4"; style: TypographyStyle.caption; color: Theme.text-secondary; }
+            Typography { text: root.token-note; style: TypographyStyle.caption; color: Theme.text-secondary; wrap: word-wrap; }
         }
     }
 }

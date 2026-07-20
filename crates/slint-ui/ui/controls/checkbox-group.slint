@@ -1,0 +1,31 @@
+import { Theme } from "../tokens/theme.slint";
+import { Checkbox, CheckState } from "checkbox.slint";
+
+export struct CheckboxGroupItem { text: string, value: string, checked: bool, enabled: bool }
+
+export component CheckboxGroup inherits Rectangle {
+    in-out property <[CheckboxGroupItem]> items;
+    in property <bool> enabled: true;
+    in property <string> accessible-name: "";
+    in property <string> error-text: "";
+    callback changed(index: int, checked: bool);
+
+    public function set-checked(index: int, checked: bool) {
+        if (enabled && index >= 0 && index < items.length && items[index].enabled && items[index].checked != checked) {
+            root.items[index].checked = checked;
+            root.changed(index, checked);
+        }
+    }
+
+    accessible-role: groupbox;
+    accessible-label: accessible-name;
+    accessible-enabled: enabled;
+    accessible-description: error-text;
+    accessible-item-count: items.length;
+
+    VerticalLayout {
+        spacing: Theme.space-2;
+        for item[index] in root.items: Checkbox { text: item.text; enabled: root.enabled && item.enabled; state: item.checked ? CheckState.checked : CheckState.unchecked; toggled(state) => { root.set-checked(index, state == CheckState.checked); } }
+        if root.error-text != "": Text { text: root.error-text; color: Theme.color-error; font-size: Theme.font-size-caption; wrap: word-wrap; accessible-live-region: polite; }
+    }
+}

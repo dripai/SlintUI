@@ -1,0 +1,18 @@
+import { Theme } from "../tokens/theme.slint";
+import { Spinner } from "spinner.slint";
+
+export component ProgressRing inherits Rectangle {
+    in property <float> value: 0;
+    in property <bool> indeterminate: false;
+    in property <string> accessible-name: "";
+    in property <bool> show-value: true;
+    private property <float> clamped-value: clamp(value, 0, 1);
+
+    min-width: Theme.progress-ring-size; max-width: self.min-width; min-height: Theme.progress-ring-size; max-height: self.min-height;
+    accessible-role: progress-indicator; accessible-label: accessible-name; accessible-value: clamped-value; accessible-value-minimum: 0; accessible-value-maximum: 1;
+
+    if root.indeterminate: Spinner { width: parent.width; height: parent.height; accessible-name: root.accessible-name; }
+    if !root.indeterminate: Path { width: parent.width; height: parent.height; commands: "M 24 4 A 20 20 0 1 1 23.9 4"; fill: transparent; stroke: Theme.border-secondary; stroke-width: Theme.progress-track-height / 2; }
+    if !root.indeterminate: Path { width: parent.width; height: parent.height; commands: root.clamped-value <= 0 ? "M 24 4" : root.clamped-value <= 0.25 ? "M 24 4 A 20 20 0 0 1 44 24" : root.clamped-value <= 0.5 ? "M 24 4 A 20 20 0 0 1 24 44" : root.clamped-value <= 0.75 ? "M 24 4 A 20 20 0 1 1 4 24" : "M 24 4 A 20 20 0 1 1 23.9 4"; fill: transparent; stroke: Theme.color-primary; stroke-width: Theme.progress-track-height / 2; }
+    if !root.indeterminate && root.show-value: Text { width: parent.width; height: parent.height; text: round(root.clamped-value * 100) + "%"; color: Theme.text-primary; font-size: Theme.font-size-caption; horizontal-alignment: center; vertical-alignment: center; accessible-role: none; }
+}

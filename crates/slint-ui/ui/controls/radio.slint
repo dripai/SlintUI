@@ -1,0 +1,54 @@
+import { Theme } from "../tokens/theme.slint";
+import { FocusRing } from "../primitives/focus-ring.slint";
+
+export component Radio inherits Rectangle {
+    in property <string> text: "";
+    in property <string> value: "";
+    in property <bool> checked: false;
+    in property <bool> enabled: true;
+    in property <string> accessible-name: text;
+    out property <bool> has-focus <=> focus.has-focus;
+    callback selected(value: string);
+
+    public function select() { if (enabled && !checked) { root.selected(value); } }
+
+    min-height: max(Theme.control-height-small, Theme.line-height-body);
+    accessible-role: radio-button;
+    accessible-label: accessible-name;
+    accessible-enabled: enabled;
+    accessible-checkable: true;
+    accessible-checked: checked;
+    accessible-action-default => { root.select(); }
+
+    HorizontalLayout { spacing: Theme.space-2; cross-axis-alignment: center;
+        dot := Rectangle { width: Theme.icon-size-small; height: Theme.icon-size-small; border-radius: self.width / 2; border-width: Theme.border-width; border-color: root.checked ? Theme.color-primary : root.enabled ? Theme.border-default : Theme.text-disabled; background: root.enabled ? Theme.bg-control : Theme.bg-disabled;
+            if root.checked: Rectangle { x: Theme.space-1; y: Theme.space-1; width: parent.width - Theme.space-2; height: self.width; border-radius: self.width / 2; background: root.enabled ? Theme.color-primary : Theme.text-disabled; }
+            FocusRing { active: root.has-focus && root.enabled; target-width: parent.width; target-height: parent.height; radius: parent.width / 2; }
+        }
+        Text { text: root.text; color: root.enabled ? Theme.text-primary : Theme.text-disabled; font-size: Theme.font-size-body; wrap: word-wrap; vertical-alignment: center; accessible-role: none; }
+    }
+    TouchArea { enabled: root.enabled; mouse-cursor: self.enabled ? pointer : default; clicked => { root.select(); } }
+    focus := FocusScope { x: 0px; width: 0px; enabled: root.enabled; key-pressed(event) => { if (event.text == Key.Space || event.text == Key.Return) { root.select(); return accept; } return reject; } }
+}
+
+export struct RadioGroupItem { text: string, value: string, enabled: bool }
+
+export component RadioGroup inherits Rectangle {
+    in property <[RadioGroupItem]> items;
+    in-out property <int> current-index: -1;
+    in property <bool> enabled: true;
+    in property <string> accessible-name: "";
+    in property <string> error-text: "";
+    callback changed(index: int, value: string);
+
+    public function select(index: int) {
+        if (enabled && index >= 0 && index < items.length && items[index].enabled && current-index != index) { root.current-index = index; root.changed(index, items[index].value); }
+    }
+    public function select-next(step: int) { if (items.length > 0) { root.select(Math.mod(current-index + step + items.length, items.length)); } }
+
+    accessible-role: groupbox; accessible-label: accessible-name; accessible-enabled: enabled; accessible-description: error-text; accessible-item-count: items.length;
+    VerticalLayout { spacing: Theme.space-2;
+        for item[index] in root.items: Radio { text: item.text; value: item.value; enabled: root.enabled && item.enabled; checked: index == root.current-index; selected(value) => { root.select(index); } }
+        if root.error-text != "": Text { text: root.error-text; color: Theme.color-error; font-size: Theme.font-size-caption; wrap: word-wrap; accessible-live-region: polite; }
+    }
+}

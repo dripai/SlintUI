@@ -1,0 +1,6 @@
+import { Theme } from "../tokens/theme.slint";
+
+export component Flex inherits HorizontalLayout {
+    in property <length> gap: Theme.space-2;
+    spacing: gap;
+}

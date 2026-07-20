@@ -1,0 +1,31 @@
+import { Theme, Direction } from "../tokens/theme.slint";
+
+export component AppShell inherits Rectangle {
+    in property <length> title-height: Theme.app-shell-title-height;
+    in property <length> navigation-width: Theme.app-shell-navigation-width;
+    in property <length> status-height: Theme.app-shell-status-height;
+    in property <bool> navigation-visible: true;
+
+    out property <length> title-x: 0px;
+    out property <length> title-y: 0px;
+    out property <length> title-width: root.width;
+    out property <length> navigation-x: Theme.direction == Direction.rtl ? root.width - effective-navigation-width : 0px;
+    out property <length> navigation-y: title-height;
+    out property <length> navigation-height: max(0px, root.height - title-height - status-height);
+    out property <length> content-x: Theme.direction == Direction.rtl ? 0px : effective-navigation-width;
+    out property <length> content-y: title-height;
+    out property <length> content-width: max(0px, root.width - effective-navigation-width);
+    out property <length> content-height: max(0px, root.height - title-height - status-height);
+    out property <length> status-x: 0px;
+    out property <length> status-y: max(0px, root.height - status-height);
+    out property <length> status-width: root.width;
+    private property <length> effective-navigation-width: navigation-visible ? min(navigation-width, root.width) : 0px;
+
+    background: Theme.bg-layout;
+    accessible-role: groupbox;
+
+    Rectangle { x: root.title-x; y: root.title-y; width: root.title-width; height: root.title-height; background: Theme.bg-surface; border-width: Theme.border-width; border-color: Theme.border-secondary; }
+    if root.navigation-visible: Rectangle { x: root.navigation-x; y: root.navigation-y; width: root.effective-navigation-width; height: root.navigation-height; background: Theme.bg-surface; border-width: Theme.border-width; border-color: Theme.border-secondary; }
+    Rectangle { x: root.status-x; y: root.status-y; width: root.status-width; height: root.status-height; background: Theme.bg-surface; border-width: Theme.border-width; border-color: Theme.border-secondary; }
+    @children
+}

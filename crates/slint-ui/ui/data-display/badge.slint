@@ -1,0 +1,26 @@
+import { Theme, ThemeMode } from "../tokens/theme.slint";
+
+export enum BadgeTone { neutral, info, success, warning, error }
+
+export component Badge inherits Rectangle {
+    in property <int> count: 0;
+    in property <int> max-count: 99;
+    in property <bool> show-zero: false;
+    in property <bool> dot: false;
+    in property <BadgeTone> tone: BadgeTone.error;
+    in property <string> accessible-name: "";
+    out property <string> display-text: dot ? "" : count > max-count ? max-count + "+" : count;
+
+    visible: dot || count > 0 || show-zero;
+    min-width: dot ? Theme.status-indicator-size : max(Theme.badge-min-size, label.preferred-width + Theme.space-2);
+    max-width: self.min-width;
+    min-height: dot ? Theme.status-indicator-size : Theme.badge-min-size;
+    max-height: self.min-height;
+    border-radius: self.height / 2;
+    background: tone == BadgeTone.success ? Theme.color-success : tone == BadgeTone.warning ? Theme.color-warning : tone == BadgeTone.info ? Theme.color-primary : tone == BadgeTone.neutral ? Theme.icon-default : Theme.color-error;
+    accessible-role: text;
+    accessible-label: accessible-name == "" ? display-text : accessible-name;
+    accessible-value: count;
+
+    label := Text { visible: !root.dot; width: parent.width; height: parent.height; text: root.display-text; color: Theme.mode == ThemeMode.light ? Theme.text-on-accent : Theme.bg-layout; font-size: Theme.font-size-caption; font-weight: Theme.font-weight-medium; horizontal-alignment: center; vertical-alignment: center; accessible-role: none; }
+}

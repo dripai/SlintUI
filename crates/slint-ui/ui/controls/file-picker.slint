@@ -1,0 +1,28 @@
+import { Theme, ControlSize } from "../tokens/theme.slint";
+import { TextField } from "text-field.slint";
+import { Button } from "button.slint";
+
+export component FilePicker inherits Rectangle {
+    in-out property <string> path: "";
+    in property <string> placeholder-text: "";
+    in property <string> browse-text: "";
+    in property <string> accessible-name: "";
+    in property <bool> enabled: true;
+    in property <ControlSize> size: ControlSize.medium;
+    callback browse-requested();
+    callback changed(path: string);
+
+    public function request-browse() { if (enabled) { root.browse-requested(); } }
+    public function choose(next-path: string) { if (enabled && path != next-path) { root.path = next-path; root.changed(next-path); } }
+
+    min-width: Theme.control-min-width * 2;
+    min-height: size == ControlSize.small ? Theme.control-height-small : size == ControlSize.large ? Theme.control-height-large : Theme.control-height-medium;
+    accessible-role: groupbox;
+    accessible-label: accessible-name;
+    accessible-enabled: enabled;
+
+    HorizontalLayout { spacing: Theme.space-2;
+        TextField { horizontal-stretch: 1; text: root.path; placeholder-text: root.placeholder-text; accessible-name: root.accessible-name; enabled: root.enabled; read-only: true; size: root.size; }
+        Button { text: root.browse-text; enabled: root.enabled; size: root.size; clicked => { root.request-browse(); } }
+    }
+}

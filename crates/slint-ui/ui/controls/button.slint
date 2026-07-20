@@ -14,6 +14,7 @@ export component Button inherits Rectangle {
     in property <bool> checkable: false;
     in-out property <bool> checked: false;
     in property <bool> keyboard-focusable: true;
+    in property <length> radius: Theme.radius-medium;
     in property <string> accessible-name: text;
     out property <bool> has-focus <=> focus-scope.has-focus;
 
@@ -31,20 +32,21 @@ export component Button inherits Rectangle {
         : Theme.control-height-medium;
     private property <bool> interactive: enabled && !loading;
     private property <bool> emphasized: variant == ButtonVariant.primary || variant == ButtonVariant.danger;
-    private property <color> accent: variant == ButtonVariant.danger ? Theme.color-error : Theme.color-primary;
-    private property <color> accent-hover: variant == ButtonVariant.danger ? Theme.color-error-hover : Theme.color-primary-hover;
-    private property <color> accent-active: variant == ButtonVariant.danger ? Theme.color-error-active : Theme.color-primary-active;
+    private property <color> text-accent: variant == ButtonVariant.danger ? Theme.color-error : Theme.color-primary;
+    private property <color> fill-accent: variant == ButtonVariant.danger ? Theme.color-error-fill : Theme.color-primary-fill;
+    private property <color> fill-accent-hover: variant == ButtonVariant.danger ? Theme.color-error-fill-hover : Theme.color-primary-fill-hover;
+    private property <color> fill-accent-active: variant == ButtonVariant.danger ? Theme.color-error-fill-active : Theme.color-primary-fill-active;
 
     min-height: control-height;
     max-height: control-height;
     preferred-height: control-height;
     min-width: text == "" ? control-height : control-height + Theme.control-padding-horizontal;
     preferred-width: max(self.min-width, content.preferred-width + Theme.control-padding-horizontal * 2);
-    border-radius: variant == ButtonVariant.link ? 0px : Theme.radius-medium;
+    border-radius: variant == ButtonVariant.link ? 0px : radius;
     border-width: variant == ButtonVariant.default && enabled ? Theme.border-width : 0px;
     border-color: Theme.border-default;
     background: !enabled ? Theme.bg-disabled
-        : emphasized ? (touch-area.pressed ? accent-active : touch-area.has-hover ? accent-hover : accent)
+        : emphasized ? (touch-area.pressed ? fill-accent-active : touch-area.has-hover ? fill-accent-hover : fill-accent)
         : checked ? Theme.selection-bg
         : variant == ButtonVariant.text || variant == ButtonVariant.link ? (touch-area.pressed ? Theme.fill-pressed : touch-area.has-hover ? Theme.fill-hover : transparent)
         : touch-area.pressed ? Theme.fill-pressed
@@ -76,7 +78,7 @@ export component Button inherits Rectangle {
             width: Theme.icon-size-small;
             height: Theme.icon-size-small;
             image-fit: contain;
-            colorize: root.emphasized ? Theme.text-on-accent : root.variant == ButtonVariant.link ? root.accent : Theme.icon-default;
+            colorize: root.emphasized ? Theme.text-on-accent : root.variant == ButtonVariant.link ? root.text-accent : Theme.icon-default;
             accessible-role: none;
         }
 
@@ -85,7 +87,7 @@ export component Button inherits Rectangle {
             color: !root.enabled ? Theme.text-disabled
                 : root.emphasized ? Theme.text-on-accent
                 : root.checked && Theme.mode == ThemeMode.high-contrast ? Theme.bg-layout
-                : root.variant == ButtonVariant.link ? root.accent
+                : root.variant == ButtonVariant.link ? root.text-accent
                 : Theme.text-primary;
             font-size: Theme.font-size-body;
             font-weight: root.emphasized ? Theme.font-weight-medium : Theme.font-weight-regular;

@@ -1,0 +1,31 @@
+import { Theme, Direction } from "../tokens/theme.slint";
+import { FocusRing } from "../primitives/focus-ring.slint";
+
+export struct CollapseItem { title:string, content:string, enabled:bool, expanded:bool }
+
+export component Collapse inherits Rectangle {
+    in-out property <[CollapseItem]> items;
+    in property <bool> enabled:true;
+    in property <string> accessible-name:"";
+    callback changed(index:int,expanded:bool);
+
+    public function toggle(index:int){if(enabled&&index>=0&&index<items.length&&items[index].enabled){root.items[index].expanded=!root.items[index].expanded;root.changed(index,root.items[index].expanded);}}
+
+    background:Theme.bg-surface;border-width:Theme.border-width;border-color:Theme.border-default;border-radius:Theme.radius-medium;clip:true;
+    accessible-role:groupbox;accessible-label:accessible-name;accessible-enabled:enabled;accessible-item-count:items.length;
+    VerticalLayout{spacing:0px;
+        for item[index] in root.items: VerticalLayout{spacing:0px;
+            header:=Rectangle{min-height:Theme.row-height;background:touch.has-hover&&root.enabled&&item.enabled?Theme.fill-hover:transparent;accessible-role:button;accessible-label:item.title;accessible-enabled:root.enabled&&item.enabled;accessible-expandable:true;accessible-expanded:item.expanded;accessible-action-default=>{root.toggle(index);}
+                HorizontalLayout{padding-left:Theme.space-3;padding-right:Theme.space-3;spacing:Theme.space-2;cross-axis-alignment:center;
+                    Image{width:Theme.icon-size-x-small;height:Theme.icon-size-x-small;source:item.expanded?@image-url("../../assets/icons/ant-design/outlined/down.svg"):Theme.direction==Direction.rtl?@image-url("../../assets/icons/ant-design/outlined/left.svg"):@image-url("../../assets/icons/ant-design/outlined/right.svg");colorize:item.enabled?Theme.icon-default:Theme.text-disabled;accessible-role:none;}
+                    Text{text:item.title;color:root.enabled&&item.enabled?Theme.text-primary:Theme.text-disabled;font-size:Theme.font-size-body;font-weight:Theme.font-weight-medium;horizontal-stretch:1;overflow:elide;}
+                }
+                touch:=TouchArea{enabled:root.enabled&&item.enabled;clicked=>{root.toggle(index);}}
+            }
+            if item.expanded: HorizontalLayout { padding-left: Theme.space-8; padding-right: Theme.space-3; padding-top: Theme.space-2; padding-bottom: Theme.space-2;
+                Text { text: item.content; color: Theme.text-secondary; font-size: Theme.font-size-body; wrap: word-wrap; }
+            }
+            Rectangle{height:Theme.border-width;background:Theme.border-secondary;}
+        }
+    }
+}

@@ -1,0 +1,13 @@
+import { Slider as NativeSlider } from "std-widgets.slint";
+import { Theme } from "../tokens/theme.slint";
+
+export component Slider inherits NativeSlider {
+    in property <string> accessible-name: "";
+
+    public function set-value(next: float) {
+        if (root.enabled && root.value != clamp(next, root.minimum, root.maximum)) { root.value = clamp(next, root.minimum, root.maximum); root.changed(root.value); }
+    }
+
+    min-width: root.orientation == Orientation.horizontal ? Theme.slider-min-width : Theme.icon-size-large;
+    accessible-label: accessible-name;
+}

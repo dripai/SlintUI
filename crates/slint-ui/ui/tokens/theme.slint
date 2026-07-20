@@ -20,7 +20,7 @@ export global Theme {
 
     out property <color> text-primary: mode == ThemeMode.dark ? #ffffffd9 : mode == ThemeMode.high-contrast ? #ffffff : #000000e0;
     out property <color> text-secondary: mode == ThemeMode.dark ? #ffffffa6 : mode == ThemeMode.high-contrast ? #ffffff : #000000a6;
-    out property <color> text-tertiary: mode == ThemeMode.dark ? #ffffff73 : mode == ThemeMode.high-contrast ? #ffffff : #00000073;
+    out property <color> text-tertiary: mode == ThemeMode.dark ? #ffffff99 : mode == ThemeMode.high-contrast ? #ffffff : #00000099;
     out property <color> text-disabled: mode == ThemeMode.dark ? #ffffff40 : mode == ThemeMode.high-contrast ? #a0a0a0 : #00000040;
     out property <color> text-placeholder: text-disabled;
     out property <color> text-inverse: mode == ThemeMode.dark || mode == ThemeMode.high-contrast ? #000000e0 : #ffffff;
@@ -28,24 +28,43 @@ export global Theme {
 
     out property <color> icon-default: text-tertiary;
     out property <color> icon-hover: text-primary;
-    out property <color> border-default: mode == ThemeMode.dark ? #424242 : mode == ThemeMode.high-contrast ? #ffffff : #d9d9d9;
+    out property <color> border-default: mode == ThemeMode.dark ? #737373 : mode == ThemeMode.high-contrast ? #ffffff : #8c8c8c;
     out property <color> border-secondary: mode == ThemeMode.dark ? #fdfdfd1f : mode == ThemeMode.high-contrast ? #ffffff : #0505050f;
     out property <color> fill-hover: mode == ThemeMode.dark ? #ffffff14 : mode == ThemeMode.high-contrast ? #ffffff26 : #0000000f;
     out property <color> fill-pressed: mode == ThemeMode.dark ? #ffffff1f : mode == ThemeMode.high-contrast ? #ffffff40 : #0000001a;
     out property <color> selection-bg: mode == ThemeMode.dark ? #111a2c : mode == ThemeMode.high-contrast ? #ffffff : #e6f4ff;
     out property <color> overlay-mask: mode == ThemeMode.dark ? #000000a6 : #00000073;
 
-    out property <color> color-primary: mode == ThemeMode.dark ? #1668dc : mode == ThemeMode.high-contrast ? #00ffff : #1677ff;
-    out property <color> color-primary-hover: mode == ThemeMode.dark ? #3c89e8 : mode == ThemeMode.high-contrast ? #ffffff : #4096ff;
-    out property <color> color-primary-active: mode == ThemeMode.dark ? #1554ad : mode == ThemeMode.high-contrast ? #00ffff : #0958d9;
+    // Foreground semantic colors are kept separate from filled-control colors:
+    // the former contrast with surfaces, while the latter contrast with text-on-accent.
+    out property <color> color-primary: mode == ThemeMode.dark ? #69b1ff : mode == ThemeMode.high-contrast ? #00ffff : #0958d9;
+    out property <color> color-primary-hover: mode == ThemeMode.dark ? #91caff : mode == ThemeMode.high-contrast ? #ffffff : #003eb3;
+    out property <color> color-primary-active: mode == ThemeMode.dark ? #4096ff : mode == ThemeMode.high-contrast ? #00ffff : #002c8c;
+    out property <color> color-primary-fill: mode == ThemeMode.dark ? #1554ad : mode == ThemeMode.high-contrast ? #00ffff : #0958d9;
+    out property <color> color-primary-fill-hover: mode == ThemeMode.dark ? #1668dc : mode == ThemeMode.high-contrast ? #ffffff : #003eb3;
+    out property <color> color-primary-fill-active: mode == ThemeMode.dark ? #15325b : mode == ThemeMode.high-contrast ? #00ffff : #002c8c;
     out property <color> color-primary-bg: mode == ThemeMode.dark ? #111a2c : mode == ThemeMode.high-contrast ? #000000 : #e6f4ff;
-    out property <color> color-primary-border: mode == ThemeMode.dark ? #15325b : mode == ThemeMode.high-contrast ? #00ffff : #91caff;
-    out property <color> color-success: mode == ThemeMode.dark ? #49aa19 : mode == ThemeMode.high-contrast ? #00ff00 : #52c41a;
-    out property <color> color-warning: mode == ThemeMode.dark ? #d89614 : mode == ThemeMode.high-contrast ? #ffff00 : #faad14;
-    out property <color> color-error: mode == ThemeMode.dark ? #dc4446 : mode == ThemeMode.high-contrast ? #ff8080 : #ff4d4f;
-    out property <color> color-error-hover: mode == ThemeMode.dark ? #e86e6b : mode == ThemeMode.high-contrast ? #ffffff : #ff7875;
-    out property <color> color-error-active: mode == ThemeMode.dark ? #ad393a : mode == ThemeMode.high-contrast ? #ff8080 : #d9363e;
-    out property <color> focus-outline: mode == ThemeMode.dark ? #3c89e8 : mode == ThemeMode.high-contrast ? #ffff00 : #1677ff;
+    out property <color> color-primary-bg-hover: mode == ThemeMode.dark ? #15325b : mode == ThemeMode.high-contrast ? #202020 : #bae0ff;
+    out property <color> color-primary-border: mode == ThemeMode.dark ? #69b1ff : mode == ThemeMode.high-contrast ? #00ffff : #0958d9;
+    out property <color> color-success: mode == ThemeMode.dark ? #73d13d : mode == ThemeMode.high-contrast ? #00ff00 : #237804;
+    out property <color> color-success-hover: mode == ThemeMode.dark ? #95de64 : mode == ThemeMode.high-contrast ? #ffffff : #135200;
+    out property <color> color-success-active: mode == ThemeMode.dark ? #52c41a : mode == ThemeMode.high-contrast ? #00ff00 : #092b00;
+    out property <color> color-success-bg: mode == ThemeMode.dark ? #162312 : mode == ThemeMode.high-contrast ? #000000 : #f6ffed;
+    out property <color> color-success-border: color-success;
+    out property <color> color-warning: mode == ThemeMode.dark ? #ffc53d : mode == ThemeMode.high-contrast ? #ffff00 : #874d00;
+    out property <color> color-warning-hover: mode == ThemeMode.dark ? #ffd666 : mode == ThemeMode.high-contrast ? #ffffff : #613400;
+    out property <color> color-warning-active: mode == ThemeMode.dark ? #d89614 : mode == ThemeMode.high-contrast ? #ffff00 : #3d1f00;
+    out property <color> color-warning-bg: mode == ThemeMode.dark ? #2b2111 : mode == ThemeMode.high-contrast ? #000000 : #fffbe6;
+    out property <color> color-warning-border: color-warning;
+    out property <color> color-error: mode == ThemeMode.dark ? #ff7875 : mode == ThemeMode.high-contrast ? #ff8080 : #cf1322;
+    out property <color> color-error-hover: mode == ThemeMode.dark ? #ffa39e : mode == ThemeMode.high-contrast ? #ffffff : #a8071a;
+    out property <color> color-error-active: mode == ThemeMode.dark ? #ff4d4f : mode == ThemeMode.high-contrast ? #ff8080 : #820014;
+    out property <color> color-error-fill: mode == ThemeMode.dark ? #a61d24 : mode == ThemeMode.high-contrast ? #ff8080 : #cf1322;
+    out property <color> color-error-fill-hover: mode == ThemeMode.dark ? #c41d2c : mode == ThemeMode.high-contrast ? #ffffff : #a8071a;
+    out property <color> color-error-fill-active: mode == ThemeMode.dark ? #820014 : mode == ThemeMode.high-contrast ? #ff8080 : #820014;
+    out property <color> color-error-bg: mode == ThemeMode.dark ? #2c1618 : mode == ThemeMode.high-contrast ? #000000 : #fff2f0;
+    out property <color> color-error-border: color-error;
+    out property <color> focus-outline: mode == ThemeMode.dark ? #69b1ff : mode == ThemeMode.high-contrast ? #ffff00 : #0958d9;
 
     out property <length> font-size-caption: 12px * text-scale;
     out property <length> font-size-body: 14px * text-scale;
@@ -125,6 +144,18 @@ export global Theme {
     out property <length> avatar-size-medium: 32px;
     out property <length> avatar-size-large: 40px;
     out property <length> calendar-cell-size: 36px;
+    out property <length> panel-header-min-height: 48px;
+    out property <length> app-shell-title-height: 48px;
+    out property <length> app-shell-navigation-width: 220px;
+    out property <length> app-shell-status-height: 32px;
+    out property <length> text-area-min-height: 96px;
+    out property <length> slider-min-width: 160px;
+    out property <length> badge-min-size: 20px;
+    out property <length> tag-height: 24px;
+    out property <length> popover-width: 320px;
+    out property <length> progress-ring-size: 48px;
+    out property <length> result-state-min-height: 240px;
+    out property <length> title-bar-height: 40px;
 
     out property <duration> motion-fast: reduced-motion ? 0ms : 100ms;
     out property <duration> motion-medium: reduced-motion ? 0ms : 200ms;

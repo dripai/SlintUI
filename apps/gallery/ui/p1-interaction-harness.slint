@@ -1,0 +1,201 @@
+import {
+    Theme, ButtonGroup, ButtonGroupItem, ToggleButton, Link, Dropdown, PopupMenuEntry,
+    TextArea, SearchField, NumberInput, CheckboxGroup, CheckboxGroupItem, RadioGroup, RadioGroupItem,
+    ComboBox, AutoCompleteOption, Slider, FilePicker, Tag, List, ListItemData, Collapse, CollapseItem,
+    Popover, Alert, LoadingOverlay, TitleBar, Overlay, Table, Toast, ToastMessage, ToastTone,
+    Notification, Drawer, ImageView, ImageViewState,
+} from "@slint-ui/index.slint";
+
+export component P1InteractionHarness inherits Window {
+    width: 360px;
+    height: 480px;
+
+    out property <int> button-group-index: test-button-group.current-index;
+    out property <int> button-group-activations: 0;
+    out property <bool> toggle-checked: test-toggle.checked;
+    out property <int> toggle-activations: 0;
+    out property <int> disabled-toggle-activations: 0;
+    out property <int> link-activations: 0;
+    out property <int> disabled-link-activations: 0;
+    out property <int> dropdown-activations: 0;
+    out property <string> text-area-value: test-text-area.text;
+    out property <int> text-area-edits: 0;
+    out property <string> disabled-text-area-value: disabled-text-area.text;
+    out property <int> search-submissions: 0;
+    out property <int> number-value: test-number.value;
+    out property <int> number-edits: 0;
+    out property <int> disabled-number-value: disabled-number.value;
+    out property <bool> checkbox-group-checked: test-checkbox-group.items[0].checked;
+    out property <int> checkbox-group-changes: 0;
+    out property <int> radio-group-index: test-radio-group.current-index;
+    out property <int> radio-group-changes: 0;
+    out property <int> combo-index: test-combo.current-index;
+    out property <string> combo-value: test-combo.text;
+    out property <int> combo-selections: 0;
+    out property <float> slider-value: test-slider.value;
+    out property <int> slider-changes: 0;
+    out property <float> disabled-slider-value: disabled-slider.value;
+    out property <string> file-path: test-file.path;
+    out property <int> file-changes: 0;
+    out property <int> file-browse-requests: 0;
+    out property <string> disabled-file-path: disabled-file.path;
+    out property <bool> tag-selected: test-tag.selected;
+    out property <int> tag-toggles: 0;
+    out property <int> tag-closes: 0;
+    out property <int> disabled-tag-toggles: 0;
+    out property <int> list-index: test-list.current-index;
+    out property <int> list-selections: 0;
+    out property <bool> collapse-expanded: test-collapse.items[0].expanded;
+    out property <int> collapse-changes: 0;
+    out property <int> popover-actions: 0;
+    out property <int> alert-actions: 0;
+    out property <int> alert-dismissals: 0;
+    out property <int> disabled-alert-actions: 0;
+    out property <int> loading-cancels: 0;
+    out property <int> inactive-loading-cancels: 0;
+    out property <int> title-minimizes: 0;
+    out property <int> title-maximizes: 0;
+    out property <int> title-restores: 0;
+    out property <int> title-closes: 0;
+    out property <int> overlay-dismissals: 0;
+    out property <int> table-row: test-table.current-row;
+    out property <int> table-selections: 0;
+    out property <int> toast-dismissals: 0;
+    out property <int> notification-actions: 0;
+    out property <int> notification-dismissals: 0;
+    out property <int> drawer-closes: 0;
+    out property <int> image-retries: 0;
+
+    public function select-button-group(index: int) { test-button-group.select(index); }
+    public function activate-toggle() { test-toggle.activate(); }
+    public function activate-disabled-toggle() { disabled-toggle.activate(); }
+    public function activate-link() { test-link.activate(); }
+    public function activate-disabled-link() { disabled-link.activate(); }
+    public function activate-dropdown(index: int) { test-dropdown.activate(index); }
+    public function replace-text-area(value: string) { test-text-area.replace-text(value); }
+    public function replace-disabled-text-area(value: string) { disabled-text-area.replace-text(value); }
+    public function submit-search() { test-search.submit(); }
+    public function set-number(value: int) { test-number.set-value(value); }
+    public function set-disabled-number(value: int) { disabled-number.set-value(value); }
+    public function set-checkbox(index: int, checked: bool) { test-checkbox-group.set-checked(index, checked); }
+    public function select-radio(index: int) { test-radio-group.select(index); }
+    public function choose-combo(index: int) { test-combo.choose(index); }
+    public function set-slider(value: float) { test-slider.set-value(value); }
+    public function set-disabled-slider(value: float) { disabled-slider.set-value(value); }
+    public function choose-file(path: string) { test-file.choose(path); }
+    public function browse-file() { test-file.request-browse(); }
+    public function choose-disabled-file(path: string) { disabled-file.choose(path); }
+    public function toggle-tag() { test-tag.toggle(); }
+    public function close-tag() { test-tag.close(); }
+    public function toggle-disabled-tag() { disabled-tag.toggle(); }
+    public function select-list(index: int) { test-list.select(index); }
+    public function toggle-collapse(index: int) { test-collapse.toggle(index); }
+    public function activate-popover() { test-popover.activate(); }
+    public function activate-alert() { test-alert.activate(); }
+    public function dismiss-alert() { test-alert.dismiss(); }
+    public function activate-disabled-alert() { disabled-alert.activate(); }
+    public function cancel-loading() { test-loading.cancel(); }
+    public function cancel-inactive-loading() { inactive-loading.cancel(); }
+    public function minimize-title() { test-title.request-minimize(); }
+    public function toggle-title-maximize() { test-title.request-toggle-maximize(); }
+    public function close-title() { test-title.request-close(); }
+    public function dismiss-overlay() { test-overlay.dismiss(); }
+    public function select-table(index: int) { test-table.select-row(index); }
+    public function dismiss-toast(index: int) { test-toast.request-dismiss(index); }
+    public function activate-notification() { test-notification.activate(); }
+    public function dismiss-notification() { test-notification.dismiss(); }
+    public function close-drawer() { test-drawer.request-close(); }
+    public function retry-image() { test-image.retry(); }
+
+    VerticalLayout {
+        test-button-group := ButtonGroup {
+            items: [
+                { text: "One", enabled: true, checked: false },
+                { text: "Two", enabled: true, checked: false },
+                { text: "Disabled", enabled: false, checked: false },
+            ];
+            selected(index) => { root.button-group-activations += 1; }
+        }
+        test-toggle := ToggleButton { text: "Toggle"; clicked => { root.toggle-activations += 1; } }
+        disabled-toggle := ToggleButton { text: "Disabled"; enabled: false; clicked => { root.disabled-toggle-activations += 1; } }
+        test-link := Link { text: "Link"; target: "slintui://component"; activated(target) => { root.link-activations += 1; } }
+        disabled-link := Link { text: "Disabled"; target: "slintui://disabled"; enabled: false; activated(target) => { root.disabled-link-activations += 1; } }
+        test-dropdown := Dropdown {
+            text: "Dropdown";
+            entries: [
+                { text: "Open", shortcut: "", enabled: true, checked: false, separator: false, has-submenu: false },
+                { text: "Disabled", shortcut: "", enabled: false, checked: false, separator: false, has-submenu: false },
+            ];
+            selected(index) => { root.dropdown-activations += 1; }
+        }
+        test-text-area := TextArea { text: "Initial"; edited(value) => { root.text-area-edits += 1; } }
+        disabled-text-area := TextArea { text: "Locked"; enabled: false; }
+        test-search := SearchField { text: "SlintUI"; searched(query) => { root.search-submissions += 1; } }
+        test-number := NumberInput { value: 2; minimum: 0; maximum: 10; step-size: 2; edited(value) => { root.number-edits += 1; } }
+        disabled-number := NumberInput { value: 3; enabled: false; }
+        test-checkbox-group := CheckboxGroup {
+            items: [
+                { text: "One", value: "one", checked: false, enabled: true },
+                { text: "Disabled", value: "disabled", checked: false, enabled: false },
+            ];
+            changed(index, checked) => { root.checkbox-group-changes += 1; }
+        }
+        test-radio-group := RadioGroup {
+            items: [
+                { text: "One", value: "one", enabled: true },
+                { text: "Two", value: "two", enabled: true },
+                { text: "Disabled", value: "disabled", enabled: false },
+            ];
+            current-index: 0;
+            changed(index, value) => { root.radio-group-changes += 1; }
+        }
+        test-combo := ComboBox {
+            text: "";
+            suggestions: [
+                { text: "Alpha", detail: "", enabled: true },
+                { text: "Disabled", detail: "", enabled: false },
+            ];
+            selected(index, value) => { root.combo-selections += 1; }
+        }
+        test-slider := Slider { value: 10; minimum: 0; maximum: 100; step: 5; changed(value) => { root.slider-changes += 1; } }
+        disabled-slider := Slider { value: 20; enabled: false; }
+        test-file := FilePicker { path: "old.txt"; browse-text: "Browse"; changed(path) => { root.file-changes += 1; } browse-requested => { root.file-browse-requests += 1; } }
+        disabled-file := FilePicker { path: "locked.txt"; browse-text: "Browse"; enabled: false; }
+        test-tag := Tag { text: "Tag"; selectable: true; closable: true; toggled(selected) => { root.tag-toggles += 1; } close-requested => { root.tag-closes += 1; } }
+        disabled-tag := Tag { text: "Disabled"; selectable: true; enabled: false; toggled(selected) => { root.disabled-tag-toggles += 1; } }
+        test-list := List {
+            items: [
+                { text: "One", description: "", enabled: true },
+                { text: "Two", description: "", enabled: true },
+                { text: "Disabled", description: "", enabled: false },
+            ];
+            selected(index) => { root.list-selections += 1; }
+        }
+        test-collapse := Collapse {
+            items: [
+                { title: "One", content: "Content", enabled: true, expanded: false },
+                { title: "Disabled", content: "", enabled: false, expanded: false },
+            ];
+            changed(index, expanded) => { root.collapse-changes += 1; }
+        }
+        test-popover := Popover { trigger-text: "Open"; action-text: "Apply"; action-requested => { root.popover-actions += 1; } }
+        test-alert := Alert { title: "Alert"; action-text: "Retry"; dismissible: true; action-requested => { root.alert-actions += 1; } dismiss-requested => { root.alert-dismissals += 1; } }
+        disabled-alert := Alert { title: "Disabled"; action-text: "Retry"; enabled: false; action-requested => { root.disabled-alert-actions += 1; } }
+        test-loading := LoadingOverlay { active: true; cancelable: true; cancel-text: "Cancel"; cancel-requested => { root.loading-cancels += 1; } }
+        inactive-loading := LoadingOverlay { active: false; cancelable: true; cancel-requested => { root.inactive-loading-cancels += 1; } }
+        test-title := TitleBar { title: "Title"; minimize-requested => { root.title-minimizes += 1; } maximize-requested => { root.title-maximizes += 1; } restore-requested => { root.title-restores += 1; } close-requested => { root.title-closes += 1; } }
+        test-overlay := Overlay { active: true; dismiss-on-click: true; dismissed => { root.overlay-dismissals += 1; } }
+        test-table := Table {
+            columns: [{ title: "Name", min-width: 80px, width: 120px, horizontal-stretch: 1 }];
+            rows: [[{ text: "One" }], [{ text: "Two" }]];
+            current-row-changed(row) => { root.table-selections += 1; }
+        }
+        test-toast := Toast {
+            messages: [{ id: 7, text: "Saved", detail: "", tone: ToastTone.success, duration: 0ms, dismissible: true }];
+            dismiss-requested(id) => { root.toast-dismissals += 1; }
+        }
+        test-notification := Notification { title: "Notice"; action-text: "Open"; dismissible: true; action-requested => { root.notification-actions += 1; } dismiss-requested => { root.notification-dismissals += 1; } }
+        test-drawer := Drawer { open: true; title: "Drawer"; close-requested => { root.drawer-closes += 1; } }
+        test-image := ImageView { state: ImageViewState.error; error-text: "Failed"; retry-requested => { root.image-retries += 1; } }
+    }
+}

@@ -7,6 +7,8 @@ export component Overlay inherits Rectangle {
 
     callback dismissed();
 
+    public function dismiss() { if (active && dismiss-on-click) { root.dismissed(); } }
+
     visible: active;
     background: Theme.overlay-mask;
     accessible-role: region;
@@ -15,7 +17,7 @@ export component Overlay inherits Rectangle {
 
     TouchArea {
         enabled: root.active && root.dismiss-on-click;
-        clicked => { root.dismissed(); }
+        clicked => { root.dismiss(); }
     }
 
     @children

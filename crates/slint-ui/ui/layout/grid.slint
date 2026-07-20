@@ -1,0 +1,8 @@
+import { Theme } from "../tokens/theme.slint";
+
+export component Grid inherits GridLayout {
+    in property <length> horizontal-gap: Theme.space-3;
+    in property <length> vertical-gap: Theme.space-3;
+    spacing-horizontal: horizontal-gap;
+    spacing-vertical: vertical-gap;
+}

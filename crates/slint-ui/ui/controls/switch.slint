@@ -45,7 +45,7 @@ export component Switch inherits Rectangle {
             height: root.track-height;
             border-radius: self.height / 2;
             background: !root.enabled ? Theme.bg-disabled
-                : root.checked ? (touch.pressed ? Theme.color-primary-active : touch.has-hover ? Theme.color-primary-hover : Theme.color-primary)
+                : root.checked ? (touch.pressed ? Theme.color-primary-fill-active : touch.has-hover ? Theme.color-primary-fill-hover : Theme.color-primary-fill)
                 : touch.pressed ? Theme.fill-pressed
                 : touch.has-hover ? Theme.fill-hover
                 : Theme.border-default;

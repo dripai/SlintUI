@@ -1,8 +1,15 @@
 export component HelpTooltip inherits Rectangle {
     in property <string> content: "";
+    in property <bool> enabled: true;
+    in property <string> accessible-name: "";
     background: transparent;
+    accessible-role: groupbox;
+    accessible-label: accessible-name;
+    accessible-description: enabled ? content : "";
 
     Tooltip {
-        text: @markdown("\{root.content}");
+        text: root.enabled ? @markdown("\{root.content}") : @markdown("");
     }
+
+    @children
 }

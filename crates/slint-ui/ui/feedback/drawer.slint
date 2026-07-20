@@ -13,6 +13,8 @@ export component Drawer inherits Rectangle {
     in property <bool> close-on-escape: true;
     callback close-requested();
 
+    public function request-close() { if (open) { root.close-requested(); } }
+
     visible: open;
     background: Theme.overlay-mask;
     accessible-role: region;
@@ -21,7 +23,7 @@ export component Drawer inherits Rectangle {
 
     private property <bool> physical-left: side == DrawerSide.start ? Theme.direction == Direction.ltr : Theme.direction == Direction.rtl;
 
-    TouchArea { enabled: root.open && root.dismiss-on-mask; clicked => { root.close-requested(); } }
+    TouchArea { enabled: root.open && root.dismiss-on-mask; clicked => { root.request-close(); } }
 
     panel := Rectangle {
         x: root.physical-left ? 0px : root.width - self.width;
@@ -36,9 +38,9 @@ export component Drawer inherits Rectangle {
         VerticalLayout {
             HorizontalLayout { padding: Theme.space-4; spacing: Theme.space-2; cross-axis-alignment: center;
                 Text { text: root.title; color: Theme.text-primary; font-size: Theme.font-size-title-small; font-weight: Theme.font-weight-medium; horizontal-stretch: 1; overflow: elide; }
-                Rectangle { width: Theme.control-height-small; height: Theme.control-height-small; border-radius: Theme.radius-small; background: close-touch.has-hover ? Theme.fill-hover : transparent; accessible-role: button; accessible-label: root.close-accessible-name; accessible-action-default => { root.close-requested(); }
+                Rectangle { width: Theme.control-height-small; height: Theme.control-height-small; border-radius: Theme.radius-small; background: close-touch.has-hover ? Theme.fill-hover : transparent; accessible-role: button; accessible-label: root.close-accessible-name; accessible-action-default => { root.request-close(); }
                     Image { source: @image-url("../../assets/icons/ant-design/outlined/close.svg"); width: Theme.icon-size-x-small; height: Theme.icon-size-x-small; x: (parent.width - self.width) / 2; y: (parent.height - self.height) / 2; colorize: Theme.icon-default; accessible-role: none; }
-                    close-touch := TouchArea { clicked => { root.close-requested(); } }
+                    close-touch := TouchArea { clicked => { root.request-close(); } }
                 }
             }
             Rectangle { height: Theme.border-width; background: Theme.border-secondary; }
@@ -46,5 +48,5 @@ export component Drawer inherits Rectangle {
         }
     }
 
-    FocusScope { enabled: root.open; key-pressed(event) => { if (event.text == Key.Escape && root.close-on-escape) { root.close-requested(); return accept; } return reject; } }
+    FocusScope { enabled: root.open; key-pressed(event) => { if (event.text == Key.Escape && root.close-on-escape) { root.request-close(); return accept; } return reject; } }
 }

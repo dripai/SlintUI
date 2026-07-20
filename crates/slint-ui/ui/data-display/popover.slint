@@ -1,0 +1,28 @@
+import { Theme } from "../tokens/theme.slint";
+import { Button, ButtonVariant } from "../controls/button.slint";
+
+export component Popover inherits Rectangle {
+    in property <string> trigger-text:"";
+    in property <string> title:"";
+    in property <string> message:"";
+    in property <string> action-text:"";
+    in property <string> close-text:"";
+    in property <bool> enabled:true;
+    in property <string> accessible-name:title;
+    out property <bool> open:popup.is-open;
+    callback action-requested();callback closed();
+    public function show(){if(enabled){popup.show();}}public function close(){popup.close();}public function toggle(){if(open){root.close();}else{root.show();}}public function activate(){if(enabled&&action-text!=""){root.action-requested();}}
+    min-width:Theme.control-min-width;min-height:Theme.control-height-medium;accessible-role:button;accessible-label:trigger-text;accessible-enabled:enabled;accessible-expandable:true;accessible-expanded:open;accessible-action-expand=>{root.toggle();}
+    Button{width:parent.width;height:parent.height;text:root.trigger-text;enabled:root.enabled;clicked=>{root.toggle();}}
+    popup:=PopupWindow{y:root.height;width:Theme.popover-width;height:content.preferred-height+Theme.space-6;close-policy:close-on-click-outside;forward-focus:focus;
+        Rectangle{background:Theme.bg-elevated;border-width:Theme.border-width;border-color:Theme.border-default;border-radius:Theme.radius-large;
+            content:=VerticalLayout{padding:Theme.space-3;spacing:Theme.space-2;
+                if root.title!="":Text{text:root.title;color:Theme.text-primary;font-size:Theme.font-size-body;font-weight:Theme.font-weight-medium;wrap:word-wrap;}
+                if root.message!="":Text{text:root.message;color:Theme.text-secondary;font-size:Theme.font-size-body;wrap:word-wrap;}
+                HorizontalLayout{alignment:end;spacing:Theme.space-2;if root.close-text!="":Button{text:root.close-text;clicked=>{root.close();}}if root.action-text!="":Button{text:root.action-text;variant:ButtonVariant.primary;clicked=>{root.activate();}}}
+            }
+        }
+        focus:=FocusScope{key-pressed(event)=>{if(event.text==Key.Escape){root.close();return accept;}return reject;}}
+    }
+    changed open=>{if(!root.open){root.closed();}}
+}

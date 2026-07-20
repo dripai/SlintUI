@@ -15,12 +15,15 @@ export component Notification inherits Rectangle {
     callback action-requested();
     callback dismiss-requested();
 
+    public function activate() { if (action-text != "" && !busy) { root.action-requested(); } }
+    public function dismiss() { if (dismissible) { root.dismiss-requested(); } }
+
     min-width: Theme.toast-width;
     max-width: Theme.toast-width;
     min-height: content.preferred-height + Theme.space-4;
-    background: Theme.bg-elevated;
     border-width: Theme.border-width;
-    border-color: tone == NotificationTone.error ? Theme.color-error : tone == NotificationTone.warning ? Theme.color-warning : tone == NotificationTone.success ? Theme.color-success : Theme.color-primary-border;
+    background: tone == NotificationTone.error ? Theme.color-error-bg : tone == NotificationTone.warning ? Theme.color-warning-bg : tone == NotificationTone.success ? Theme.color-success-bg : Theme.color-primary-bg;
+    border-color: tone == NotificationTone.error ? Theme.color-error-border : tone == NotificationTone.warning ? Theme.color-warning-border : tone == NotificationTone.success ? Theme.color-success-border : Theme.color-primary-border;
     border-radius: Theme.radius-large;
     accessible-role: region;
     accessible-label: accessible-name;
@@ -37,11 +40,11 @@ export component Notification inherits Rectangle {
         VerticalLayout { spacing: Theme.space-2; horizontal-stretch: 1;
             Text { text: root.title; color: Theme.text-primary; font-size: Theme.font-size-body; font-weight: Theme.font-weight-medium; wrap: word-wrap; }
             if root.message != "": Text { text: root.message; color: Theme.text-secondary; font-size: Theme.font-size-body; wrap: word-wrap; }
-            if root.action-text != "": Button { text: root.action-text; variant: ButtonVariant.link; loading: root.busy; clicked => { root.action-requested(); } }
+            if root.action-text != "": Button { text: root.action-text; variant: ButtonVariant.link; loading: root.busy; clicked => { root.activate(); } }
         }
-        if root.dismissible: Rectangle { width: Theme.control-height-small; height: Theme.control-height-small; border-radius: Theme.radius-small; background: close-touch.has-hover ? Theme.fill-hover : transparent; accessible-role: button; accessible-label: root.close-accessible-name; accessible-action-default => { root.dismiss-requested(); }
+        if root.dismissible: Rectangle { width: Theme.control-height-small; height: Theme.control-height-small; border-radius: Theme.radius-small; background: close-touch.has-hover ? Theme.fill-hover : transparent; accessible-role: button; accessible-label: root.close-accessible-name; accessible-action-default => { root.dismiss(); }
             Image { source: @image-url("../../assets/icons/ant-design/outlined/close.svg"); width: Theme.icon-size-x-small; height: Theme.icon-size-x-small; x: (parent.width - self.width)/2; y: (parent.height - self.height)/2; colorize: Theme.icon-default; accessible-role: none; }
-            close-touch := TouchArea { clicked => { root.dismiss-requested(); } }
+            close-touch := TouchArea { clicked => { root.dismiss(); } }
         }
     }
 }

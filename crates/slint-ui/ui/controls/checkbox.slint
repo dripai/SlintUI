@@ -43,10 +43,10 @@ export component Checkbox inherits Rectangle {
                 : root.has-focus ? Theme.focus-outline
                 : root.state == CheckState.unchecked && touch.has-hover ? Theme.color-primary-hover
                 : root.state == CheckState.unchecked ? Theme.border-default
-                : Theme.color-primary;
+                : Theme.color-primary-fill;
             background: !root.enabled ? Theme.bg-disabled
                 : root.state == CheckState.unchecked ? Theme.bg-control
-                : Theme.color-primary;
+                : Theme.color-primary-fill;
 
             if root.state != CheckState.unchecked: Image {
                 x: (parent.width - self.width) / 2;

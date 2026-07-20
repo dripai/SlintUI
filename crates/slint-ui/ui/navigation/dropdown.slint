@@ -1,0 +1,35 @@
+import { Theme, ControlSize } from "../tokens/theme.slint";
+import { Button } from "../controls/button.slint";
+import { PopupMenu, PopupMenuEntry } from "popup-menu.slint";
+
+export component Dropdown inherits Rectangle {
+    in property <string> text: "";
+    in property <[PopupMenuEntry]> entries;
+    in property <bool> enabled: true;
+    in property <ControlSize> size: ControlSize.medium;
+    in property <string> accessible-name: text;
+    out property <bool> open: menu.open;
+    callback selected(index: int);
+    callback closed();
+
+    public function toggle() {
+        if (!enabled) { return; }
+        if (open) { menu.close(); } else { menu.show(); }
+    }
+
+    public function activate(index: int) { if (enabled) { menu.activate(index); } }
+
+    min-width: Theme.control-min-width;
+    min-height: size == ControlSize.small ? Theme.control-height-small : size == ControlSize.large ? Theme.control-height-large : Theme.control-height-medium;
+    preferred-height: self.min-height;
+    max-height: self.min-height;
+    accessible-role: button;
+    accessible-label: accessible-name;
+    accessible-enabled: enabled;
+    accessible-expandable: true;
+    accessible-expanded: open;
+    accessible-action-expand => { root.toggle(); }
+
+    Button { width: parent.width; height: parent.height; text: root.text; size: root.size; enabled: root.enabled; clicked => { root.toggle(); } }
+    menu := PopupMenu { width: parent.width; height: parent.height; entries: root.entries; accessible-name: root.accessible-name; selected(index) => { root.selected(index); } closed => { root.closed(); } }
+}

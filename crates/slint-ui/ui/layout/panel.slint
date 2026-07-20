@@ -1,0 +1,33 @@
+import { Theme, Direction } from "../tokens/theme.slint";
+
+export component Panel inherits Rectangle {
+    in property <string> title: "";
+    in property <string> description: "";
+    in property <bool> bordered: true;
+    in property <string> accessible-name: title;
+
+    min-width: Theme.card-min-width;
+    background: Theme.bg-surface;
+    border-width: bordered ? Theme.border-width : 0px;
+    border-color: Theme.border-default;
+    border-radius: Theme.radius-large;
+    clip: true;
+    accessible-role: groupbox;
+    accessible-label: accessible-name;
+
+    VerticalLayout {
+        spacing: 0px;
+        header := Rectangle {
+            visible: root.title != "" || root.description != "";
+            min-height: self.visible ? max(Theme.panel-header-min-height, header-content.preferred-height + Theme.space-4) : 0px;
+            max-height: self.visible ? self.min-height : 0px;
+            header-content := VerticalLayout {
+                padding-left: Theme.space-4; padding-right: Theme.space-4; padding-top: Theme.space-2; padding-bottom: Theme.space-2; spacing: Theme.space-1;
+                if root.title != "": Text { text: root.title; color: Theme.text-primary; font-size: Theme.font-size-title-small; font-weight: Theme.font-weight-medium; horizontal-alignment: Theme.direction == Direction.rtl ? right : left; wrap: word-wrap; }
+                if root.description != "": Text { text: root.description; color: Theme.text-secondary; font-size: Theme.font-size-caption; horizontal-alignment: Theme.direction == Direction.rtl ? right : left; wrap: word-wrap; }
+            }
+        }
+        if header.visible: Rectangle { height: Theme.border-width; background: Theme.border-secondary; }
+        content := Rectangle { horizontal-stretch: 1; vertical-stretch: 1; @children }
+    }
+}

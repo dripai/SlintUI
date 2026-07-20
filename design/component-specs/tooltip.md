@@ -8,11 +8,11 @@
 
 ## 公开 API
 
-`content: string = ""`；作为目标控件的子元素使用。没有业务默认文案或全局队列。
+`content: string = ""`、`enabled: bool = true`、`accessible-name: string = ""`、`@children`；作为目标控件的容器使用。没有业务默认文案或全局队列。
 
 ## 状态与交互
 
-悬停定位、显示、隐藏和关闭由 Slint 原生 Tooltip 处理；组件没有 Selected、Disabled、Loading 或错误状态，也不拦截目标控件输入。
+悬停定位、显示、隐藏和关闭由 Slint 原生 Tooltip 处理；`enabled = false` 时不提供说明。组件没有 Selected、Loading 或错误状态，也不拦截目标控件输入。
 
 ## 无障碍与本地化
 

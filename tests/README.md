@@ -28,9 +28,13 @@ cargo run -p slint-ui-gallery --offline -- --screenshot tests/screenshots/galler
 cargo run -p slint-ui-gallery --offline -- --screenshot tests/screenshots/gallery-data-entry-text-field-contrast-100.png --page 3 --section 4 --theme high-contrast --density regular --scale 1.0 --locale zh-CN
 cargo run -p slint-ui-gallery --offline -- --screenshot tests/screenshots/gallery-icons-outlined-100.png --page 5 --icon-style outlined --theme light --density regular --scale 1.0 --locale zh-CN
 cargo run -p slint-ui-gallery --offline -- --screenshot tests/screenshots/gallery-icons-filled-dark-100.png --page 5 --icon-style filled --theme dark --density compact --scale 1.0 --locale en-US
+cargo run -p slint-ui-gallery --offline -- --screenshot tests/screenshots/gallery-layout-app-shell-rtl-125.png --page 1 --section 13 --theme light --density regular --scale 1.25 --locale ar-EG
+cargo run -p slint-ui-gallery --offline -- --screenshot tests/screenshots/gallery-data-entry-text-area-125.png --page 3 --section 11 --theme light --density comfortable --scale 1.25 --locale zh-CN
+cargo run -p slint-ui-gallery --offline -- --screenshot tests/screenshots/gallery-data-display-list-200.png --page 7 --section 14 --theme light --density regular --scale 2.0 --locale zh-CN
+cargo run -p slint-ui-gallery --offline -- --screenshot tests/screenshots/gallery-feedback-alert-dark-200.png --page 4 --section 9 --theme dark --density compact --scale 2.0 --locale en-US
 ```
 
-现有 8 张基线按“分类 + 单个组件”命名，覆盖七个一级分类、浅色/深色/高对比度、LTR/RTL、compact/regular、100%/150% 预览缩放，以及 outlined/filled 图标目录。125%/200% 与 comfortable 密度可在 Gallery 中交互检查，但不为每种组合保留固定图片。截图使用 `winit-software` 并强制减少动效，使动画相位不会造成无意义差异；跨系统字体差异仍需人工评审。
+现有 12 张基线按“分类 + 单个组件”命名，覆盖七个一级分类、浅色/深色/高对比度、LTR/RTL、compact/regular/comfortable、100%/125%/150%/200% 预览缩放，以及 outlined/filled 图标目录。截图使用 `winit-software` 并强制减少动效，使动画相位不会造成无意义差异；跨系统字体差异仍需人工评审。125% 的 AppShell RTL 与 TextArea、200% 的 List 与深色 Alert 已完成当前 Windows 软件渲染人工检查。
 
 核心 crate 测试还会核对 447 个 outlined、249 个 filled SVG 与对应按需 Slint 模块一一存在，并防止 Checkbox、TextField 清除入口重新使用字体符号代替 SVG。
 

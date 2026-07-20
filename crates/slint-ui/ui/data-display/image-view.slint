@@ -12,6 +12,8 @@ export component ImageView inherits Rectangle {
     in property <string> error-text: "";
     callback retry-requested();
 
+    public function retry() { if (state == ImageViewState.error) { root.retry-requested(); } }
+
     min-width: Theme.card-min-width; min-height: Theme.empty-state-min-height;
     background: Theme.bg-surface; border-width: Theme.border-width; border-color: Theme.border-default; border-radius: Theme.radius-medium; clip: true;
     accessible-role: image; accessible-label: accessible-name; accessible-description: state == ImageViewState.loading ? loading-text : state == ImageViewState.error ? error-text : state == ImageViewState.empty ? empty-text : "";
@@ -21,5 +23,5 @@ export component ImageView inherits Rectangle {
         Image { source: root.state == ImageViewState.error ? @image-url("../../assets/icons/ant-design/outlined/picture.svg") : @image-url("../../assets/icons/ant-design/outlined/file-image.svg"); width: Theme.icon-size-x-large; height: Theme.icon-size-x-large; colorize: root.state == ImageViewState.error ? Theme.color-error : Theme.icon-default; accessible-role: none; }
         Text { text: root.state == ImageViewState.loading ? root.loading-text : root.state == ImageViewState.error ? root.error-text : root.empty-text; color: root.state == ImageViewState.error ? Theme.color-error : Theme.text-secondary; font-size: Theme.font-size-body; horizontal-alignment: center; wrap: word-wrap; }
     }
-    if state == ImageViewState.error: TouchArea { mouse-cursor: pointer; clicked => { root.retry-requested(); } }
+    if state == ImageViewState.error: TouchArea { mouse-cursor: pointer; clicked => { root.retry(); } }
 }

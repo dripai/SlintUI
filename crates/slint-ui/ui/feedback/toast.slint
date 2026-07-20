@@ -99,6 +99,10 @@ export component Toast inherits Rectangle {
     in property <string> accessible-name: "Notifications";
     callback dismiss-requested(id: int);
 
+    public function request-dismiss(index: int) {
+        if (index >= 0 && index < messages.length && messages[index].dismissible) { root.dismiss-requested(messages[index].id); }
+    }
+
     background: transparent;
     accessible-role: region;
     accessible-label: accessible-name;

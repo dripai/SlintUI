@@ -2,71 +2,71 @@
 
 本文是仓库未完成工作的唯一状态清单。目标组件范围和优先级见 [`design/component-inventory.md`](design/component-inventory.md)，已经实现的组件 API 与明确限制见 [`design/component-specs/`](design/component-specs/README.md)。不再按 P0、P1、P2 分别维护状态文档。
 
-最近核对：2026-07-20。当前基线已实现全部 P0、提前完成的 `ScrollArea`、里程碑 D 的 11 份 P1 规格和全部 20 个 P2 组件，共有 58 份已实现组件规格；按组件清单行计，当前共有 12 个 P1 条目已经实现。`v0.1.0` 标签已经发布。
+最近核对：2026-07-20。当前基线已实现全部 P0、40 份 P1 和 20 份 P2 组件规格，共 86 份；原 58 个组件的完成定义复核及剩余 28 个 P1 条目均已完成。`v0.1.0` 是首个固定 P0 标签，当前未提交工作属于其后的完整核心组件基线。
 
 ## 1. 现有组件质量补齐
 
 这些任务优先于继续增加组件数量。完成一项后必须同步组件规格、Gallery、测试和截图证据。
 
-- [ ] 按 [`design/component-inventory.md`](design/component-inventory.md) 第 13 节逐个复核 58 个已实现组件，不以“已经导出”替代完成定义。
-- [ ] 为每个组件补齐适用的 Variant、Size、Disabled、Loading、Selected、Error、Focus 和长文本示例；不适用状态在规格中明确说明。
-- [ ] 把 Gallery 中通用的 API 与 Theme Token 占位说明替换为组件特有内容。
-- [ ] 扩充交互测试，使每个有状态组件至少覆盖正常、禁用、重复操作和边界路径。
-- [ ] 建立文本、图标、边框、焦点环和状态色的对比度检查记录。
-- [ ] 更新 125% 和 200% 代表性截图；继续保留主题、密度、Locale、RTL 和 reduced-motion 组合检查。
+- [x] 按 [`design/component-inventory.md`](design/component-inventory.md) 第 13 节逐个复核 58 个已实现组件；证据见 [`design/component-quality-audit.md`](design/component-quality-audit.md)。
+- [x] 为每个组件补齐适用的 Variant、Size、Disabled、Loading、Selected、Error、Focus 和长文本示例；不适用状态已在规格或质量记录中说明。
+- [x] Gallery 已使用组件特有 API、状态和 Theme Token 说明，不再复用通用占位内容。
+- [x] 交互 Harness 已覆盖全部有状态核心协议的正常、禁用、重复操作和边界路径。
+- [x] 已建立文本、图标、边框、焦点环和状态色的 [`design/contrast-audit.md`](design/contrast-audit.md) 记录。
+- [x] 已新增 125% 和 200% 代表性截图，并继续保留主题、密度、Locale、RTL 和 reduced-motion 组合检查。
 
-## 2. 剩余 P1 组件（28 项）
+## 2. P1 完整批次（28 项，已完成）
 
-只有出现至少两个明确产品场景，或进入经过确认的新里程碑后才开始实现。
+以下组件已作为里程碑 F 完成，并纳入公开入口、分类 Gallery、规格和质量门禁。
 
 ### 操作（3）
 
-- [ ] `ButtonGroup`
-- [ ] `ToggleButton`
-- [ ] `Link`
+- [x] `ButtonGroup`
+- [x] `ToggleButton`
+- [x] `Link`
 
 ### 布局与容器（4）
 
-- [ ] `Flex`
-- [ ] `Grid`
-- [ ] `Panel`
-- [ ] `AppShell`
+- [x] `Flex`
+- [x] `Grid`
+- [x] `Panel`
+- [x] `AppShell`
 
 ### 导航（1）
 
-- [ ] `Dropdown`
+- [x] `Dropdown`
 
 ### 数据录入（8）
 
-- [ ] `TextArea`
-- [ ] `SearchField`
-- [ ] `NumberInput`
-- [ ] `CheckboxGroup`
-- [ ] `Radio` / `RadioGroup`
-- [ ] `ComboBox`
-- [ ] `Slider`
-- [ ] `FilePicker`
+- [x] `TextArea`
+- [x] `SearchField`
+- [x] `NumberInput`
+- [x] `CheckboxGroup`
+- [x] `Radio` / `RadioGroup`
+- [x] `ComboBox`
+- [x] `Slider`
+- [x] `FilePicker`
 
 ### 数据展示（6）
 
-- [ ] `Badge`
-- [ ] `Tag`
-- [ ] `List` / `ListItem`
-- [ ] `DescriptionList`
-- [ ] `Collapse`
-- [ ] `Popover`
+- [x] `Badge`
+- [x] `Tag`
+- [x] `List` / `ListItem`
+- [x] `DescriptionList`
+- [x] `Collapse`
+- [x] `Popover`
 
 ### 反馈（4）
 
-- [ ] `Alert`
-- [ ] `ProgressRing`
-- [ ] `ResultState`
-- [ ] `LoadingOverlay`
+- [x] `Alert`
+- [x] `ProgressRing`
+- [x] `ResultState`
+- [x] `LoadingOverlay`
 
 ### 桌面核心（2）
 
-- [ ] `ShortcutHint`
-- [ ] `TitleBar`
+- [x] `ShortcutHint`
+- [x] `TitleBar`
 
 ## 3. 平台增强（6 项）
 

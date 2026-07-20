@@ -57,6 +57,34 @@
       "height": 800,
       "sha256": "fca7dcc583686b222f2f6c54c02acc48b67f82677dfc246f93048bd4f6e83610",
       "bytes": 67030
+    },
+    {
+      "file": "gallery-layout-app-shell-rtl-125.png",
+      "width": 1180,
+      "height": 800,
+      "sha256": "797da8b26f3899a7c4ab66640f2b43bc83a46a106ac14d4c1bfe4f8b71b491e9",
+      "bytes": 53593
+    },
+    {
+      "file": "gallery-data-entry-text-area-125.png",
+      "width": 1180,
+      "height": 800,
+      "sha256": "dba8f792f262c36824dcf3d4b1d3ed17c3acbd523b0c559e5a3f02de8bb3c153",
+      "bytes": 72200
+    },
+    {
+      "file": "gallery-data-display-list-200.png",
+      "width": 1180,
+      "height": 800,
+      "sha256": "0ae22bbe6a5756eb832b218ceaf6578b49a3f4df36b6662a7a2fff451d11f3ad",
+      "bytes": 73150
+    },
+    {
+      "file": "gallery-feedback-alert-dark-200.png",
+      "width": 1180,
+      "height": 800,
+      "sha256": "225fa12deb2497972192260df7c365227e76a113e5b47bb30661ff56c8034625",
+      "bytes": 68444
     }
   ]
 }
