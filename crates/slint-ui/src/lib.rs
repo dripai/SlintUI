@@ -73,117 +73,46 @@ mod tests {
     }
 
     #[test]
-    fn implemented_component_specs_follow_completion_template() {
+    fn public_component_specs_follow_contract_template() {
         let crate_root = PathBuf::from(env!("CARGO_MANIFEST_DIR"));
         let spec_root = crate_root.join("../../design/component-specs");
-        let specs = [
-            "button.md",
-            "card.md",
-            "checkbox.md",
-            "divider.md",
-            "empty-state.md",
-            "focus-ring.md",
-            "form-row.md",
-            "icon-button.md",
-            "icon.md",
-            "label.md",
-            "modal-dialog.md",
-            "confirm-dialog.md",
-            "context-menu.md",
-            "form.md",
-            "overlay.md",
-            "popup-menu.md",
-            "progress.md",
-            "scroll-area.md",
-            "segmented-control.md",
-            "select.md",
-            "settings-section.md",
-            "space.md",
-            "spinner.md",
-            "stack.md",
-            "status-bar.md",
-            "split-pane.md",
-            "surface.md",
-            "switch.md",
-            "text-field.md",
-            "theme.md",
-            "toolbar.md",
-            "tool-button.md",
-            "tooltip.md",
-            "tabs.md",
-            "table.md",
-            "toast.md",
-            "tree.md",
-            "typography.md",
-            "split-button.md",
-            "breadcrumb.md",
-            "steps.md",
-            "pagination.md",
-            "navigation-rail.md",
-            "command-palette.md",
-            "multi-select.md",
-            "auto-complete.md",
-            "date-picker.md",
-            "time-picker.md",
-            "color-picker.md",
-            "avatar.md",
-            "data-grid.md",
-            "statistic.md",
-            "timeline.md",
-            "image-view.md",
-            "calendar.md",
-            "notification.md",
-            "drawer.md",
-            "skeleton.md",
-            "button-group.md",
-            "toggle-button.md",
-            "link.md",
-            "flex.md",
-            "grid.md",
-            "panel.md",
-            "app-shell.md",
-            "dropdown.md",
-            "text-area.md",
-            "search-field.md",
-            "number-input.md",
-            "checkbox-group.md",
-            "radio-group.md",
-            "combo-box.md",
-            "slider.md",
-            "file-picker.md",
-            "badge.md",
-            "tag.md",
-            "list.md",
-            "description-list.md",
-            "collapse.md",
-            "popover.md",
-            "alert.md",
-            "progress-ring.md",
-            "result-state.md",
-            "loading-overlay.md",
-            "shortcut-hint.md",
-            "title-bar.md",
-        ];
-        assert_eq!(specs.len(), 86, "implemented component spec count");
+        let mut specs = Vec::new();
+        for category in fs::read_dir(&spec_root).expect("read component spec root") {
+            let category = category.expect("read component spec category");
+            if !category.path().is_dir() {
+                continue;
+            }
+            for spec in fs::read_dir(category.path()).expect("read component spec category") {
+                let spec = spec.expect("read component spec").path();
+                if spec.extension().is_some_and(|extension| extension == "md") {
+                    specs.push(spec);
+                }
+            }
+        }
+        specs.sort();
+        assert_eq!(specs.len(), 89, "public component and global spec count");
         let required_sections = [
-            "状态：已实现",
-            "## 用途与边界",
+            "成熟度：`Alpha`",
             "## 公开 API",
-            "## 状态",
-            "无障碍",
-            "Gallery",
-            "测试",
-            "限制",
+            "## 视觉规范",
+            "## 行为规范",
         ];
 
         for spec in specs {
-            let text = fs::read_to_string(spec_root.join(spec)).expect("read component spec");
+            let text = fs::read_to_string(&spec).expect("read component spec");
             for required in required_sections {
                 assert!(
                     text.contains(required),
-                    "{spec} is missing completion evidence: {required}"
+                    "{} is missing component contract section: {required}",
+                    spec.display()
                 );
             }
+            assert_eq!(
+                text.lines().filter(|line| line.starts_with("## ")).count(),
+                3,
+                "{} must contain exactly the three component contract sections",
+                spec.display()
+            );
         }
     }
 }

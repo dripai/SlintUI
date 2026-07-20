@@ -3,11 +3,11 @@ import {
     Typography, TypographyStyle, Label, Icon, IconSize, Surface, SurfaceVariant, Divider, DividerOrientation, FocusRing,
     ScrollArea, Stack, Space, Card, Overlay, SplitPane, SettingsSection, FormRow, Form, FormError, Toolbar, Flex, Grid, Panel, AppShell, TitleBar,
     Button, ButtonVariant, IconButton, ToolButton, SplitButton, ButtonGroup, ButtonGroupItem, ToggleButton, Link, ShortcutHint,
-    Checkbox, CheckState, Switch, TextField, ValidationState, Select, SegmentedControl, TextArea, SearchField, NumberInput, CheckboxGroup, CheckboxGroupItem, RadioGroup, RadioGroupItem, ComboBox, Slider, FilePicker,
+    Checkbox, CheckState, Switch, TextField, ValidationState, Select, SegmentedControl, TextArea, SearchField, NumberInput, CheckboxGroup, CheckboxGroupItem, Radio, RadioGroup, RadioGroupItem, ComboBox, Slider, FilePicker,
     MultiSelect, MultiSelectOption, AutoComplete, AutoCompleteOption, DatePicker, TimePicker, ColorPicker, ColorOption,
-    Tabs, TabItem, PopupMenu, PopupMenuEntry, ContextMenu, Dropdown, Breadcrumb, BreadcrumbItem, Steps, StepItem, StepState, Pagination, NavigationRail, NavigationRailItem, CommandPalette, CommandItem,
+    Tabs, TabItem, PopupMenu, PopupMenuItem, PopupMenuEntry, ContextMenu, Dropdown, Breadcrumb, BreadcrumbItem, Steps, StepItem, StepState, Pagination, NavigationRail, NavigationRailItem, CommandPalette, CommandItem,
     Table, Tree, TreeItem, Avatar, DataGrid, Statistic, StatisticTone, Timeline, TimelineItem, TimelineTone, ImageView, ImageViewState, Calendar, CalendarDay, EmptyState, EmptyStateKind,
-    Badge, BadgeTone, Tag, TagTone, List, ListItemData, DescriptionList, DescriptionItem, Collapse, CollapseItem, Popover,
+    Badge, BadgeTone, Tag, TagTone, List, ListItem, ListItemData, DescriptionList, DescriptionItem, Collapse, CollapseItem, Popover,
     Tooltip, Progress, Spinner, StatusBar, StatusTone, Toast, ToastMessage, ToastTone, Notification, NotificationTone, Drawer, DrawerSide, Skeleton, Alert, AlertTone, ProgressRing, ResultState, ResultTone, LoadingOverlay,
 } from "@slint-ui/index.slint";
 import { ListView } from "std-widgets.slint";
@@ -27,9 +27,9 @@ export component ComponentDetail inherits Rectangle {
 
     private property <string> general-name: section == 0 ? "Theme" : section == 1 ? "Typography" : section == 2 ? "Label" : section == 3 ? "Icon" : section == 4 ? "Surface" : section == 5 ? "Divider" : section == 6 ? "FocusRing" : section == 7 ? "Button" : section == 8 ? "IconButton" : section == 9 ? "ToolButton" : section == 10 ? "SplitButton" : section == 11 ? "ButtonGroup" : section == 12 ? "ToggleButton" : section == 13 ? "Link" : "ShortcutHint";
     private property <string> layout-name: section == 0 ? "Surface" : section == 1 ? "Divider" : section == 2 ? "FocusRing" : section == 3 ? "Stack" : section == 4 ? "Space" : section == 5 ? "ScrollArea" : section == 6 ? "Overlay" : section == 7 ? "SplitPane" : section == 8 ? "Toolbar" : section == 9 ? "SettingsSection" : section == 10 ? "Flex" : section == 11 ? "Grid" : section == 12 ? "Panel" : section == 13 ? "AppShell" : "TitleBar";
-    private property <string> entry-name: section == 0 ? "Form" : section == 1 ? "FormRow" : section == 2 ? "Checkbox" : section == 3 ? "Switch" : section == 4 ? "TextField" : section == 5 ? "Select" : section == 6 ? "MultiSelect" : section == 7 ? "AutoComplete" : section == 8 ? "DatePicker" : section == 9 ? "TimePicker" : section == 10 ? "ColorPicker" : section == 11 ? "TextArea" : section == 12 ? "SearchField" : section == 13 ? "NumberInput" : section == 14 ? "CheckboxGroup" : section == 15 ? "RadioGroup" : section == 16 ? "ComboBox" : section == 17 ? "Slider" : "FilePicker";
-    private property <string> navigation-name: section == 0 ? "Tabs" : section == 1 ? "PopupMenu" : section == 2 ? "ContextMenu" : section == 3 ? "Breadcrumb" : section == 4 ? "Steps" : section == 5 ? "Pagination" : section == 6 ? "NavigationRail" : section == 7 ? "CommandPalette" : "Dropdown";
-    private property <string> display-name: section == 0 ? "Card" : section == 1 ? "SegmentedControl" : section == 2 ? "Tooltip" : section == 3 ? "Table" : section == 4 ? "Tree" : section == 5 ? "Avatar" : section == 6 ? "DataGrid" : section == 7 ? "Statistic" : section == 8 ? "Timeline" : section == 9 ? "ImageView" : section == 10 ? "Calendar" : section == 11 ? "EmptyState" : section == 12 ? "Badge" : section == 13 ? "Tag" : section == 14 ? "List" : section == 15 ? "DescriptionList" : section == 16 ? "Collapse" : "Popover";
+    private property <string> entry-name: section == 0 ? "Form" : section == 1 ? "FormRow" : section == 2 ? "Checkbox" : section == 3 ? "Switch" : section == 4 ? "TextField" : section == 5 ? "Select" : section == 6 ? "MultiSelect" : section == 7 ? "AutoComplete" : section == 8 ? "DatePicker" : section == 9 ? "TimePicker" : section == 10 ? "ColorPicker" : section == 11 ? "TextArea" : section == 12 ? "SearchField" : section == 13 ? "NumberInput" : section == 14 ? "CheckboxGroup" : section == 15 ? "RadioGroup" : section == 16 ? "ComboBox" : section == 17 ? "Slider" : section == 18 ? "FilePicker" : "Radio";
+    private property <string> navigation-name: section == 0 ? "Tabs" : section == 1 ? "PopupMenu" : section == 2 ? "ContextMenu" : section == 3 ? "Breadcrumb" : section == 4 ? "Steps" : section == 5 ? "Pagination" : section == 6 ? "NavigationRail" : section == 7 ? "CommandPalette" : section == 8 ? "Dropdown" : "PopupMenuItem";
+    private property <string> display-name: section == 0 ? "Card" : section == 1 ? "SegmentedControl" : section == 2 ? "Tooltip" : section == 3 ? "Table" : section == 4 ? "Tree" : section == 5 ? "Avatar" : section == 6 ? "DataGrid" : section == 7 ? "Statistic" : section == 8 ? "Timeline" : section == 9 ? "ImageView" : section == 10 ? "Calendar" : section == 11 ? "EmptyState" : section == 12 ? "Badge" : section == 13 ? "Tag" : section == 14 ? "List" : section == 15 ? "DescriptionList" : section == 16 ? "Collapse" : section == 17 ? "Popover" : "ListItem";
     private property <string> feedback-name: section == 0 ? "Progress" : section == 1 ? "Spinner" : section == 2 ? "StatusBar" : section == 3 ? "Toast" : section == 4 ? "ModalDialog" : section == 5 ? "ConfirmDialog" : section == 6 ? "Notification" : section == 7 ? "Drawer" : section == 8 ? "Skeleton" : section == 9 ? "Alert" : section == 10 ? "ProgressRing" : section == 11 ? "ResultState" : "LoadingOverlay";
     private property <string> selected-name: page == 0 ? general-name : page == 1 ? layout-name : page == 2 ? "Button" : page == 3 ? entry-name : page == 4 ? feedback-name : page == 5 ? (section == 0 ? "Outlined Icons" : "Filled Icons") : page == 6 ? navigation-name : display-name;
     private property <[string]> general-api: [
@@ -77,6 +77,7 @@ export component ComponentDetail inherits Rectangle {
         "text · suggestions · current-index · choose() · selected() · accepted()",
         "value · minimum · maximum · step · orientation · set-value() · changed()",
         "path · placeholder-text · browse-text · choose() · browse-requested() · changed()",
+        "text · value · checked · enabled · accessible-name · select() · selected()",
     ];
     private property <[string]> navigation-api: [
         "tabs · current-index · select() · select-next() · selected() · close-requested()",
@@ -88,6 +89,7 @@ export component ComponentDetail inherits Rectangle {
         "items · current-index · enabled · select() · selected()",
         "commands · query · current-index · open · activate() · selected()",
         "text · entries · enabled · size · toggle() · activate() · selected() · closed()",
+        "entry · highlighted · accessible-name · activate() · triggered() · submenu-requested()",
     ];
     private property <[string]> display-api: [
         "title · description · @children", "options · selected-index · size · enabled · select() · selected()",
@@ -102,6 +104,7 @@ export component ComponentDetail inherits Rectangle {
         "items · label-width · bordered · accessible-name",
         "items · enabled · toggle() · changed()",
         "trigger-text · title · message · action-text · show()/close()/toggle()",
+        "item · selected · focused · activated()",
     ];
     private property <[string]> feedback-api: [
         "value · indeterminate · accessible-name", "size · indicator-color · accessible-name", "text · detail · tone · busy · accessible-name",
@@ -133,7 +136,7 @@ export component ComponentDetail inherits Rectangle {
         : selected-name == "ModalDialog" || selected-name == "ConfirmDialog" || selected-name == "Drawer" || selected-name == "Overlay" ? "overlay-mask · bg-elevated · dialog/drawer geometry · border-* · radius-* · space-*"
         : selected-name == "Progress" || selected-name == "Spinner" || selected-name == "Skeleton" ? "color-primary · bg-disabled · progress/spinner/skeleton-cycle · reduced-motion"
         : "bg-surface/layout · text-primary/secondary/disabled · border-* · fill-* · selection-bg · focus-outline · radius-* · space-*";
-    private property <bool> button-page: (page == 0 && section == 7) || page == 2;
+    private property <bool> button-page: page == 0 && section == 7;
     private property <CheckState> checkbox-state: CheckState.checked;
     private property <bool> switch-value: true;
     private property <string> input-value: "SlintUI";
@@ -293,6 +296,7 @@ export component ComponentDetail inherits Rectangle {
             if root.page == 3 && root.section == 16: ComboBox { width: 420px; text: "Slint"; suggestions: root.suggestions; placeholder-text: GalleryStrings.choose; accessible-name: "ComboBox"; }
             if root.page == 3 && root.section == 17: Stack { Slider { width: 520px; value: 35; minimum: 0; maximum: 100; step: 5; accessible-name: "Slider"; } Slider { width: 520px; value: 60; enabled: false; accessible-name: GalleryStrings.disabled; } }
             if root.page == 3 && root.section == 18: FilePicker { width: 620px; path: "C:/workspace/example.txt"; browse-text: GalleryStrings.choose; accessible-name: "FilePicker"; }
+            if root.page == 3 && root.section == 19: Space { Radio { text: GalleryStrings.one; value: "one"; checked: true; } Radio { text: GalleryStrings.two; value: "two"; } Radio { text: GalleryStrings.disabled; value: "disabled"; enabled: false; } }
 
             if root.page == 6 && root.section == 0: Tabs { width: 620px; tabs: root.tabs; current-index: 0; }
             if root.page == 6 && root.section == 1: menu-anchor := Rectangle { width: 220px; height: Theme.control-height-medium; Button { width: parent.width; text: GalleryStrings.open-menu; clicked => { detail-menu.show(); } } detail-menu := PopupMenu { width: parent.width; height: parent.height; entries: root.menu-entries; } }
@@ -303,6 +307,7 @@ export component ComponentDetail inherits Rectangle {
             if root.page == 6 && root.section == 6: NavigationRail { height: 220px; items: root.rail-items; current-index: 0; }
             if root.page == 6 && root.section == 7: Button { text: "CommandPalette"; clicked => { root.command-palette-requested(); } }
             if root.page == 6 && root.section == 8: Dropdown { width: 280px; text: GalleryStrings.open-menu; entries: root.menu-entries; accessible-name: "Dropdown"; }
+            if root.page == 6 && root.section == 9: Stack { PopupMenuItem { width: 320px; entry: { text: GalleryStrings.settings, shortcut: "Ctrl+,", enabled: true, checked: true, separator: false, has-submenu: false }; highlighted: true; } PopupMenuItem { width: 320px; entry: { text: GalleryStrings.disabled, shortcut: "", enabled: false, checked: false, separator: false, has-submenu: false }; } }
 
             if root.page == 7 && root.section == 0: Card { width: 420px; title: GalleryStrings.details; description: GalleryStrings.account-help; Label { text: GalleryStrings.long-text; } }
             if root.page == 7 && root.section == 1: SegmentedControl { width: 360px; options: root.options; selected-index: 1; }
@@ -322,6 +327,7 @@ export component ComponentDetail inherits Rectangle {
             if root.page == 7 && root.section == 15: DescriptionList { width: 720px; items: root.description-items; bordered: true; accessible-name: "DescriptionList"; }
             if root.page == 7 && root.section == 16: Collapse { width: 720px; items: root.collapse-items; accessible-name: "Collapse"; }
             if root.page == 7 && root.section == 17: Popover { width: 280px; trigger-text: "Popover"; title: GalleryStrings.details; message: GalleryStrings.long-text; action-text: GalleryStrings.save; close-text: GalleryStrings.cancel; accessible-name: "Popover"; }
+            if root.page == 7 && root.section == 18: Stack { width: 620px; ListItem { width: parent.width; item: { text: GalleryStrings.settings, description: GalleryStrings.account-help, enabled: true }; selected: true; focused: true; } ListItem { width: parent.width; item: { text: GalleryStrings.disabled, description: GalleryStrings.long-text, enabled: false }; } }
 
             if root.page == 4 && root.section == 0: Stack { Progress { width: 520px; value: 0.64; } Progress { width: 520px; indeterminate: true; } }
             if root.page == 4 && root.section == 1: Space { Spinner { accessible-name: GalleryStrings.loading; } Label { text: GalleryStrings.loading; } }

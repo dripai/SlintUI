@@ -1,83 +1,40 @@
 # SlintUI 待办清单
 
-本文是仓库未完成工作的唯一状态清单。目标组件范围和优先级见 [`design/component-inventory.md`](design/component-inventory.md)，已经实现的组件 API 与明确限制见 [`design/component-specs/`](design/component-specs/README.md)。不再按 P0、P1、P2 分别维护状态文档。
+本文只记录尚未完成的工作。公开组件范围、分类和当前契约见 [`design/component-specs/`](design/component-specs/README.md)；历史 P0/P1/P2 里程碑不再作为成熟度依据。
 
-最近核对：2026-07-20。当前基线已实现全部 P0、40 份 P1 和 20 份 P2 组件规格，共 86 份；原 58 个组件的完成定义复核及剩余 28 个 P1 条目均已完成。`v0.1.0` 是首个固定 P0 标签，当前未提交工作属于其后的完整核心组件基线。
+最近核对：2026-07-20。当前公开入口包含 88 个组件和 1 个 `Theme` 全局对象，均按 `Alpha` 重新评审。“源码存在、可以编译、Gallery 可见”不表示达到生产级或 Beta。
 
-## 1. 现有组件质量补齐
+## 1. 生产级 API 收敛
 
-这些任务优先于继续增加组件数量。完成一项后必须同步组件规格、Gallery、测试和截图证据。
+- [x] 将组件规格按 General、Layout、Navigation、Data Entry、Data Display、Feedback、Desktop 分类。
+- [x] 为每个公开组件或全局对象建立独立规格，共 89 份。
+- [x] 每份规格记录当前实际属性、数据类型、内容入口、事件、方法、Theme Token 和现有行为，不创建空 API 类别。
+- [ ] 评审第一批 Button、IconButton、TextField、TextArea、Checkbox、Radio、Switch、Select 的状态所有权、事件时序和方法语义。
+- [ ] 按评审结果修正第一批源码、Gallery、交互测试和截图，不保留未经使用验证的 Alpha 兼容接口。
+- [ ] 依次评审 Form、Tabs、PopupMenu、Dropdown、ModalDialog、ConfirmDialog、Toast。
+- [ ] 依次评审 List、ListItem、Table、Tree、DataGrid。
+- [ ] 按组件风险继续评审其余 Alpha 规格，并逐项完成实现与验证闭环。
+- [ ] 建立规格与 `index.slint` 的自动一致性检查，防止公开属性、事件、方法或导出发生未记录漂移。
 
-- [x] 按 [`design/component-inventory.md`](design/component-inventory.md) 第 13 节逐个复核 58 个已实现组件；证据见 [`design/component-quality-audit.md`](design/component-quality-audit.md)。
-- [x] 为每个组件补齐适用的 Variant、Size、Disabled、Loading、Selected、Error、Focus 和长文本示例；不适用状态已在规格或质量记录中说明。
-- [x] Gallery 已使用组件特有 API、状态和 Theme Token 说明，不再复用通用占位内容。
-- [x] 交互 Harness 已覆盖全部有状态核心协议的正常、禁用、重复操作和边界路径。
-- [x] 已建立文本、图标、边框、焦点环和状态色的 [`design/contrast-audit.md`](design/contrast-audit.md) 记录。
-- [x] 已新增 125% 和 200% 代表性截图，并继续保留主题、密度、Locale、RTL 和 reduced-motion 组合检查。
+## 2. Gallery 与测试
 
-## 2. P1 完整批次（28 项，已完成）
+- [ ] 单组件页面只展示一个组件，并逐项覆盖该组件实际拥有的 API、视觉和行为规范。
+- [ ] 为受控属性展示宿主赋值与用户操作的差异。
+- [ ] 为实际公开的事件增加名称、参数、来源和累计次数日志。
+- [ ] 为实际公开的方法增加可操作控制和调用前后状态。
+- [ ] 补齐键盘、焦点、重复操作、非法值、空模型、RTL、长文本、125% 和 200% 自动或截图证据。
+- [ ] 截图基线改用“分类/组件/场景”命名，不继续使用 P0/P1/P2 批次命名。
 
-以下组件已作为里程碑 F 完成，并纳入公开入口、分类 Gallery、规格和质量门禁。
-
-### 操作（3）
-
-- [x] `ButtonGroup`
-- [x] `ToggleButton`
-- [x] `Link`
-
-### 布局与容器（4）
-
-- [x] `Flex`
-- [x] `Grid`
-- [x] `Panel`
-- [x] `AppShell`
-
-### 导航（1）
-
-- [x] `Dropdown`
-
-### 数据录入（8）
-
-- [x] `TextArea`
-- [x] `SearchField`
-- [x] `NumberInput`
-- [x] `CheckboxGroup`
-- [x] `Radio` / `RadioGroup`
-- [x] `ComboBox`
-- [x] `Slider`
-- [x] `FilePicker`
-
-### 数据展示（6）
-
-- [x] `Badge`
-- [x] `Tag`
-- [x] `List` / `ListItem`
-- [x] `DescriptionList`
-- [x] `Collapse`
-- [x] `Popover`
-
-### 反馈（4）
-
-- [x] `Alert`
-- [x] `ProgressRing`
-- [x] `ResultState`
-- [x] `LoadingOverlay`
-
-### 桌面核心（2）
-
-- [x] `ShortcutHint`
-- [x] `TitleBar`
-
-## 3. 平台增强（6 项）
+## 3. 平台增强
 
 平台增强必须进入独立 crate，并为 Windows、macOS、Linux 保持统一公开语义；核心 `.slint` 组件不得直接调用系统 API。
 
-- [ ] 窗口拖动与缩放
-- [ ] 原生窗口阴影
-- [ ] 系统托盘
-- [ ] 全局快捷键
-- [ ] 原生文件对话框
-- [ ] 系统通知
+- [ ] 窗口拖动与缩放。
+- [ ] 原生窗口阴影。
+- [ ] 系统托盘。
+- [ ] 全局快捷键。
+- [ ] 原生文件对话框。
+- [ ] 系统通知。
 
 ## 4. 平台与无障碍验证
 
@@ -96,17 +53,15 @@
 - [ ] 接入第二个业务项目，验证跨产品复用。
 - [ ] 完成兼容性审查后发布 `1.0.0`。
 
-## 6. 已知限制与上游依赖
-
-以下项目不是静默缺失的功能。只有 Slint 提供稳定能力，或经过评审决定最小必要自定义方案后，才转为实施任务。
+## 6. 已知上游限制
 
 - Tooltip 的延迟、偏移和通用焦点触发。
 - Toolbar 任意子项的 roving focus、方向键遍历和自动溢出。
 - 任意 `@children` 的运行时方向切换和自动换行。
 - 任意业务组合的自动 RTL 结构镜像和方向图标镜像。
 - 通用跨窗口焦点陷阱、所有者焦点恢复和平台模态关系。
-- `ScrollArea` 虚拟化；超长数据集合继续使用 Table、DataGrid 或后续 List 协议。
+- `ScrollArea` 虚拟化；超长数据集合继续使用 Table、DataGrid 或后续窗口数据协议。
 
-## 7. 不进入当前待办
+## 7. 当前范围之外
 
-FloatButton、Affix、Anchor、Carousel、Tour、Watermark、QRCode、Rate、Mentions、Transfer、Masonry、网页 24 栅格和 ProComponents 没有明确桌面产品需求，不作为当前完成度缺口。出现真实场景时先更新组件清单，再进入本 TODO。
+FloatButton、Affix、Anchor、Carousel、Tour、Watermark、QRCode、Rate、Mentions、Transfer、Masonry、网页 24 栅格和 ProComponents 没有明确桌面产品需求。出现真实场景时先增加独立组件提案和规格，再决定是否实现。
