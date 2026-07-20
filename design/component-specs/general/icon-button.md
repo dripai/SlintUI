@@ -2,6 +2,8 @@
 
 成熟度：`Alpha`。源码：`crates/slint-ui/ui/controls/icon-button.slint`。公开名称：`IconButton`。
 
+评审状态：`2026-07-21 已完成契约评审`。本页 API 表仍记录当前继承实现；“评审结论”是待落实的目标契约。
+
 用于仅图标的紧凑操作。能稳定显示文字时优先使用 `Button`；工具栏可切换项使用 `ToolButton`。
 
 ## 公开 API
@@ -56,6 +58,16 @@
 |---|---|---|
 | `activate()` | `无` | 当前实现约束：`if (interactive) { if (checkable) { root.checked = !root.checked; } root.clicked(); }`；继承自 Button |
 
+### 评审结论（待实现）
+
+- 改为组合 `Button`，不再继承其完整公开表面，避免向 IconButton 泄漏 `text`、`checkable`、`checked` 和 `radius`。
+- 目标属性只保留 `icon`、`tooltip`、`variant`、`size`、`enabled`、`loading`、`keyboard-focusable`、`accessible-name`、`has-focus`。
+- `accessible-name` 是必填契约。Slint 不能在编译期验证非空，因此由 Gallery、自动测试和宿主接入检查负责；Tooltip 不能替代可访问名称。
+- `tooltip` 为空表示不显示可见说明；它不影响点击、焦点或无障碍名称。
+- 保留 `clicked()`、`activate()`，新增 `focus()`、`clear-focus()`；事件语义与 Button 完全一致。
+
+目标状态所有权：除 `has-focus` 为组件派生外，其余属性均由调用方输入；IconButton 不拥有切换状态，需要选择状态时使用 `ToolButton` 或 `ToggleButton`。
+
 ## 视觉规范
 
 ### 组成结构
@@ -64,7 +76,7 @@
 
 ### 变体、尺寸与状态外观
 
-视觉控制入口：`variant`、`size`、`loading`、`checked`。状态组合以公开属性和行为规范为准，不为 Gallery 虚构额外状态。
+当前视觉控制入口继承 `variant`、`size`、`loading`、`checked`。目标契约删除 Checked 外观，固定为正方形命中区域并仅显示图标或 Loading 指示。
 
 ### Theme Token
 
@@ -79,6 +91,20 @@
 ### 状态与交互
 
 Default、Hover、Pressed、Focused、Disabled、Loading 和激活行为与 Button 一致；Selected 仅在调用方启用 checkable 时适用。
+
+### 已评审事件时序
+
+指针、Enter、Space、无障碍默认动作和 `activate()` 在 `enabled && !loading` 时各触发一次 `clicked()`；Disabled、Loading、宿主赋值、Tooltip 显示与隐藏均不触发业务事件。按下后移出命中区域再释放不触发。
+
+### 已评审方法语义
+
+| 方法 | 前置条件 | 结果与事件 | 幂等与边界 |
+|---|---|---|---|
+| `activate()` | `enabled && !loading` | 触发一次 `clicked()` | 被阻止时无操作 |
+| `focus()` | `enabled && keyboard-focusable` | 获得焦点，不触发业务事件 | 已聚焦时幂等 |
+| `clear-focus()` | 当前持有焦点 | 清除焦点 | 未聚焦时幂等 |
+
+当前实现差异：继承导致公开了不适用的 Button 状态；`variant` 实际默认绑定为 `ButtonVariant.text`，与当前 API 表中的继承默认值不一致；焦点方法尚未公开。实现时必须改为组合并同步 Gallery/API 表。
 
 ### 无障碍与本地化
 

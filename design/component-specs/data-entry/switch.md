@@ -2,6 +2,8 @@
 
 成熟度：`Alpha`。源码：`crates/slint-ui/ui/controls/switch.slint`。公开名称：`Switch`。
 
+评审状态：`2026-07-21 已完成契约评审`。本页 API 表仍记录当前实现；Loading、事件重命名和焦点方法尚待实现。
+
 用于立即生效的开/关设置。需要提交后才生效或表达多选时使用 Checkbox；互斥模式使用 SegmentedControl。
 
 ## 公开 API
@@ -39,6 +41,14 @@
 |---|---|---|
 | `toggle()` | `无` | 当前实现约束：`if (enabled) { root.checked = !root.checked; root.toggled(root.checked); }` |
 
+### 评审结论（待实现）
+
+- `checked: in-out bool` 是唯一业务状态；组件和宿主共享所有权。`has-focus` 为派生状态，其他属性由调用方输入。
+- 将 `toggled(checked)` 重命名为 `changed(checked)`，统一表示值已经更新；宿主直接设置 `checked` 不触发。
+- 新增 `loading: in bool = false`。立即生效的设置经常需要等待宿主确认，Loading 保持当前值和尺寸、保留焦点并阻止重复切换。
+- 保留 `toggle()`，新增 `focus()`、`clear-focus()`；指针、Space、无障碍默认动作与方法使用同一路径。
+- Enter 不切换 Switch。文字必须描述开启后的状态，不能只写“启用/禁用”而缺少对象。
+
 ## 视觉规范
 
 ### 组成结构
@@ -62,6 +72,26 @@
 ### 状态与交互
 
 支持 Default、Hover、Pressed、Focused、Disabled、Checked。点击或 Space 切换，在状态更新后触发一次回调；禁用不变化。滑块动画使用 Theme 动效并服从 reduced-motion。
+
+### 已评审事件时序
+
+| 来源 | 前置条件 | 状态变化 | 事件 |
+|---|---|---|---|
+| 指针、Space、无障碍默认动作、`toggle()` | `enabled && !loading` | `checked = !checked` | 更新后 `changed(checked)` 一次 |
+| 宿主设置 `checked` | 任意 | 同步新值 | 无事件 |
+| Disabled 或 Loading 下激活 | 条件不满足 | 无 | 无 |
+
+宿主收到 `changed` 后如需异步保存，应立即设置 `loading = true`；失败回滚通过宿主写回 `checked`，不会再次触发 `changed`，错误反馈由 FormRow、Alert 或 Notification 承担。
+
+### 已评审方法语义
+
+| 方法 | 前置条件 | 结果与事件 | 幂等与边界 |
+|---|---|---|---|
+| `toggle()` | `enabled && !loading` | 切换并触发 `changed` | 每次有效调用切换一次；被阻止时无操作 |
+| `focus()` | `enabled` | 获得焦点 | 已聚焦时幂等；Loading 仍可聚焦 |
+| `clear-focus()` | 当前持有焦点 | 清除焦点 | 未聚焦时幂等 |
+
+当前实现差异：回调仍名为 `toggled`，没有 Loading 与焦点方法；动效始终声明 `Theme.motion-fast`，实现阶段必须验证 reduced-motion 下该 Token 实际归零或禁用位置动画。
 
 ### 无障碍与本地化
 

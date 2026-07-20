@@ -2,7 +2,9 @@
 
 成熟度：`Alpha`。源码：`crates/slint-ui/ui/controls/text-field.slint`。公开名称：`TextField`。
 
-用于单行文本、密码和只读输入。多行使用后续 TextArea，格式化数字使用后续 NumberInput；Label 和错误关系由 `FormRow` 提供。
+评审状态：`2026-07-21 已完成契约评审`。本页 API 表仍记录当前实现；评审后的命名和方法差异均标记为待实现。
+
+用于单行文本、密码和只读输入。多行使用 `TextArea`，格式化数字使用 `NumberInput`；Label 和错误关系由 `FormRow` 提供。
 
 ## 公开 API
 
@@ -57,6 +59,17 @@
 |---|---|---|
 | `clear()` | `无` | 当前实现约束：`if (clearable && enabled && !read-only && text != "") { root.text = ""; root.edited(""); root.cleared(); input.focus(); }` |
 
+### 评审结论（待实现）
+
+- `text` 继续使用 `in-out`，是唯一可变值；`has-focus` 只读派生，其他属性均由调用方输入。
+- 将 `accepted(text)` 重命名为 `submitted(text)`，与全局“明确提交”语义一致。Enter 只提交当前值，不额外触发 `edited`。
+- `edited(text)` 只在用户编辑或等效的公开清除操作真实改变值后触发；宿主直接设置 `text` 不触发。
+- `clearable` 只控制清除按钮是否可见，不再限制公共 `clear()`；方法是否能修改值只由 `enabled`、`read-only` 和当前是否为空决定。
+- 保留 `clear()`，新增 `focus()`、`clear-focus()`、`select-all()`；不公开仅服务内部布局的光标坐标。
+- `clear-accessible-name` 在 `clearable == true` 时必须为非空本地化文本。Placeholder 不替代外部 Label。
+
+评审不新增 `changed`：TextField 采用即时双向 `text` + `edited` + `submitted` 三种明确语义，不引入含义不清的失焦提交事件。
+
 ## 视觉规范
 
 ### 组成结构
@@ -80,6 +93,29 @@
 ### 状态与交互
 
 支持 Default、Focused、Disabled、ReadOnly、四种校验状态和有值清除入口。输入、IME、选择、剪贴板、撤销、密码和 Enter 接受由原生 TextInput 处理。`clear()` 与清除按钮走同一路径，禁用、只读、不可清除或空值时不触发。
+
+### 已评审事件时序
+
+| 来源 | 前置条件 | 状态变化 | 事件顺序 |
+|---|---|---|---|
+| 键盘、IME、粘贴等用户编辑 | `enabled && !read-only` 且文本真实变化 | 先更新 `text` | `edited(new-text)` 一次 |
+| Enter | `enabled` | 不修改 `text` | `submitted(text)` 一次；ReadOnly 允许提交当前值 |
+| 清除按钮或 `clear()` | `enabled && !read-only && text != ""` | `text = ""`，保留/恢复输入焦点 | `edited("")`，随后 `cleared()` |
+| 宿主直接设置 `text` | 任意 | 同步新值 | 无事件 |
+| Disabled、ReadOnly 下编辑或重复清空 | 条件不满足 | 无 | 无 |
+
+校验状态由宿主设置，不因用户编辑自动切换，也不触发业务事件。焦点变化不等同提交。
+
+### 已评审方法语义
+
+| 方法 | 前置条件 | 结果与事件 | 幂等与边界 |
+|---|---|---|---|
+| `clear()` | `enabled && !read-only && text != ""` | 清空，触发 `edited("")`、`cleared()`，聚焦输入 | 空值、禁用、只读时无操作；不依赖 `clearable` |
+| `focus()` | `enabled` | 聚焦输入，不触发编辑或提交事件 | 已聚焦时幂等；ReadOnly 可聚焦 |
+| `clear-focus()` | 当前持有焦点 | 清除焦点，不触发 `submitted` | 未聚焦时幂等 |
+| `select-all()` | `enabled && text != ""` | 选中全部文本，不改变值 | 空值时无操作；ReadOnly 可选择 |
+
+当前实现差异：事件仍名为 `accepted`；`clear()` 错误地受 `clearable` 限制；尚未公开焦点与全选方法。底层使用低级 `TextInput` 且未实现官方要求的光标移出可视区域时自动滚动，这也是实现阶段必须修正的生产缺口。
 
 ### 无障碍与本地化
 

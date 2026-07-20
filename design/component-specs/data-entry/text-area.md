@@ -2,6 +2,8 @@
 
 成熟度：`Alpha`。源码：`crates/slint-ui/ui/controls/text-area.slint`。公开名称：`TextArea`。
 
+评审状态：`2026-07-21 已完成契约评审`。本页 API 表仍记录当前实现；目标差异尚未写入源码。
+
 用于多行自由文本；单行输入使用 TextField，搜索使用 SearchField。
 
 ## 公开 API
@@ -44,6 +46,15 @@
 |---|---|---|
 | `replace-text()` | `next: string` | 当前实现约束：`if (enabled && !read-only && text != next) { root.text = next; root.edited(next); }` |
 
+### 评审结论（待实现）
+
+- `text` 是唯一可变值，继续使用 `in-out`；`has-focus`、`character-count` 和计划新增的 `over-limit` 为组件派生状态。
+- 删除 `replace-text(next)`。宿主赋值直接写 `text`，不应通过方法伪造用户 `edited` 事件。
+- 新增 `clear()`、`focus()`、`clear-focus()`、`select-all()`；TextArea 不提供通用 `submit()`，Enter 始终插入换行，业务若需要 Ctrl+Enter 提交应由 Form 或宿主定义。
+- `max-length == 0` 表示无上限；大于零时是校验阈值，不静默截断用户或宿主文本。新增 `over-limit: out bool`，定义为 `max-length > 0 && character-count > max-length`。
+- `validation` 仍由宿主拥有，`over-limit` 不自动覆盖宿主的 Error/Warning/Success 选择；Form 可以据此决定校验结果。
+- `edited(text)` 仅在用户编辑或等效的 `clear()` 真实改变值时触发；宿主赋值、计数更新和校验变化不触发。
+
 ## 视觉规范
 
 ### 组成结构
@@ -67,6 +78,27 @@
 ### 状态与交互
 
 覆盖 Default、Focused、Populated、Empty、Disabled、ReadOnly、Success、Warning、Error、滚动和长文本。`max-length` 是显式计数/校验上限，不静默截断输入。
+
+### 已评审事件时序
+
+| 来源 | 前置条件 | 状态变化 | 事件 |
+|---|---|---|---|
+| 键盘、IME、粘贴、删除等用户编辑 | `enabled && !read-only` 且值真实变化 | 更新 `text`、`character-count`、`over-limit` | `edited(new-text)` 一次 |
+| Enter | `enabled && !read-only` | 插入换行 | 作为普通编辑触发 `edited`，不提交 |
+| `clear()` | `enabled && !read-only && text != ""` | 清空并更新派生状态 | `edited("")` 一次 |
+| 宿主直接设置 `text` | 任意 | 同步值和派生状态 | 无事件 |
+| Disabled、ReadOnly 或重复清空 | 条件不满足 | 无 | 无 |
+
+### 已评审方法语义
+
+| 方法 | 前置条件 | 结果与事件 | 幂等与边界 |
+|---|---|---|---|
+| `clear()` | `enabled && !read-only && text != ""` | 清空并触发 `edited("")` | 空值、禁用、只读时无操作 |
+| `focus()` | `enabled` | 聚焦编辑器 | 已聚焦时幂等；ReadOnly 可聚焦 |
+| `clear-focus()` | 当前持有焦点 | 清除焦点 | 未聚焦时幂等 |
+| `select-all()` | `enabled && text != ""` | 选中全部文本，不改变值 | 空值时无操作；ReadOnly 可选择 |
+
+当前实现差异：仍公开 `replace-text()`，尚无 `clear()`、焦点、全选和 `over-limit`；现有测试把 `replace-text()` 当作用户编辑，必须按新语义重写。Slint 1.17.1 `TextEdit` 原生提供滚动、IME、全选及剪贴板能力，可直接包装公开焦点和全选方法。
 
 ### 无障碍与本地化
 

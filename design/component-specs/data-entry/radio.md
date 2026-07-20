@@ -2,6 +2,8 @@
 
 成熟度：`Alpha`。源码：`crates/slint-ui/ui/controls/radio.slint`。公开名称：`Radio`。
 
+评审状态：`2026-07-21 已完成契约评审`。本页 API 表记录当前请求式实现；目标事件命名和键盘规则尚待落实。
+
 用于互斥选项中的单个可选项。多个 Radio 必须由 RadioGroup 或宿主共享一个选择状态；独立布尔值应使用 Checkbox。
 
 ## 公开 API
@@ -29,6 +31,14 @@
 |---|---|---|
 | `select()` | `无` | 当前实现约束：`if (enabled && !checked) { root.selected(value); }` |
 
+### 评审结论（待实现）
+
+- 单个 `Radio` 保持请求式状态：`checked` 是只读输入，由 `RadioGroup` 或宿主管理；组件不得自行改写。
+- 将 `selected(value)` 重命名为 `selection-requested(value)`，准确表示组件只提出选择请求，尚未代表宿主已经更新组状态。
+- `value` 是稳定业务值，`text` 是本地化显示文本；同一组内 `value` 必须唯一，空值和重复值由 RadioGroup 的模型校验拒绝。
+- `select()` 在 `enabled && !checked` 时发出一次请求；已选中项重复激活不发请求。
+- 新增 `focus()`、`clear-focus()`。单个 Radio 只响应指针和 Space；Enter 不选择。方向键、Home、End 和 roving focus 由 RadioGroup 负责。
+
 ## 视觉规范
 
 ### 组成结构
@@ -52,6 +62,27 @@
 ### 状态与交互
 
 Unchecked、Checked、Hover、Focused 和 Disabled 由 checked、enabled 与焦点状态共同决定。select() 只在可用且尚未选中时发出 selected(value)，组件自身不修改 checked。
+
+### 已评审事件时序
+
+| 来源 | 前置条件 | 状态变化 | 事件 |
+|---|---|---|---|
+| 指针、Space、无障碍默认动作、`select()` | `enabled && !checked` | 无；等待宿主更新 `checked` | `selection-requested(value)` 一次 |
+| 已选中项重复激活 | `checked == true` | 无 | 无 |
+| 宿主设置 `checked` | 任意 | 同步视觉与语义状态 | 无事件 |
+| Disabled 下激活 | `enabled == false` | 无 | 无 |
+
+RadioGroup 接受请求后才更新组的 `current-index`，随后所有 Radio 根据组状态重绘；该同步不应再次发出请求。
+
+### 已评审方法语义
+
+| 方法 | 前置条件 | 结果与事件 | 幂等与边界 |
+|---|---|---|---|
+| `select()` | `enabled && !checked` | 发出 `selection-requested(value)`，不修改属性 | 已选中、禁用时无操作 |
+| `focus()` | `enabled` | 获得焦点 | 已聚焦时幂等；组内通常由 RadioGroup 调用 |
+| `clear-focus()` | 当前持有焦点 | 清除焦点 | 未聚焦时幂等 |
+
+当前实现差异：事件仍名为 `selected`，Space 和 Enter 都会激活，且没有公开焦点方法。Slint 1.17.1 已提供原生 RadioGroup 的单一 `current-index` 与组内选择模型，可参考其状态所有权，但 SlintUI 仍需保留稳定业务 `value` 和禁用项规则。
 
 ### 无障碍与本地化
 

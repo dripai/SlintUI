@@ -2,14 +2,14 @@
 
 本文只记录尚未完成的工作。公开组件范围、分类和当前契约见 [`design/component-specs/`](design/component-specs/README.md)；历史 P0/P1/P2 里程碑不再作为成熟度依据。
 
-最近核对：2026-07-20。当前公开入口包含 88 个组件和 1 个 `Theme` 全局对象，均按 `Alpha` 重新评审。“源码存在、可以编译、Gallery 可见”不表示达到生产级或 Beta。
+最近核对：2026-07-21。当前公开入口包含 88 个组件和 1 个 `Theme` 全局对象，均按 `Alpha` 重新评审。“源码存在、可以编译、Gallery 可见”不表示达到生产级或 Beta。
 
 ## 1. 生产级 API 收敛
 
 - [x] 将组件规格按 General、Layout、Navigation、Data Entry、Data Display、Feedback、Desktop 分类。
 - [x] 为每个公开组件或全局对象建立独立规格，共 89 份。
 - [x] 每份规格记录当前实际属性、数据类型、内容入口、事件、方法、Theme Token 和现有行为，不创建空 API 类别。
-- [ ] 评审第一批 Button、IconButton、TextField、TextArea、Checkbox、Radio、Switch、Select 的状态所有权、事件时序和方法语义。
+- [x] 评审第一批 Button、IconButton、TextField、TextArea、Checkbox、Radio、Switch、Select 的状态所有权、事件时序和方法语义；结论已分别写入 8 份组件规格，源码差异仍待实现。
 - [ ] 按评审结果修正第一批源码、Gallery、交互测试和截图，不保留未经使用验证的 Alpha 兼容接口。
 - [ ] 依次评审 Form、Tabs、PopupMenu、Dropdown、ModalDialog、ConfirmDialog、Toast。
 - [ ] 依次评审 List、ListItem、Table、Tree、DataGrid。

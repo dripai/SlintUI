@@ -2,7 +2,9 @@
 
 成熟度：`Alpha`。源码：`crates/slint-ui/ui/controls/button.slint`。公开名称：`Button`。
 
-用于离散操作和可选的可切换操作。立即生效的布尔设置使用 `Switch`，多项互斥选择使用 `SegmentedControl`，导航链接后续使用 `Link`。
+评审状态：`2026-07-21 已完成契约评审`。本页 API 表仍记录当前实现；“评审结论”是下一步必须落实的目标契约，未完成前不得按目标能力对外承诺。
+
+用于提交、保存、删除等离散命令。可切换操作使用 `ToggleButton`，立即生效的布尔设置使用 `Switch`，导航使用 `Link`。
 
 ## 公开 API
 
@@ -55,6 +57,16 @@
 |---|---|---|
 | `activate()` | `无` | 当前实现约束：`if (interactive) { if (checkable) { root.checked = !root.checked; } root.clicked(); }` |
 
+### 评审结论（待实现）
+
+- `Button` 只表示离散命令，不再承担选择状态；删除 `checkable`、`checked`，切换操作使用 `ToggleButton`。
+- 删除 `radius`。调用方只能通过 `variant`、`size` 和 Theme Token 控制外观，不允许用局部圆角修补页面。
+- 保留 `activate()`，并新增 `focus()`、`clear-focus()`；三者都必须显式定义禁用和 Loading 行为。
+- `clicked()` 表示一次被接受的激活，来源可以是指针、Enter、Space、无障碍默认动作或 `activate()`；宿主修改输入属性不触发。
+- `keyboard-focusable` 保留给 Toolbar 等复合控件实现 roving focus，普通调用方保持默认值 `true`。
+
+目标状态所有权：`text`、`icon`、`variant`、`size`、`enabled`、`loading`、`keyboard-focusable`、`accessible-name` 由调用方输入；`has-focus` 由组件派生；Button 不拥有业务值。
+
 ## 视觉规范
 
 ### 组成结构
@@ -63,7 +75,7 @@
 
 ### 变体、尺寸与状态外观
 
-视觉控制入口：`variant`、`size`、`loading`、`checked`。状态组合以公开属性和行为规范为准，不为 Gallery 虚构额外状态。
+当前视觉控制入口：`variant`、`size`、`loading`、`checked`。目标契约删除 Checked 外观，Button 只保留命令按钮状态；可切换外观由 `ToggleButton` 提供。
 
 ### Theme Token
 
@@ -78,6 +90,28 @@
 ### 状态与交互
 
 支持 Default、Hover、Pressed、Focused、Disabled、Checked、Loading。点击或 Enter/Space 调用同一 `activate()`；禁用和 Loading 阻止状态变化及回调，checkable 在回调前更新 checked。
+
+### 已评审事件时序
+
+| 来源 | 前置条件 | 状态变化 | 事件 |
+|---|---|---|---|
+| 指针在同一命中区域按下并释放 | `enabled && !loading` | 无业务状态变化 | `clicked()` 一次 |
+| Enter、Space、无障碍默认动作 | `enabled && !loading` | 无业务状态变化 | `clicked()` 一次 |
+| `activate()` | `enabled && !loading` | 无业务状态变化 | `clicked()` 一次 |
+| 宿主修改属性 | 任意 | 仅同步属性 | 不触发 `clicked()` |
+| Disabled 或 Loading 下激活 | 条件不满足 | 无 | 无 |
+
+Pressed 只在按住期间存在；拖出后释放不触发。Loading 不移除焦点、不改变按钮宽度，也不允许重复激活。
+
+### 已评审方法语义
+
+| 方法 | 前置条件 | 结果与事件 | 幂等与边界 |
+|---|---|---|---|
+| `activate()` | `enabled && !loading` | 触发一次 `clicked()` | 每次有效调用代表一次独立命令；被阻止时无操作 |
+| `focus()` | `enabled && keyboard-focusable` | 将焦点交给内部 FocusScope，不触发 `clicked()` | 已聚焦时幂等；Loading 仍可聚焦 |
+| `clear-focus()` | 当前持有焦点 | 清除焦点，不触发业务事件 | 未聚焦时幂等 |
+
+当前实现差异：仍公开 `checkable`、`checked`、`radius`，且尚未公开焦点方法；这些属于破坏性 Alpha API 调整，必须与实现、Gallery 和测试一起修改。
 
 ### 无障碍与本地化
 
