@@ -64,7 +64,7 @@ numbering-system: 跟随 Locale，必要时显式覆盖
 - Back、Forward、Chevron、Undo/Redo 等方向图标必须声明 RTL 是否镜像；播放、下载、搜索等非方向图标不镜像。
 - 用户生成内容可以拥有与界面不同的文本方向，组件需支持局部方向。
 
-当前 P0 实现状态：`Theme.locale` 与 `Theme.direction` 独立存在，Gallery 可切换中文、英文和阿拉伯语，并验证 RTL 文本对齐。稳定布局不会自动交换任意 `@children` 的结构顺序，方向图标也不会自动镜像；调用方必须按组件规格显式编排。完整自动结构镜像仍是待实现能力，不能用当前 Locale 展示替代该项验收。
+当前实现状态：`Theme.locale` 与 `Theme.direction` 独立存在，Gallery 可切换中文、英文和阿拉伯语，并验证 RTL 文本对齐。稳定布局不会自动交换任意 `@children` 的结构顺序，方向图标也不会自动镜像；调用方必须按组件规格显式编排。完整自动结构镜像仍是待实现能力，已统一记录在 [`TODO.md`](../TODO.md)，不能用当前 Locale 展示替代该项验收。
 
 ## 6. 文本扩张与溢出
 

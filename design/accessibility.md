@@ -104,7 +104,7 @@ SlintUI 以 WCAG 2.2 AA 作为通用验收基线，并结合 Windows、macOS、L
 - 中文、英文、长文本和 RTL。
 - 屏幕阅读器或平台无障碍检查工具读取名称、角色、状态和值。
 
-当前 P0 实现已声明 Slint 公开的名称、角色、checked、enabled、read-only、值与 live-region 属性，并提供键盘焦点和减少动效场景。Slint 1.17.1 公开能力不能表达 checkbox mixed 和字段 required 状态；Narrator、NVDA、VoiceOver、Orca 的实际播报仍需三平台真机验证，当前不标记为已经通过。
+当前实现已声明 Slint 公开的名称、角色、checked、enabled、read-only、值与 live-region 属性，并提供键盘焦点和减少动效场景。Slint 1.17.1 公开能力不能表达 checkbox mixed 和字段 required 状态；Narrator、NVDA、VoiceOver、Orca 的实际播报仍需三平台真机验证，相关任务统一记录在 [`TODO.md`](../TODO.md)，当前不标记为已经通过。
 - 焦点不丢失、不被遮挡，Modal 和 Popup 关闭后正确恢复。
 - 文本、图标、边框和焦点的自动对比度检查。
 
